@@ -10,6 +10,9 @@ import os
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
+import requests
+import base64
+import time
 import numpy as np
 from dotenv import load_dotenv
 
@@ -220,7 +223,7 @@ def call_gemini_analysis(selected_stocks):
         stocks_info.append({
             '代码': s['code'],
             '名称': s['name'],
-            '市值(亿)': round(s['market_cap'], 0),
+            '总市值(亿元)': round(s['market_cap'], 0),
             '题材': s.get('industry', ''),  # 添加题材
             '信号类型': ', '.join(s['signals']),
             'K': round(s['K'], 1),
@@ -291,9 +294,14 @@ def generate_xiaohongshu_post(gemini_analysis, selected_stocks):
 4. **标题**：吸引眼球，20字以内。
 5. **结构要求**：
    - **标题行**：日期 + 核心主题 + Emoji
-    - 开头：仅用一句话概括（日期: {datetime.now().strftime('%Y-%m-%d')}，AI量化发现超卖反弹机会，请确保标题和文中日期准确无误！）。
-    - 中间：直接列出Top10股票及其核心理由。每只股票一行，格式：
-     `🔍 [股票名脱敏] ([代码脱敏]) | [行业] | [核心理由简述]` (请使用类似的清晰分割格式，稍微修饰一下)
+   - **开头**：各位交易员，AI量化今日扫描全场！ ({datetime.now().strftime('%Y-%m-%d')})
+   - **中间（核心部分）**：列出Top10股票。**必须严格执行2行格式**，每只股票占2行：
+     
+     1️⃣ **[股票名脱敏] ([代码脱敏])** | 🏷️[行业]
+     👉 [核心理由简述，30字以内，重点写技术面优势]
+
+     2️⃣ ... (以此类推)
+   
    - **结尾**：风险提示 + 互动 + 关注引导。
 6. **术语替换**：将 "B" 或 "B1" 替换为 "买点"。
 7. **禁词**：绝对不要出现 "知行"、"东方财富" 等具体策略或来源名称。
@@ -315,7 +323,7 @@ def generate_xiaohongshu_post(gemini_analysis, selected_stocks):
     return response.choices[0].message.content, prompt
 
 
-def generate_image_prompt(gemini_analysis):
+def generate_image_prompt(gemini_analysis, selected_stocks):
     """生成信息图提示词"""
     from openai import OpenAI
     
@@ -323,37 +331,74 @@ def generate_image_prompt(gemini_analysis):
         api_key="sk-ydHa8x53xR3roO9ppZRfuZkPkT5ozng1oXg7BTCeAedRbVgO",
         base_url="https://api.34ku.com/v1"
     )
+
+    # 准备股票数据摘要(包含技术指标)
+    stock_summary = []
+    for s in selected_stocks:
+        stock_summary.append({
+            'name': s['name'],
+            'code': s['code'],
+            'industry': s.get('industry', '未知'),
+            'signals': ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点'),
+            'J': round(s.get('J', 0), 2),
+            'RSI': round(s.get('RSI', 0), 2),
+            # Market Cap removed
+        })
     
-    prompt = f"""基于以下股票分析内容，设计一个生成图片的Prompt。
+    prompt = f"""基于以下选股结果和AI分析，设计一个用于生成"Nano Banana Pro3"模型图片的详细英文Prompt。
 
-分析内容：
-{gemini_analysis}
+    选股明细（包含代码、题材、技术指标、信号）：
+    {json.dumps(stock_summary, ensure_ascii=False, indent=2)}
 
-当前日期：{datetime.now().strftime('%Y-%m-%d')}
+    AI市场分析结论：
+    {gemini_analysis[:500]}... (Extracted summary)
 
-要求基于用户指令：
-"请根据输入内容提取核心主题与要点，生成一张卡通风格的信息图：采用手绘风格，横版构图。 加入简洁的卡通元素、图标或名人画像，增强趣味性和视觉记忆。
-【重要】图片中必须清晰标注今日日期 ({datetime.now().strftime('%Y-%m-%d')})。
-【重要】图中的主角/分析师形象必须是一个具有科技感的AI机器人，而不是人类分析师。
-【重要】除了技术指标名称（如RSI, KDJ, MACD）外，图片中绝对不要出现任何其他英文字母！所有标题、说明文字必须是中文手绘字体。
-如果有敏感人物或者版权内容，画一个相似替代，但是不要拒绝生成所有图像、文字必须使用手绘风格。信息精简，突出关键词与核心概念，多留白，易于一眼抓住重点。"
+    当前日期：{datetime.now().strftime('%Y-%m-%d')}
 
-请输出一段英文Prompt，用于文生图模型，描述这张信息图的视觉细节。包含Top股票的关键信息。确保在Prompt中明确指定：
-1. Title includes date '{datetime.now().strftime('%Y-%m-%d')}'.
-2. Title text MUST be "AI大模型量化 今日精选Top10". Do NOT include specific strategy names.
-3. The main character is a high-tech AI Robot.
-4. NO English text allows for general content, ONLY Technical Indicators (RSI, KDJ, etc.) are allowed in English. All other text MUST be Chinese.
-5. **Vertical composition (Aspect Ratio 3:4 or 9:16)** is REQUIRED to fit Xiaohongshu full screen. The image MUST be tall, not wide.
-6. **MUST include ALL Top 10 stocks** listed in the analysis content. Arrange them in a clear list or grid format.
-7. **MUST include text**: "次日关注进场" (Watch for entry tomorrow) in a prominent position.
-8. **Terminology**: Replace all "B" or "B1" signals with "买点" (Buy Point) in Chinese text on the image (e.g. "原始买点", "缩量买点").
+    【核心指令】请严格完全遵守以下所有要求，**风格和布局必须与参考图高度一致**：
+    1.  **Layout & Composition**: 
+        -   **Orientation**: **STRICTLY VERTICAL (9:16)**.
+        -   **Structure**: 2-Column Grid of Stock Cards.
+        -   **Header Area**: 
+            -   **Top Left**: A **"Dynamic Theme Mascot"** representing the HOTTEST sector in the analysis (e.g. If Semis -> Chip Character; If Military -> Rocket Character; If Auto -> Car Character). **Style**: Professional Hand-Drawn Sketch, Festive/Bullish (e.g. wearing Red Scarf).
+            -   **Top Right**: A LARGE Speech Bubble containing **Rich Narrative Market Summary**.
+            -   **Top Center**: Title "**AI大模型量化策略**" + Date.
+        -   **Body Area**: **2-Column Grid** of rounded rectangular cards.
+        -   **Footer**: **NONE**.
+    2.  **Stock Card Design (Internal Layout)**:
+        -   **Color Distinction**: Left Column (Pale Blue) / Right Column (Pale Yellow/Cream).
+        -   **Content Structure**:
+            -   **Line 1**: **[#Index]** [Stock Name] (Bold Black)  [Code] (Gray).
+            -   **Line 2**: **[Industry Icon]** + **[Industry/Theme Tag]** (Dark Orange).
+                -   *Note*: The Industry Icon MUST be relevant to the specific theme (e.g. ✈️ for Military, 💊 for Bio, 💻 for Chips, 🚗 for Auto).
+            -   **Line 3**: **[ONE Lucky Icon]** [Signal Name] | **J=xx  RSI=xx**.
+        -   **Visuals**:
+            -   **ONE Lucky Icon Only**: Use EXACTLY ONE "Fortune" icon (Rocket 🚀 OR Fire 🔥 OR Red Arrow 📈) next to the signal. Do not crowd with multiple icons.
+    3.  **Market Sentiment (Rich Narrative)**: 
+        -   **Content**: Summarize the analysis into **2-3 enthusiastic sentences** (Chinese).
+        -   **Visuals**: **Golden Coins, Rising Arrows**.
+    4.  **Visual Style**: 
+        -   **style**: **"Professional Hand-Drawn Sketch / Architectural Sketch"**. 
+        -   **Texture**: Pencil/Ink lines on paper texture. Avoid smooth vector/cartoon shading.
+        -   **Background**: **Festive Red/Gold Gradient** but with "Sketchy" texture.
+    5.  **Text Constraints**: 
+        -   NO English sentences. Only "AI", "RSI", "J", "KDJ", "Code" allowed.
+
+    Output the final English Prompt. Explicitly describe the "Industry Icons", "Single Lucky Icon", and "Hand-Drawn Sketch Style".
+
+
 """
 
     response = client.chat.completions.create(
         model="gemini-3-flash-preview-thinking-exp",
         messages=[{"role": "user", "content": prompt}]
     )
-    return response.choices[0].message.content, prompt
+    
+    # 添加模型特定说明
+    final_prompt = response.choices[0].message.content
+    final_prompt += "\n\n(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)"
+    
+    return final_prompt, prompt
 
 
 def save_reports(gemini_analysis, xiaohongshu_post, today):
@@ -428,19 +473,28 @@ def main():
         return
 
     try:
-        gemini_analysis, analysis_prompt = call_gemini_analysis(selected) # 传 Top10
+        # 仅取 Top 10 进行分析和生图
+        top_stocks = selected[:10]
+        
+        gemini_analysis, analysis_prompt = call_gemini_analysis(top_stocks)
         print("\n✅ Gemini分析完成")
         
         # 3. 生成小红书文案
-        xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, selected)
+        xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, top_stocks)
         print("✅ 小红书文案生成完成")
         
         # 4. 生成图片提示词
-        image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis)
+        image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis, top_stocks)
         print("✅ 图片提示词生成完成")
         print(f"\n[Image Prompt]:\n{image_prompt}\n")
         
-        # 保存提示词
+        # 保存独立图片提示词文件
+        img_prompt_file = os.path.join(date_dir, f"image_prompt_{today}.txt")
+        with open(img_prompt_file, 'w', encoding='utf-8') as f:
+            f.write(image_prompt)
+        print(f"📁 图片提示词已保存: {img_prompt_file}")
+        
+        # 保存提示词汇总
         prompts_dict = {
             "Top10分析 Prompt": analysis_prompt,
             "小红书文案 Prompt": xhs_prompt,
