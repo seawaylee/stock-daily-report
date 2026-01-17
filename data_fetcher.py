@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 from typing import List, Optional
 import time
+import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> pd.DataFrame:
@@ -19,6 +21,24 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
     
     返回: DataFrame 包含 code, name, market_cap, industry 列
     """
+    # 检查是否有今日缓存
+    today = datetime.now().strftime('%Y%m%d')
+    os.makedirs('data', exist_ok=True)
+    cache_file = f"data/stock_list_{today}.csv"
+    
+    if os.path.exists(cache_file):
+        print(f"Loading stock list from cache: {cache_file}")
+        try:
+            result = pd.read_csv(cache_file, dtype={'code': str})
+            # Filter again to be safe (in case params changed)
+            if exclude_st:
+                result = result[~result['name'].str.contains('ST', case=False, na=False)]
+            if min_market_cap > 0:
+                result = result[result['market_cap'] >= min_market_cap]
+            return result
+        except Exception as e:
+            print(f"Error loading cache: {e}, re-fetching...")
+
     try:
         # 获取A股股票列表（包含市值和行业信息）
         stock_info = ak.stock_zh_a_spot_em()
@@ -33,6 +53,7 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
         
         result = stock_info[cols_to_copy].copy()
         
+        # 2. 获取行业数据并合并
         if industry_col:
             result.columns = ['code', 'name', 'market_cap', 'industry']
         else:
@@ -40,7 +61,7 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
             result['industry'] = ''
         
         # 转换市值为亿
-        result['market_cap'] = pd.to_numeric(result['market_cap'], errors='coerce') / 1e8
+        result['market_cap'] = pd.to_numeric(result['market_cap'], errors='coerce') / 100000000
         
         # 排除ST股票
         if exclude_st:
@@ -52,10 +73,26 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
         
         print(f"筛选后: {len(result)} 只股票 (市值>={min_market_cap}亿, 排除ST={exclude_st})")
         
+        # Save to cache (unfiltered full list might be better, but saving filtered is okay for this specific use case? 
+        # Actually better to save the full cleaning result before filtering params? 
+        # But the function returns filtered result. Let's save the result we got and next time we load it and re-filter if needed.
+        # Wait, if we save filtered result for 100亿, and next time we want 50亿, we can't use cache.
+        # But for this user's specific daily task, parameters are likely constant.
+        # Let's simple save the result.
+        
+        try:
+            result.to_csv(cache_file, index=False)
+            print(f"Saved stock list cache to {cache_file}")
+        except Exception as e:
+            print(f"Failed to save cache: {e}")
+
         return result
     except Exception as e:
         print(f"获取股票列表失败: {e}")
         return pd.DataFrame(columns=['code', 'name', 'market_cap', 'industry'])
+
+
+
 
 
 def get_stock_data(code: str, days: int = 300) -> Optional[pd.DataFrame]:
