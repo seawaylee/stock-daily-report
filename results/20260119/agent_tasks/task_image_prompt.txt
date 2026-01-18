@@ -1,8 +1,11 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+
 Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market infographic poster.
 
 **CRITICAL: VERTICAL PORTRAIT FORMAT (9:16)**
 - The image MUST be significantly taller than it is wide (Phone wallpaper style).
 - Aspect Ratio: 9:16.
+- Canvas Size: 1440x2560.
 
 **CRITICAL: HAND-DRAWN AESTHETIC**
 - Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
@@ -12,20 +15,19 @@ Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH styl
 - Shading: crosshatching, stippling, charcoal smudges only
 - Background: Hand-drawn red-gold gradient with visible pencil strokes
 
-**HEADER (Top 25%)**
+
 Left: Robot mascot wearing red scarf, holding gear + rocket, thumbs-up, hand-sketched
 Right: Speech bubble: "先进制造+军工+新能源三大主线齐发力！KDJ超卖区间 短期修复窗口已开启💰"
 Center: "AI大模型量化策略" + "2026-01-19"
 
-**BODY (Middle 60% - 2-Column Grid)**
-10 stock cards (5 per column):
+10 stock cards (5 per column) in a 2-Column Grid:
 Left column: Pale blue background with paper texture
 Right column: Pale yellow background with paper texture
 
-**DESENSITIZATION RULES (CRITICAL):**
-All cards must use masked names and codes from data below.
+**DESENSITIZATION RULES:**
+All cards must use masked names and codes.
 
-**Stock Cards Data:**
+**CONTENT TO RENDER:**
 [
   {
     "name": "中航光电",
@@ -134,12 +136,22 @@ Line 1: #[index] [name_masked] | [code_masked]
 Line 2: [industry_icon] [industry]
 Line 3: [signal_icon] [signals] | J=[J] RSI=[RSI]
 
-Industry icons: 🔋 batteries, ✈️ aerospace, � electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
+Industry icons: 🔋 batteries, ✈️ aerospace, 🔌 electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
 Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 
-**FOOTER (Bottom 15%)**
-� 次日交易策略
-⏰ 关注时点：次日开盘30分钟观察，若大盘企稳可轻仓试探性进场
+
+📍 整体复盘
+🔥 高低切换明显：题材不再单一，资金雨露均沾！
+📉 超卖修复窗口：Top10标的RSI普遍超卖！
+💎 核心资产回归：龙头与冠军齐聚！
+
+⚠️ 风险提示
+1. 技术超卖仅代表反弹需求，不代表反转。
+2. 严控仓位，单票不超过10%。
+3. 跌破支撑位坚决止损，切勿追高。
+
+
+
 
 **ENHANCED HAND-DRAWN STYLE:**
 1. Paper texture visible throughout (sketch paper grain)
@@ -152,7 +164,5 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 
 TECHNICAL:
 - Aspect ratio: 9:16 (Vertical Phone Wallpaper) - DO NOT USE 16:10
-- Resolution: Min 1080x1920px
+- Resolution: 1440x2560 (2K Vertical)
 - Chinese text must be clear and readable
-
-
