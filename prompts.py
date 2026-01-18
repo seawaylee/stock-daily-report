@@ -30,8 +30,8 @@ def get_analysis_prompt(stocks_info):
 
 请输出：
 1. Top10股票排名
-   - 格式：`[股票名称] ([代码]) | [行业/题材] | [推荐理由]`
-   - 理由要求：3-5句话，结合技术面与基本面题材。
+   - 格式：`[股票名称] ([代码]) | [行业/题材]`
+   - 推荐理由：另起一行，3-5句话，结合技术面与基本面题材。
 2. 整体市场分析（2-3句话）
 3. 风险提示
 4. **【重要】图片生成专用摘要**
@@ -135,9 +135,8 @@ All cards must use masked names and codes.
 {json.dumps(stock_summary, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
 
 For each stock, create card with:
-Line 1: #[index] [name_masked] | [code_masked]
-Line 2: [industry_icon] [industry]
-Line 3: [signal_icon] [signals] | J=[J] RSI=[RSI]
+Line 1: #[index] [name_masked] | [code_masked] | [industry_icon] [industry] (smaller font size for industry)
+Line 2: [signal_icon] [signals] | J=[J] RSI=[RSI]
 
 Industry icons: 🔋 batteries, ✈️ aerospace, 🔌 electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
 Signal icons: Use ONE of 🚀 OR 🔥 OR 📈

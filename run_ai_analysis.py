@@ -488,16 +488,20 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
             with open(analysis_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # 解析模式: 1. 中航光电 (002179) | 军工电子/高端连接器 | ...
-            # 兼容格式: 序号. 名称 (代码) | 行业 | ...
-            pattern = re.compile(r'\d+\.\s*(.+?)\s*\((\d{6})\)\s*\|\s*(.+?)\s*\|')
+            # 解析模式: 1. **中航光电 (002179)** | 军工电子/高端连接器 |
+            # 兼容带有 ** 的 markdown 格式
+            pattern = re.compile(r'\d+\.\s*(?:\*\*)?(.+?)\s*(?:\*\*)?\s*\((?:\*\*)?(\d{6})(?:\*\*)?\)\s*(?:\*\*)?\s*\|\s*(.+?)\s*\|')
             
             # 构建映射表 code -> industry
             industry_map = {}
             matches = pattern.findall(content)
             for name, code, ind in matches:
-                industry_map[code] = ind.strip()
-                # print(f"  - 识别到: {code} -> {ind.strip()}")
+                # 清理数据
+                clean_name = name.replace('*', '').strip()
+                clean_code = code.replace('*', '').strip()
+                clean_ind = ind.replace('*', '').strip()
+                industry_map[clean_code] = clean_ind
+                # print(f"  - 识别到: {clean_code} -> {clean_ind}")
 
             # 回填到 selected_stocks
             count = 0
@@ -508,6 +512,13 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
                     count += 1
             
             print(f"✅ 成功从分析报告回填 {count} 条行业数据")
+            
+            # 保存回填后的结果到 selected_top10.json
+            top10_file = os.path.join(date_dir, "selected_top10.json")
+            with open(top10_file, 'w', encoding='utf-8') as f:
+                json.dump(selected_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
+            print(f"💾 已更新 selected_top10.json")
+            
             return True
         else:
             print("⚠️ 未找到 result_analysis.txt，无法回填信息")
