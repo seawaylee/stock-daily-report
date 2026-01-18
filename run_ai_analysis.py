@@ -27,7 +27,7 @@ from tqdm import tqdm
 import pandas as pd
 
 # 配置
-MAX_WORKERS = 100
+MAX_WORKERS = 400
 MIN_MARKET_CAP = 100  # 市值100亿以上
 
 
@@ -109,9 +109,9 @@ def run_full_selection():
     print("\n[1/4] 获取股票列表...")
     stock_list = get_all_stock_list(min_market_cap=MIN_MARKET_CAP, exclude_st=True)
     
-    # Limit to 500 stocks as requested
-    stock_list = stock_list.head(500)
-    print(f"⚠️ [Test Mode] 仅分析前 {len(stock_list)} 只股票")
+    # 注释：移除500只股票限制，分析全部股票
+    # stock_list = stock_list.head(500)
+    print(f"⚠️ 将分析全部 {len(stock_list)} 只股票")
     
     if len(stock_list) == 0:
         print("❌ 无法获取股票列表")
@@ -199,23 +199,41 @@ def save_stock_summary(selected_stocks, date_dir, timestamp):
     print(f"📁 私信汇总列表: {summary_file}")
     return summary_file
 
+# 注释：save_stock_summary 功能已移至 agent_outputs/result_analysis.txt
+# 此函数保留但不再调用
 
+# ================ 脱敏工具函数 ================
 
-
-def call_gemini_analysis(selected_stocks):
-    """调用Gemini分析Top10值博率"""
-    from openai import OpenAI
+def desensitize_stock_name(name):
+    """股票名称脱敏：保留前2字，后面改为拼音首字母大写"""
+    if len(name) <= 2:
+        return name
     
-    # 配置API（使用环境变量）
-    api_key = "sk-ydHa8x53xR3roO9ppZRfuZkPkT5ozng1oXg7BTCeAedRbVgO"
-    base_url = os.getenv("GEMINI_API_BASE_URL", "https://api.34ku.com/v1")
+    try:
+        from pypinyin import lazy_pinyin, Style
+        # 获取后缀的拼音首字母
+        suffix = name[2:]
+        pinyin_initials = lazy_pinyin(suffix, style=Style.FIRST_LETTER)
+        # 转大写并拼接
+        initials = ''.join([p.upper() for p in pinyin_initials])
+        return name[:2] + initials
+    except ImportError:
+        # 如果没有安装 pypinyin，使用简化逻辑
+        print("Warning: pypinyin not installed. Using simplified desensitization.")
+        suffix = name[2:]
+        # 取后缀前两个字符作为标识
+        return name[:2] + (suffix[:2].upper() if len(suffix) >= 2 else suffix.upper())
+
+def desensitize_stock_code(code):
+    """股票代码脱敏：前4位保留，后2位改为**"""
+    if len(code) < 6:
+        return code
+    return code[:4] + '**'
 
 
-    client = OpenAI(
-        api_key=api_key,
-        base_url=base_url
-    )
-    
+
+def call_gemini_analysis(selected_stocks, date_dir):
+    """使用Agent分析Top10值博率"""
     # 准备分析数据
     stocks_info = []
     for s in selected_stocks:
@@ -224,7 +242,6 @@ def call_gemini_analysis(selected_stocks):
             '代码': s['code'],
             '名称': s['name'],
             '总市值(亿元)': round(s['market_cap'], 0),
-            '题材': s.get('industry', ''),  # 添加题材
             '信号类型': ', '.join(s['signals']),
             'K': round(s['K'], 1),
             'D': round(s['D'], 1),
@@ -239,13 +256,13 @@ def call_gemini_analysis(selected_stocks):
     prompt = f"""你是一位资深量化分析师。以下是通过"AI模型"策略选出的股票列表，该策略主要捕捉超卖反弹和回踩支撑的买入信号。
 
 选出的股票数据：
-{json.dumps(stocks_info, ensure_ascii=False, indent=2)}
+{json.dumps(stocks_info, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
 
 请从中选出Today Top10值得关注的股票，评估标准：
 1. 信号强度（多信号叠加更佳）
 2. 技术指标位置（KDJ/RSI超卖程度）
-3. 市值适中（流动性好但弹性足）
-4. 近期波动（有足够空间）
+3. **【选股偏好】尽量不选688开头的科创板股票**，除非其他标的质量明显不足。
+4. **【题材分布】题材尽量分散，不要扎堆**！每类细分题材/行业入选股票不超过2只。
 5. **【重要】所属行业/题材**（由于数据源缺失，请你根据股票代码和名称，利用你的知识库补充其所属的行业和核心题材）
 
 请输出：
@@ -257,29 +274,76 @@ def call_gemini_analysis(selected_stocks):
 
 注意：这是技术分析参考，不构成投资建议。题材信息请务必准确。"""
 
-    print("\n[4/4] 调用Gemini分析Top10...")
-    response = client.chat.completions.create(
-        model="gemini-3-flash-preview-thinking-exp",
-        messages=[{"role": "user", "content": prompt}]
-    )
+    # 保存任务到文件供Agent处理
+    agent_task_dir = os.path.join(date_dir, "agent_tasks")
+    os.makedirs(agent_task_dir, exist_ok=True)
     
-    return response.choices[0].message.content, prompt
+    task_file = os.path.join(agent_task_dir, "task_analysis.txt")
+    with open(task_file, 'w', encoding='utf-8') as f:
+        f.write(prompt)
+    
+    print(f"\n[4/4] 任务已保存，等待Agent分析Top10...")
+    print(f"📝 任务文件: {task_file}")
+    
+    # 读取Agent生成的结果
+    agent_output_dir = os.path.join(date_dir, "agent_outputs")
+    output_file = os.path.join(agent_output_dir, "result_analysis.txt")
+    
+    if os.path.exists(output_file):
+        with open(output_file, 'r', encoding='utf-8') as f:
+            result = f.read()
+        print("✅ Agent分析完成")
+        
+        # --- 提取并保存 Top 10 ---
+        import re
+        top_codes = re.findall(r'\((\d{6})\)', result)
+        seen = set()
+        unique_codes = []
+        for c in top_codes:
+            if c not in seen:
+                unique_codes.append(c)
+                seen.add(c)
+        unique_codes = unique_codes[:10]
+        
+        stock_map = {s['code']: s for s in selected_stocks}
+        top_stocks = []
+        for c in unique_codes:
+            if c in stock_map:
+                top_stocks.append(stock_map[c])
+        
+        top10_file = os.path.join(date_dir, "selected_top10.json")
+        with open(top10_file, 'w', encoding='utf-8') as f:
+            json.dump(top_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
+        print(f"📁 已生成中间文件: {top10_file} ({len(top_stocks)}只)")
+        
+        return result, prompt
+    else:
+        print(f"⚠️  等待Agent生成结果: {output_file}")
+        print("提示：请运行 Agent 工作流来处理分析任务")
+        return None, prompt
 
 
-def generate_xiaohongshu_post(gemini_analysis, selected_stocks):
-    """生成小红书文案（脱敏处理）"""
-    from openai import OpenAI
-    
-    client = OpenAI(
-        api_key="sk-ydHa8x53xR3roO9ppZRfuZkPkT5ozng1oXg7BTCeAedRbVgO",
-        base_url="https://api.34ku.com/v1"
-    )
+def generate_xiaohongshu_post(gemini_analysis, selected_stocks, date_dir):
+    """使用Agent生成小红书文案（脱敏处理）"""
+    # 准备脱敏后的股票列表
+    masked_stocks = []
+    for s in selected_stocks:
+        masked_stocks.append({
+            'name': s['name'],
+            'name_masked': desensitize_stock_name(s['name']),
+            'code': s['code'],
+            'code_masked': desensitize_stock_code(s['code']),
+            'industry': s.get('industry', ''),
+        })
     
     # 准备脱敏说明
     prompt = f"""请将以下股票分析报告改写成小红书风格的文案。
 
 原始分析：
 {gemini_analysis}
+
+【脱敏股票列表】（使用此列表中的脱敏名称和代码）：
+{json.dumps(masked_stocks, ensure_ascii=False, indent=2)}
 
 要求：
 1. **风格灵魂**：必须极度"小红书化"！大量使用Emoji，段落短促，语气兴奋、专业且硬核。
@@ -289,8 +353,8 @@ def generate_xiaohongshu_post(gemini_analysis, selected_stocks):
    - 重点词汇前后加Emoji.
    - 推荐使用：🚀 (潜力), 💰 (买点), 📉 (超卖), 🎯 (目标), ⚠️ (风险), 🤖 (AI分析).
 3. **【重要】股票脱敏处理**：
-   - 股票名称：保留前两个字，后面的换成英文缩写（如"中芯国际"变成"中芯GJ"）。
-   - 股票代码：前4位保留，后2位换成xx（如"688981"变成"6889xx"）。
+   - 直接使用上面列表中的 name_masked 和 code_masked 字段
+   - 示例格式：华盛LD (6883**)
 4. **标题**：吸引眼球，20字以内。
 5. **结构要求**：
    - **标题行**：日期 + 核心主题 + Emoji
@@ -314,144 +378,169 @@ def generate_xiaohongshu_post(gemini_analysis, selected_stocks):
 
 请直接输出文案内容。"""
 
-
-
-    response = client.chat.completions.create(
-        model="gemini-3-flash-preview-thinking-exp",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content, prompt
-
-
-def generate_image_prompt(gemini_analysis, selected_stocks):
-    """生成信息图提示词"""
-    from openai import OpenAI
+    # 保存任务到文件供Agent处理
+    agent_task_dir = os.path.join(date_dir, "agent_tasks")
+    os.makedirs(agent_task_dir, exist_ok=True)
     
-    client = OpenAI(
-        api_key="sk-ydHa8x53xR3roO9ppZRfuZkPkT5ozng1oXg7BTCeAedRbVgO",
-        base_url="https://api.34ku.com/v1"
-    )
+    task_file = os.path.join(agent_task_dir, "task_xiaohongshu.txt")
+    with open(task_file, 'w', encoding='utf-8') as f:
+        f.write(prompt)
+    
+    print(f"📝 小红书任务已保存: {task_file}")
+    
+    # 读取Agent生成的结果
+    agent_output_dir = os.path.join(date_dir, "agent_outputs")
+    output_file = os.path.join(agent_output_dir, "result_xiaohongshu.txt")
+    
+    if os.path.exists(output_file):
+        with open(output_file, 'r', encoding='utf-8') as f:
+            result = f.read()
+        print("✅ 小红书文案生成完成")
+        return result, prompt
+    else:
+        print(f"⚠️  等待Agent生成结果: {output_file}")
+        return None, prompt
 
-    # 准备股票数据摘要(包含技术指标)
+
+def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
+    """使用Agent生成信息图提示词"""
+    # 准备股票数据摘要(包含技术指标 + 脱敏信息)
+    # 准备股票数据摘要(包含技术指标 + 脱敏信息)
+    if len(selected_stocks) > 10:
+        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，预期为10。")
+        # 尝试使用前10个
+        selected_stocks = selected_stocks[:10]
+
+    # 准备股票数据摘要(包含技术指标 + 脱敏信息)
     stock_summary = []
     for s in selected_stocks:
         stock_summary.append({
             'name': s['name'],
+            'name_masked': desensitize_stock_name(s['name']),  # 脱敏名称
             'code': s['code'],
+            'code_masked': desensitize_stock_code(s['code']),  # 脱敏代码
             'industry': s.get('industry', '未知'),
             'signals': ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点'),
             'J': round(s.get('J', 0), 2),
             'RSI': round(s.get('RSI', 0), 2),
-            # Market Cap removed
         })
     
-    prompt = f"""基于以下选股结果和AI分析，设计一个用于生成"Nano Banana Pro3"模型图片的详细英文Prompt。
+    # 从小红书文案提取次日策略
+    xiaohongshu_file = os.path.join(date_dir, "agent_outputs", "result_xiaohongshu.txt")
+    tomorrow_strategy = ""
+    if os.path.exists(xiaohongshu_file):
+        with open(xiaohongshu_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+            # 提取次日交易策略部分
+            if '次日交易策略' in content:
+                import re
+                match = re.search(r'💡 次日交易策略\s+(.+?)(?=\n\n|$)', content, re.DOTALL)
+                if match:
+                    tomorrow_strategy = match.group(1).strip()
+    
+    prompt = f"""Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market infographic poster.
 
-    选股明细（包含代码、题材、技术指标、信号）：
-    {json.dumps(stock_summary, ensure_ascii=False, indent=2)}
+**CRITICAL: VERTICAL PORTRAIT FORMAT (9:16)**
+- The image MUST be significantly taller than it is wide (Phone wallpaper style).
+- Aspect Ratio: 9:16.
 
-    AI市场分析结论：
-    {gemini_analysis[:500]}... (Extracted summary)
+**CRITICAL: HAND-DRAWN AESTHETIC**
+- Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
+- Visible paper grain texture throughout
+- Line wobbles and imperfections (authentic hand-drawn feel)
+- NO digital smoothness, NO vector graphics
+- Shading: crosshatching, stippling, charcoal smudges only
+- Background: Hand-drawn red-gold gradient with visible pencil strokes
 
-    当前日期：{datetime.now().strftime('%Y-%m-%d')}
+**HEADER (Top 25%)**
+Left: Robot mascot wearing red scarf, holding gear + rocket, thumbs-up, hand-sketched
+Right: Speech bubble: "先进制造+军工+新能源三大主线齐发力！KDJ超卖区间 短期修复窗口已开启💰"
+Center: "AI大模型量化策略" + "{datetime.now().strftime('%Y-%m-%d')}"
 
-    【核心指令】请严格完全遵守以下所有要求，**风格和布局必须与参考图高度一致**：
-    1.  **Layout & Composition**: 
-        -   **Orientation**: **STRICTLY VERTICAL (9:16)**.
-        -   **Structure**: 2-Column Grid of Stock Cards.
-        -   **Header Area**: 
-            -   **Top Left**: A **"Dynamic Theme Mascot"** representing the HOTTEST sector in the analysis (e.g. If Semis -> Chip Character; If Military -> Rocket Character; If Auto -> Car Character). **Style**: Professional Hand-Drawn Sketch, Festive/Bullish (e.g. wearing Red Scarf).
-            -   **Top Right**: A LARGE Speech Bubble containing **Rich Narrative Market Summary**.
-            -   **Top Center**: Title "**AI大模型量化策略**" + Date.
-        -   **Body Area**: **2-Column Grid** of rounded rectangular cards.
-        -   **Footer**: **NONE**.
-    2.  **Stock Card Design (Internal Layout)**:
-        -   **Color Distinction**: Left Column (Pale Blue) / Right Column (Pale Yellow/Cream).
-        -   **Content Structure**:
-            -   **Line 1**: **[#Index]** [Stock Name] (Bold Black)  [Code] (Gray).
-            -   **Line 2**: **[Industry Icon]** + **[Industry/Theme Tag]** (Dark Orange).
-                -   *Note*: The Industry Icon MUST be relevant to the specific theme (e.g. ✈️ for Military, 💊 for Bio, 💻 for Chips, 🚗 for Auto).
-            -   **Line 3**: **[ONE Lucky Icon]** [Signal Name] | **J=xx  RSI=xx**.
-        -   **Visuals**:
-            -   **ONE Lucky Icon Only**: Use EXACTLY ONE "Fortune" icon (Rocket 🚀 OR Fire 🔥 OR Red Arrow 📈) next to the signal. Do not crowd with multiple icons.
-    3.  **Market Sentiment (Rich Narrative)**: 
-        -   **Content**: Summarize the analysis into **2-3 enthusiastic sentences** (Chinese).
-        -   **Visuals**: **Golden Coins, Rising Arrows**.
-    4.  **Visual Style**: 
-        -   **style**: **"Professional Hand-Drawn Sketch / Architectural Sketch"**. 
-        -   **Texture**: Pencil/Ink lines on paper texture. Avoid smooth vector/cartoon shading.
-        -   **Background**: **Festive Red/Gold Gradient** but with "Sketchy" texture.
-    5.  **Text Constraints**: 
-        -   NO English sentences. Only "AI", "RSI", "J", "KDJ", "Code" allowed.
+**BODY (Middle 60% - 2-Column Grid)**
+10 stock cards (5 per column):
+Left column: Pale blue background with paper texture
+Right column: Pale yellow background with paper texture
 
-    Output the final English Prompt. Explicitly describe the "Industry Icons", "Single Lucky Icon", and "Hand-Drawn Sketch Style".
+**DESENSITIZATION RULES (CRITICAL):**
+All cards must use masked names and codes from data below.
+
+**Stock Cards Data:**
+{json.dumps(stock_summary, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
+
+For each stock, create card with:
+Line 1: #[index] [name_masked] | [code_masked]
+Line 2: [industry_icon] [industry]
+Line 3: [signal_icon] [signals] | J=[J] RSI=[RSI]
+
+Industry icons: 🔋 batteries, ✈️ aerospace, � electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
+Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
+
+**FOOTER (Bottom 15%)**
+""" + (f"� 次日交易策略\n{tomorrow_strategy}" if tomorrow_strategy else "") + """
+
+**ENHANCED HAND-DRAWN STYLE:**
+1. Paper texture visible throughout (sketch paper grain)
+2. All lines with wobbles, varying thickness
+3. Shading only via crosshatching/stippling - NO smooth gradients  
+4. Hand-lettered text with irregularities
+5. Background: Red-gold gradient with visible pencil strokes
+6. Card borders: Hand-drawn rounded rectangles
+7. Overall: Professional architect sketch, NOT polished digital
+
+TECHNICAL:
+- Aspect ratio: 10:16 (vertical)
+- Resolution: Min 1080x1728px
+- Chinese text must be clear and readable
 
 
 """
 
-    response = client.chat.completions.create(
-        model="gemini-3-flash-preview-thinking-exp",
-        messages=[{"role": "user", "content": prompt}]
-    )
+    # 保存任务到文件供Agent处理
+    agent_task_dir = os.path.join(date_dir, "agent_tasks")
+    os.makedirs(agent_task_dir, exist_ok=True)
     
-    # 添加模型特定说明
-    final_prompt = response.choices[0].message.content
-    final_prompt += "\n\n(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)"
+    task_file = os.path.join(agent_task_dir, "task_image_prompt.txt")
+    with open(task_file, 'w', encoding='utf-8') as f:
+        f.write(prompt)
     
-    return final_prompt, prompt
+    print(f"📝 图片生成任务已保存: {task_file}")
+    
+    # 读取Agent生成的结果
+    agent_output_dir = os.path.join(date_dir, "agent_outputs")
+    output_file = os.path.join(agent_output_dir, "result_image_prompt.txt")
+    
+    if os.path.exists(output_file):
+        with open(output_file, 'r', encoding='utf-8') as f:
+            final_prompt = f.read()
+        final_prompt += "\n\n(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)"
+        print("✅ 图片提示词生成完成")
+        return final_prompt, prompt
+    else:
+        print(f"⚠️  等待Agent生成结果: {output_file}")
+        return None, prompt
 
 
 def save_reports(gemini_analysis, xiaohongshu_post, today):
-    """保存报告"""
-    # 创建日期目录
+    """保存报告（简化版 - 仅保存到agent_outputs）"""
+    # 注释：外层重复文件已移除，所有结果集中在 agent_outputs/
+    # 此函数保留用于向后兼容，actual saving done in agent workflow
     date_str = today.split('_')[0]
     date_dir = os.path.join("results", date_str)
-    os.makedirs(date_dir, exist_ok=True)
     
-    # 保存MD报告
-    md_file = os.path.join(date_dir, f"ai_analysis_{today}.md")
-    with open(md_file, 'w', encoding='utf-8') as f:
-        f.write(f"# 📊 AI智能选股分析报告\n\n")
-        f.write(f"> 生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-        f.write(f"---\n\n")
-        f.write(gemini_analysis)
-        f.write(f"\n\n---\n\n")
-        f.write(f"## 📱 小红书文案\n\n")
-        f.write(xiaohongshu_post)
+    print(f"� 分析结果已保存到: {date_dir}/agent_outputs/")
+    print(f"   - result_analysis.txt")
+    print(f"   - result_xiaohongshu.txt")
+    print(f"   - result_image_prompt.txt")
     
-    print(f"📁 AI分析报告: {md_file}")
-    
-    # 保存小红书文案
-    xhs_file = os.path.join(date_dir, f"xiaohongshu_{today}.txt")
-    with open(xhs_file, 'w', encoding='utf-8') as f:
-        f.write(xiaohongshu_post)
-    
-    print(f"📁 小红书文案: {xhs_file}")
-    
-    return md_file, xhs_file
+    return None, None
 
 
 def save_prompts(prompts_dict, today):
-    """保存提示词记录"""
-    date_str = today.split('_')[0]
-    date_dir = os.path.join("results", date_str)
-    os.makedirs(date_dir, exist_ok=True)
-    
-    prompt_file = os.path.join(date_dir, f"prompts_{today}.md")
-    
-    with open(prompt_file, 'w', encoding='utf-8') as f:
-        f.write(f"# 🤖 AI 提示词记录\n")
-        f.write(f"> 时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-        
-        for title, content in prompts_dict.items():
-            f.write(f"## {title}\n\n")
-            f.write("```text\n")
-            f.write(content)
-            f.write("\n```\n\n")
-            f.write("---\n\n")
-            
-    print(f"📁 提示词记录: {prompt_file}")
-    return prompt_file
+    """保存提示词记录（可选 - 用于调试）"""
+    # 注释：此功能可选，提示词已在 agent_tasks/ 中保存
+    # 保留此函数用于调试目的
+    pass
 
 
 def main():
@@ -463,9 +552,9 @@ def main():
     date_dir = os.path.join("results", date_str)
     os.makedirs(date_dir, exist_ok=True)
     
-    # 保存私信汇总列表
-    if selected:
-        save_stock_summary(selected, date_dir, today)
+    # 注释：stock_list_summary 已移至 agent_outputs/result_analysis.txt
+    # if selected:
+    #     save_stock_summary(selected, date_dir, today)
     
     # 4. 调用AI分析
     if not selected:
@@ -473,18 +562,44 @@ def main():
         return
 
     try:
-        # 仅取 Top 10 进行分析和生图
-        top_stocks = selected[:10]
+        # 传入所有选中的股票供Agent分析
+        # Agent会从中选出Top10进行深度分析
+        all_stocks = selected
         
-        gemini_analysis, analysis_prompt = call_gemini_analysis(top_stocks)
-        print("\n✅ Gemini分析完成")
+        # 调用Agent分析（传入全部候选）
+        gemini_analysis, analysis_prompt = call_gemini_analysis(all_stocks, date_dir)
         
-        # 3. 生成小红书文案
-        xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, top_stocks)
+        # 如果Agent还未生成结果，等待用户运行工作流
+        if gemini_analysis is None:
+            print("\n⏸️  脚本暂停：等待Agent工作流处理任务")
+            print("请运行 Agent 工作流完成分析，然后再次执行此脚本")
+            return
+        
+        print("\n✅ Agent分析完成")
+        
+        # 加载 Top 10 中间文件
+        top10_file = os.path.join(date_dir, "selected_top10.json")
+        top_stocks_list = all_stocks # 默认
+        
+        if os.path.exists(top10_file):
+             with open(top10_file, 'r', encoding='utf-8') as f:
+                top_stocks_list = json.load(f)
+             print(f"⚡ 加载 Top 10 股票池: {len(top_stocks_list)} 只")
+        else:
+             print("⚠️ 未找到 selected_top10.json，将使用全部股票")
+
+        # 生成小红书文案
+        xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, top_stocks_list, date_dir)
+        if xiaohongshu_post is None:
+            print("\n⏸️  脚本暂停：等待Agent工作流处理小红书文案")
+            return
         print("✅ 小红书文案生成完成")
         
-        # 4. 生成图片提示词
-        image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis, top_stocks)
+        # 生成图片提示词
+        image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis, top_stocks_list, date_dir)
+        if image_prompt is None:
+            print("\n⏸️  脚本暂停：等待Agent工作流处理图片提示词")
+            return
         print("✅ 图片提示词生成完成")
         print(f"\n[Image Prompt]:\n{image_prompt}\n")
         
@@ -494,13 +609,13 @@ def main():
             f.write(image_prompt)
         print(f"📁 图片提示词已保存: {img_prompt_file}")
         
-        # 保存提示词汇总
-        prompts_dict = {
-            "Top10分析 Prompt": analysis_prompt,
-            "小红书文案 Prompt": xhs_prompt,
-            "图片生成 Prompt": img_gen_prompt
-        }
-        save_prompts(prompts_dict, today)
+        # 注释：提示词已保存在 agent_tasks/ 目录，不需要重复保存
+        # prompts_dict = {
+        #     "Top10分析 Prompt": analysis_prompt,
+        #     "小红书文案 Prompt": xhs_prompt,
+        #     "图片生成 Prompt": img_gen_prompt
+        # }
+        # save_prompts(prompts_dict, today)
         
         # 4. 保存报告
         save_reports(gemini_analysis, xiaohongshu_post, today)
