@@ -465,7 +465,7 @@ Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH styl
 **CRITICAL: VERTICAL PORTRAIT FORMAT (9:16)**
 - The image MUST be significantly taller than it is wide (Phone wallpaper style).
 - Aspect Ratio: 9:16.
-- Canvas Size: 1080x1920.
+- Canvas Size: 1440x2560.
 
 **CRITICAL: HAND-DRAWN AESTHETIC**
 - Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
