@@ -14,17 +14,17 @@ import requests
 import base64
 import time
 import numpy as np
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 # 加载环境变量
-load_dotenv()
+# load_dotenv()
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from data_fetcher import get_all_stock_list, get_stock_data
-from signals import check_stock_signal
-from tqdm import tqdm
-import pandas as pd
+# from data_fetcher import get_all_stock_list, get_stock_data
+# from signals import check_stock_signal
+# from tqdm import tqdm
+# import pandas as pd
 
 # 配置
 MAX_WORKERS = 400
@@ -361,7 +361,7 @@ def generate_xiaohongshu_post(gemini_analysis, selected_stocks, date_dir):
    - **开头**：各位交易员，AI量化今日扫描全场！ ({datetime.now().strftime('%Y-%m-%d')})
    - **中间（核心部分）**：列出Top10股票。**必须严格执行2行格式**，每只股票占2行：
      
-     1️⃣ **[股票名脱敏] ([代码脱敏])** | 🏷️[行业]
+     1️⃣ [股票名脱敏] ([代码脱敏]) | 🏷️[行业]
      👉 [核心理由简述，30字以内，重点写技术面优势]
 
      2️⃣ ... (以此类推)
@@ -417,9 +417,9 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     for s in selected_stocks:
         stock_summary.append({
             'name': s['name'],
-            'name_masked': desensitize_stock_name(s['name']),  # 脱敏名称
+            'name_masked': s.get('name_masked', desensitize_stock_name(s['name'])),  # 优先使用已有脱敏名
             'code': s['code'],
-            'code_masked': desensitize_stock_code(s['code']),  # 脱敏代码
+            'code_masked': s.get('code_masked', desensitize_stock_code(s['code'])),  # 优先使用已有脱敏代码
             'industry': s.get('industry', '未知'),
             'signals': ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点'),
             'J': round(s.get('J', 0), 2),
@@ -427,30 +427,46 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         })
     
     # 从小红书文案提取次日策略
+    # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
-    xiaohongshu_file = os.path.join(date_dir, "agent_outputs", "result_xiaohongshu.txt")
+    
+    # 提取 整体复盘
+    # 模式: "整体市场复盘" -> (直到 "次日交易策略")
+    market_review = "无复盘内容"
+    match_review = re.search(r'整体市场复盘\s+(.+?)(?=\n\s*次日交易策略|$)', gemini_analysis, re.DOTALL)
+    if match_review:
+        market_review = match_review.group(1).strip()
+        
+    # 提取 次日交易策略
+    # 模式: "次日交易策略" -> (直到 "风险提示" 或 结束)
     tomorrow_strategy = ""
-    if os.path.exists(xiaohongshu_file):
-        with open(xiaohongshu_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-            # 提取次日交易策略部分
-            if '次日交易策略' in content:
-                import re
-                # 优化正则：匹配到下一个标题符号 (💡 或 ⚠️) 之前
-                match = re.search(r'💡 次日交易策略\s+(.+?)(?=\n\s*[⚠️]|$)', content, re.DOTALL)
-                if match:
-                    tomorrow_strategy = match.group(1).strip()
-            
-            # 提取整体复盘部分
-            if '📍 整体复盘' in content:
-                # 优化正则：匹配到下一个标题符号 (💡) 之前
-                match_review = re.search(r'📍 整体复盘\s+(.+?)(?=\n\s*[💡]|$)', content, re.DOTALL)
-                if match_review:
-                    market_review = match_review.group(1).strip()
-                else:
-                    market_review = "无复盘内容"
-            else:
-                market_review = "无复盘内容"
+    match_strategy = re.search(r'次日交易策略\s+(.+?)(?=\n\s*风险提示|$)', gemini_analysis, re.DOTALL)
+    if match_strategy:
+        tomorrow_strategy = match_strategy.group(1).strip()
+
+    # --- 对复盘和策略文案进行脱敏替换 ---
+    # 遍历所有股票，将文案中的"全名"替换为"脱敏名"
+    # 按名称长度降序排列，避免短名误伤长名 (e.g. "中航" vs "中航光电")
+    sorted_stocks = sorted(selected_stocks, key=lambda x: len(x['name']), reverse=True)
+    
+    for s in sorted_stocks:
+        name = s['name']
+        name_masked = s.get('name_masked', desensitize_stock_name(name))
+        code = s['code']
+        code_masked = s.get('code_masked', desensitize_stock_code(code))
+        
+        # 替换名称
+        if name in market_review:
+            market_review = market_review.replace(name, name_masked)
+        if name in tomorrow_strategy:
+            tomorrow_strategy = tomorrow_strategy.replace(name, name_masked)
+        
+        # 替换代码 (如果有的话)
+        if code in market_review:
+            market_review = market_review.replace(code, code_masked)
+        if code in tomorrow_strategy:
+            tomorrow_strategy = tomorrow_strategy.replace(code, code_masked)
+
     
     # 构建动态 Footer 内容
     footer_content = ""
@@ -460,14 +476,14 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     if tomorrow_strategy:
         footer_content += f"💡 次日策略\n{tomorrow_strategy}"
 
-    prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+    prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
 
-Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market infographic poster.
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
 
-**CRITICAL: VERTICAL PORTRAIT FORMAT (9:16)**
+**CRITICAL: VERTICAL PORTRAIT FORMAT (10:16)**
 - The image MUST be significantly taller than it is wide (Phone wallpaper style).
-- Aspect Ratio: 9:16.
-- Canvas Size: 1440x2560.
+- Aspect Ratio: 10:16.
+- Canvas Size: 1600x2560.
 
 **CRITICAL: HAND-DRAWN AESTHETIC**
 - Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
@@ -514,8 +530,8 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 7. Overall: Professional architect sketch, NOT polished digital
 
 TECHNICAL:
-- Aspect ratio: 9:16 (Vertical Phone Wallpaper) - DO NOT USE 16:10
-- Resolution: 1440x2560 (2K Vertical)
+- Aspect ratio: 10:16 (Vertical Phone Wallpaper)
+- Resolution: 1600x2560 (2K Vertical)
 - Chinese text must be clear and readable
 """
 
@@ -563,7 +579,44 @@ def save_prompts(prompts_dict, today):
     """保存提示词记录（可选 - 用于调试）"""
     # 注释：此功能可选，提示词已在 agent_tasks/ 中保存
     # 保留此函数用于调试目的
-    pass
+def enrich_stocks_from_analysis(selected_stocks, date_dir):
+    """从分析报告回填行业/题材"""
+    try:
+        print("🔄 正在从分析报告回填 [行业] 和 [脱敏信息]...")
+        analysis_file = os.path.join(date_dir, "agent_outputs", "result_analysis.txt")
+        if os.path.exists(analysis_file):
+            import re
+            with open(analysis_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # 解析模式: 1. 中航光电 (002179) | 军工电子/高端连接器 | ...
+            # 兼容格式: 序号. 名称 (代码) | 行业 | ...
+            pattern = re.compile(r'\d+\.\s*(.+?)\s*\((\d{6})\)\s*\|\s*(.+?)\s*\|')
+            
+            # 构建映射表 code -> industry
+            industry_map = {}
+            matches = pattern.findall(content)
+            for name, code, ind in matches:
+                industry_map[code] = ind.strip()
+                # print(f"  - 识别到: {code} -> {ind.strip()}")
+
+            # 回填到 selected_stocks
+            count = 0
+            for stock in selected_stocks:
+                code = stock['code']
+                if code in industry_map:
+                    stock['industry'] = industry_map[code]
+                    count += 1
+            
+            print(f"✅ 成功从分析报告回填 {count} 条行业数据")
+            return True
+        else:
+            print("⚠️ 未找到 result_analysis.txt，无法回填信息")
+            return False
+    except Exception as e:
+        print(f"⚠️ 回填信息出错: {e}") 
+        return False
+
 
 
 def main():
@@ -618,6 +671,13 @@ def main():
             return
         print("✅ 小红书文案生成完成")
         
+        # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
+        # 目的：解耦对小红书文案的依赖，直接使用分析结果
+        # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
+        enrich_stocks_from_analysis(top_stocks_list, date_dir)
+        # -------------------------------------------------------------------
+
+
         # 生成图片提示词
         image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis, top_stocks_list, date_dir)
         if image_prompt is None:

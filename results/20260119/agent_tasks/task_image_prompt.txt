@@ -1,11 +1,11 @@
-(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
 
-Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market infographic poster.
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
 
-**CRITICAL: VERTICAL PORTRAIT FORMAT (9:16)**
+**CRITICAL: VERTICAL PORTRAIT FORMAT (10:16)**
 - The image MUST be significantly taller than it is wide (Phone wallpaper style).
-- Aspect Ratio: 9:16.
-- Canvas Size: 1440x2560.
+- Aspect Ratio: 10:16.
+- Canvas Size: 1600x2560.
 
 **CRITICAL: HAND-DRAWN AESTHETIC**
 - Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
@@ -34,7 +34,7 @@ All cards must use masked names and codes.
     "name_masked": "中航GD",
     "code": "002179",
     "code_masked": "0021**",
-    "industry": NaN,
+    "industry": "军工电子/高端连接器",
     "signals": "超卖缩量标准买点,原始标准买点",
     "J": 7.27,
     "RSI": 28.63
@@ -44,7 +44,7 @@ All cards must use masked names and codes.
     "name_masked": "指南Z",
     "code": "300803",
     "code_masked": "3008**",
-    "industry": NaN,
+    "industry": "金融科技/互联网金融",
     "signals": "超卖缩量标准买点,原始标准买点",
     "J": 0.64,
     "RSI": 24.77
@@ -54,7 +54,7 @@ All cards must use masked names and codes.
     "name_masked": "中国ZM",
     "code": "601888",
     "code_masked": "6018**",
-    "industry": NaN,
+    "industry": "免税零售/大消费",
     "signals": "超卖缩量标准买点",
     "J": -14.51,
     "RSI": 15.78
@@ -64,7 +64,7 @@ All cards must use masked names and codes.
     "name_masked": "祥鑫KJ",
     "code": "002965",
     "code_masked": "0029**",
-    "industry": NaN,
+    "industry": "新能源汽车/结构件",
     "signals": "超卖缩量拐头标准买点",
     "J": 21.76,
     "RSI": 59.7
@@ -74,7 +74,7 @@ All cards must use masked names and codes.
     "name_masked": "机器R",
     "code": "300024",
     "code_masked": "3000**",
-    "industry": NaN,
+    "industry": "机器人/智能制造",
     "signals": "超卖缩量拐头标准买点",
     "J": 19.34,
     "RSI": 51.43
@@ -84,7 +84,7 @@ All cards must use masked names and codes.
     "name_masked": "蔚蓝LX",
     "code": "002245",
     "code_masked": "0022**",
-    "industry": NaN,
+    "industry": "锂电池/LED",
     "signals": "超卖缩量拐头标准买点",
     "J": 14.82,
     "RSI": 53.51
@@ -94,7 +94,7 @@ All cards must use masked names and codes.
     "name_masked": "金达W",
     "code": "002626",
     "code_masked": "0026**",
-    "industry": NaN,
+    "industry": "医疗保健/NMN概念",
     "signals": "超卖缩量拐头标准买点",
     "J": 12.57,
     "RSI": 53.21
@@ -104,7 +104,7 @@ All cards must use masked names and codes.
     "name_masked": "北斗XT",
     "code": "002151",
     "code_masked": "0021**",
-    "industry": NaN,
+    "industry": "卫星导航/低空经济",
     "signals": "原始标准买点",
     "J": -7.58,
     "RSI": 20.18
@@ -114,7 +114,7 @@ All cards must use masked names and codes.
     "name_masked": "龙佰JT",
     "code": "002601",
     "code_masked": "0026**",
-    "industry": NaN,
+    "industry": "化工/钛白粉",
     "signals": "超卖缩量标准买点,原始标准买点",
     "J": 4.18,
     "RSI": 33.56
@@ -124,7 +124,7 @@ All cards must use masked names and codes.
     "name_masked": "中超KG",
     "code": "002471",
     "code_masked": "0024**",
-    "industry": NaN,
+    "industry": "电网设备/超导",
     "signals": "原始标准买点",
     "J": 5.11,
     "RSI": 34.53
@@ -141,16 +141,15 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 
 
 📍 整体复盘
-🔥 高低切换明显：题材不再单一，资金雨露均沾！
-📉 超卖修复窗口：Top10标的RSI普遍超卖！
-💎 核心资产回归：龙头与冠军齐聚！
+今日Top10榜单呈现明显的"高低切换"与"核心资产回归"特征。
+1. **板块分布**：资金不再单纯抱团妖股，而是流向了军工（中航GD）、消费（中国ZM）、金融（指南Z）等核心资产的超跌方向，同时也兼顾了机器R、低空经济等高弹性赛道。
+2. **超跌修复**：大部分标的（如中免、指南Z、北斗）RSI均低于30，显示市场经历了非理性的杀跌，报复性反弹一触即发。
+3. **风格切换**：从单纯的题材炒作转向"业绩+超跌"双轮驱动，龙头的安全性重新被市场重视。
 
-⚠️ 风险提示
-1. 技术超卖仅代表反弹需求，不代表反转。
-2. 严控仓位，单票不超过10%。
-3. 跌破支撑位坚决止损，切勿追高。
-
-
+💡 次日策略
+1. **低吸核心资产**：对于中免、中航GD等白马龙头，可在盘中急跌时分批低吸，博弈估值修复。
+2. **关注弹性题材**：机器R、低空经济（北斗XT）若早盘有资金承接，可尝试跟随，博弈日内强势反包。
+3. **止盈止损**：反弹非反转，设定严格止损（如-3%），遇阻力位及时获利了结，保持仓位灵活性。
 
 
 **ENHANCED HAND-DRAWN STYLE:**
@@ -163,6 +162,6 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 7. Overall: Professional architect sketch, NOT polished digital
 
 TECHNICAL:
-- Aspect ratio: 9:16 (Vertical Phone Wallpaper) - DO NOT USE 16:10
-- Resolution: 1440x2560 (2K Vertical)
+- Aspect ratio: 10:16 (Vertical Phone Wallpaper)
+- Resolution: 1600x2560 (2K Vertical)
 - Chinese text must be clear and readable
