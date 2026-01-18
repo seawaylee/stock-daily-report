@@ -3,7 +3,7 @@
     "code": "002179",
     "name": "中航光电",
     "market_cap": 780.37105482,
-    "industry": NaN,
+    "industry": "军工电子/高端连接器",
     "signal": true,
     "signals": [
       "超卖缩量B",
@@ -28,7 +28,7 @@
     "code": "300803",
     "name": "指南针",
     "market_cap": 821.090574,
-    "industry": NaN,
+    "industry": "金融科技/互联网证券",
     "signal": true,
     "signals": [
       "超卖缩量B",
@@ -53,7 +53,7 @@
     "code": "601888",
     "name": "中国中免",
     "market_cap": 1829.49205261,
-    "industry": NaN,
+    "industry": "旅游免税/消费复苏",
     "signal": true,
     "signals": [
       "超卖缩量B"
@@ -77,7 +77,7 @@
     "code": "002965",
     "name": "祥鑫科技",
     "market_cap": 110.50438149,
-    "industry": NaN,
+    "industry": "新能源车/精密结构件",
     "signal": true,
     "signals": [
       "超卖缩量拐头B"
@@ -101,7 +101,7 @@
     "code": "300024",
     "name": "机器人",
     "market_cap": 289.79625275,
-    "industry": NaN,
+    "industry": "工业机器人/新质生产力",
     "signal": true,
     "signals": [
       "超卖缩量拐头B"
@@ -125,7 +125,7 @@
     "code": "002245",
     "name": "蔚蓝锂芯",
     "market_cap": 208.26280193,
-    "industry": NaN,
+    "industry": "锂电池/LED芯片",
     "signal": true,
     "signals": [
       "超卖缩量拐头B"
@@ -149,7 +149,7 @@
     "code": "002626",
     "name": "金达威",
     "market_cap": 121.13304552,
-    "industry": NaN,
+    "industry": "营养健康/NMN概念",
     "signal": true,
     "signals": [
       "超卖缩量拐头B"
@@ -173,7 +173,7 @@
     "code": "002151",
     "name": "北斗星通",
     "market_cap": 271.07541886,
-    "industry": NaN,
+    "industry": "卫星导航/国防军工",
     "signal": true,
     "signals": [
       "原始B1"
@@ -197,7 +197,7 @@
     "code": "002601",
     "name": "龙佰集团",
     "market_cap": 471.12741587,
-    "industry": NaN,
+    "industry": "化工/钛白粉",
     "signal": true,
     "signals": [
       "超卖缩量B",
@@ -222,7 +222,7 @@
     "code": "002471",
     "name": "中超控股",
     "market_cap": 103.752008,
-    "industry": NaN,
+    "industry": "电网设备/超导概念",
     "signal": true,
     "signals": [
       "原始B1"
