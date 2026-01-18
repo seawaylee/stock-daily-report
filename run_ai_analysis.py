@@ -63,7 +63,7 @@ def process_single_stock(args):
             'code': code,
             'name': name,
             'market_cap': float(market_cap),
-            'industry': industry,  # 题材/行业
+            'industry': industry if str(industry).lower() != 'nan' else None,  # 题材/行业
             'signal': bool(result.get('signal', False)),
             'signals': result.get('signals', []),
             'K': float(result.get('K', 0)),
@@ -434,15 +434,38 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
             # 提取次日交易策略部分
             if '次日交易策略' in content:
                 import re
-                match = re.search(r'💡 次日交易策略\s+(.+?)(?=\n\n|$)', content, re.DOTALL)
+                # 优化正则：匹配到下一个标题符号 (💡 或 ⚠️) 之前
+                match = re.search(r'💡 次日交易策略\s+(.+?)(?=\n\s*[⚠️]|$)', content, re.DOTALL)
                 if match:
                     tomorrow_strategy = match.group(1).strip()
+            
+            # 提取整体复盘部分
+            if '📍 整体复盘' in content:
+                # 优化正则：匹配到下一个标题符号 (💡) 之前
+                match_review = re.search(r'📍 整体复盘\s+(.+?)(?=\n\s*[💡]|$)', content, re.DOTALL)
+                if match_review:
+                    market_review = match_review.group(1).strip()
+                else:
+                    market_review = "无复盘内容"
+            else:
+                market_review = "无复盘内容"
     
-    prompt = f"""Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market infographic poster.
+    # 构建动态 Footer 内容
+    footer_content = ""
+    if market_review and market_review != "无复盘内容":
+        footer_content += f"📍 整体复盘\n{market_review}\n\n"
+    
+    if tomorrow_strategy:
+        footer_content += f"💡 次日策略\n{tomorrow_strategy}"
+
+    prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market infographic poster.
 
 **CRITICAL: VERTICAL PORTRAIT FORMAT (9:16)**
 - The image MUST be significantly taller than it is wide (Phone wallpaper style).
 - Aspect Ratio: 9:16.
+- Canvas Size: 1080x1920.
 
 **CRITICAL: HAND-DRAWN AESTHETIC**
 - Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
@@ -452,20 +475,19 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
 - Shading: crosshatching, stippling, charcoal smudges only
 - Background: Hand-drawn red-gold gradient with visible pencil strokes
 
-**HEADER (Top 25%)**
+
 Left: Robot mascot wearing red scarf, holding gear + rocket, thumbs-up, hand-sketched
 Right: Speech bubble: "先进制造+军工+新能源三大主线齐发力！KDJ超卖区间 短期修复窗口已开启💰"
 Center: "AI大模型量化策略" + "{datetime.now().strftime('%Y-%m-%d')}"
 
-**BODY (Middle 60% - 2-Column Grid)**
-10 stock cards (5 per column):
+10 stock cards (5 per column) in a 2-Column Grid:
 Left column: Pale blue background with paper texture
 Right column: Pale yellow background with paper texture
 
-**DESENSITIZATION RULES (CRITICAL):**
-All cards must use masked names and codes from data below.
+**DESENSITIZATION RULES:**
+All cards must use masked names and codes.
 
-**Stock Cards Data:**
+**CONTENT TO RENDER:**
 {json.dumps(stock_summary, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
 
 For each stock, create card with:
@@ -473,11 +495,12 @@ Line 1: #[index] [name_masked] | [code_masked]
 Line 2: [industry_icon] [industry]
 Line 3: [signal_icon] [signals] | J=[J] RSI=[RSI]
 
-Industry icons: 🔋 batteries, ✈️ aerospace, � electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
+Industry icons: 🔋 batteries, ✈️ aerospace, 🔌 electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
 Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 
-**FOOTER (Bottom 15%)**
-""" + (f"� 次日交易策略\n{tomorrow_strategy}" if tomorrow_strategy else "") + """
+
+{footer_content}
+
 
 **ENHANCED HAND-DRAWN STYLE:**
 1. Paper texture visible throughout (sketch paper grain)
@@ -489,11 +512,9 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 7. Overall: Professional architect sketch, NOT polished digital
 
 TECHNICAL:
-- Aspect ratio: 10:16 (vertical)
-- Resolution: Min 1080x1728px
+- Aspect ratio: 9:16 (Vertical Phone Wallpaper) - DO NOT USE 16:10
+- Resolution: 1440x2560 (2K Vertical)
 - Chinese text must be clear and readable
-
-
 """
 
     # 保存任务到文件供Agent处理

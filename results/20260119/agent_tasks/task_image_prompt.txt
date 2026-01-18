@@ -151,8 +151,8 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 7. Overall: Professional architect sketch, NOT polished digital
 
 TECHNICAL:
-- Aspect ratio: 10:16 (vertical)
-- Resolution: Min 1080x1728px
+- Aspect ratio: 9:16 (Vertical Phone Wallpaper) - DO NOT USE 16:10
+- Resolution: Min 1080x1920px
 - Chinese text must be clear and readable
 
 
