@@ -14,35 +14,17 @@ import requests
 import base64
 import time
 import numpy as np
-# from dotenv import load_dotenv
 
-# 加载环境变量
-# load_dotenv()
+# 导入配置和Prompt模块
+from config import MAX_WORKERS, MIN_MARKET_CAP
+from prompts import (
+    NumpyEncoder, 
+    get_analysis_prompt, 
+    get_xiaohongshu_prompt, 
+    get_image_prompt
+)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-# from data_fetcher import get_all_stock_list, get_stock_data
-# from signals import check_stock_signal
-# from tqdm import tqdm
-# import pandas as pd
-
-# 配置
-MAX_WORKERS = 400
-MIN_MARKET_CAP = 100  # 市值100亿以上
-
-
-class NumpyEncoder(json.JSONEncoder):
-    """处理numpy类型的JSON编码器"""
-    def default(self, obj):
-        if isinstance(obj, (np.integer, np.int64)):
-            return int(obj)
-        if isinstance(obj, (np.floating, np.float64)):
-            return float(obj)
-        if isinstance(obj, np.bool_):
-            return bool(obj)
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return super().default(obj)
 
 
 def process_single_stock(args):
@@ -171,8 +153,6 @@ def save_stock_summary(selected_stocks, date_dir, timestamp):
             code = stock['code']
             name = stock['name']
             industry = stock.get('industry', '未知行业')
-            # 尝试获取收盘价，如果在数据里的话
-            # 假设stock dict里可能有'price'或者'close'，如果没有就不显示
             
             f.write(f"{idx}. {name} ({code})\n")
             if industry and str(industry).lower() != 'nan':
@@ -253,26 +233,7 @@ def call_gemini_analysis(selected_stocks, date_dir):
             '成交量': raw['volume']
         })
     
-    prompt = f"""你是一位资深量化分析师。以下是通过"AI模型"策略选出的股票列表，该策略主要捕捉超卖反弹和回踩支撑的买入信号。
-
-选出的股票数据：
-{json.dumps(stocks_info, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
-
-请从中选出Today Top10值得关注的股票，评估标准：
-1. 信号强度（多信号叠加更佳）
-2. 技术指标位置（KDJ/RSI超卖程度）
-3. **【选股偏好】尽量不选688开头的科创板股票**，除非其他标的质量明显不足。
-4. **【题材分布】题材尽量分散，不要扎堆**！每类细分题材/行业入选股票不超过2只。
-5. **【重要】所属行业/题材**（由于数据源缺失，请你根据股票代码和名称，利用你的知识库补充其所属的行业和核心题材）
-
-请输出：
-1. Top10股票排名
-   - 格式：`[股票名称] ([代码]) | [行业/题材] | [推荐理由]`
-   - 理由要求：3-5句话，结合技术面与基本面题材。
-2. 整体市场分析（2-3句话）
-3. 风险提示
-
-注意：这是技术分析参考，不构成投资建议。题材信息请务必准确。"""
+    prompt = get_analysis_prompt(stocks_info)
 
     # 保存任务到文件供Agent处理
     agent_task_dir = os.path.join(date_dir, "agent_tasks")
@@ -337,47 +298,11 @@ def generate_xiaohongshu_post(gemini_analysis, selected_stocks, date_dir):
         })
     
     # 准备脱敏说明
-    prompt = f"""请将以下股票分析报告改写成小红书风格的文案。
-
-原始分析：
-{gemini_analysis}
-
-【脱敏股票列表】（使用此列表中的脱敏名称和代码）：
-{json.dumps(masked_stocks, ensure_ascii=False, indent=2)}
-
-要求：
-1. **风格灵魂**：必须极度"小红书化"！大量使用Emoji，段落短促，语气兴奋、专业且硬核。
-2. **Emoji使用规范**：
-   - 标题前后必须加Emoji (e.g., 🚀/🔥/💰).
-   - 每一段开头必须加Emoji.
-   - 重点词汇前后加Emoji.
-   - 推荐使用：🚀 (潜力), 💰 (买点), 📉 (超卖), 🎯 (目标), ⚠️ (风险), 🤖 (AI分析).
-3. **【重要】股票脱敏处理**：
-   - 直接使用上面列表中的 name_masked 和 code_masked 字段
-   - 示例格式：华盛LD (6883**)
-4. **标题**：吸引眼球，严格控制在20个字符以内。
-5. **结构要求**：
-   - **标题行**：日期 + 核心主题 + Emoji
-   - **开头**：各位交易员，AI量化今日扫描全场！ ({datetime.now().strftime('%Y-%m-%d')})
-   - **中间（核心部分）**：列出Top10股票。**必须严格执行2行格式**，每只股票占2行：
-     
-     1️⃣ [股票名脱敏] ([代码脱敏]) | 🏷️[行业]
-     👉 [核心理由简述，30字以内，重点写技术面优势]
-
-     2️⃣ ... (以此类推)
-   
-   - **结尾**：风险提示 + 互动 + 关注引导。
-6. **术语替换**：将 "B" 或 "B1" 替换为 "买点"。
-7. **字数限制**：全文字数必须严格控制在 **1000字以内**。精简核心理由，去除冗余修饰。
-7. **禁词**：绝对不要出现 "知行"、"东方财富" 等具体策略或来源名称。
-7. **人设**：AI量化分析师（机器人语气，但生动）。
-8. **严禁Markdown**：不要用 `**`, `###`, `- ` 等Markdown符号。只用Emoji和空行分段。
-9. **文末话题**：#AI选股 #量化交易 #A股 #每日复盘
-10. **字数**：1000字以内。
-11. **称呼**：统称读者为"各位交易员" (Traders)，严禁使用"家人们"、"集美们"等小红书常见称呼。
-12. **必须包含**："次日关注进场" 的提示。
-
-请直接输出文案内容。"""
+    prompt = get_xiaohongshu_prompt(
+        gemini_analysis, 
+        json.dumps(masked_stocks, ensure_ascii=False, indent=2), 
+        datetime.now().strftime('%Y-%m-%d')
+    )
 
     # 保存任务到文件供Agent处理
     agent_task_dir = os.path.join(date_dir, "agent_tasks")
@@ -430,19 +355,50 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
     
-    # 提取 整体复盘
-    # 模式: "整体市场复盘" -> (直到 "次日交易策略")
+    # --- 提取复盘与策略 (优先使用 Step 4 专用摘要) ---
     market_review = "无复盘内容"
-    match_review = re.search(r'整体市场复盘\s+(.+?)(?=\n\s*次日交易策略|$)', gemini_analysis, re.DOTALL)
-    if match_review:
-        market_review = match_review.group(1).strip()
-        
-    # 提取 次日交易策略
-    # 模式: "次日交易策略" -> (直到 "风险提示" 或 结束)
     tomorrow_strategy = ""
-    match_strategy = re.search(r'次日交易策略\s+(.+?)(?=\n\s*风险提示|$)', gemini_analysis, re.DOTALL)
-    if match_strategy:
-        tomorrow_strategy = match_strategy.group(1).strip()
+    
+    # 尝试提取 "Step 4: 图片生成专用摘要"
+    summary_section_match = re.search(r'图片生成专用摘要\s*(.+)', gemini_analysis, re.DOTALL)
+    
+    SUMMARY_FOUND = False
+    if summary_section_match:
+        summary_content = summary_section_match.group(1)
+        
+        # 提取复盘
+        match_rev = re.search(r'📍\s*(.+?)(?=\n\s*💡|$)', summary_content, re.DOTALL)
+        if match_rev:
+            extracted_rev = match_rev.group(1).strip().replace('**', '').replace('整体复盘', '').strip()
+            if extracted_rev:
+                market_review = extracted_rev
+                SUMMARY_FOUND = True
+        
+        # 提取策略
+        match_str = re.search(r'💡\s*(.+)', summary_content, re.DOTALL)
+        if match_str:
+            extracted_str = match_str.group(1).strip().replace('**', '').replace('次日策略', '').strip()
+            if extracted_str:
+                tomorrow_strategy = extracted_str
+                SUMMARY_FOUND = True
+                
+    if not SUMMARY_FOUND:
+        print("⚠️ 未找到专用摘要，使用智能提取回退模式...")
+        # 回退模式：从正文提取第一段
+        match_review = re.search(r'整体市场复盘\s+(.+?)(?=\n\s*次日交易策略|$)', gemini_analysis, re.DOTALL)
+        if match_review:
+            full_review = match_review.group(1).strip()
+            market_review = full_review.split('\n')[0].strip().replace('**', '')
+
+        match_strategy = re.search(r'次日交易策略\s+(.+?)(?=\n\s*风险提示|$)', gemini_analysis, re.DOTALL)
+        if match_strategy:
+            full_strategy = match_strategy.group(1).strip()
+            # 提取 **核心点**
+            strategy_points = re.findall(r'\*\*(.*?)\*\*', full_strategy)
+            if strategy_points:
+                tomorrow_strategy = "、".join(strategy_points[:3])
+            else:
+                tomorrow_strategy = full_strategy.split('\n')[0].strip().replace('**', '')
 
     # --- 对复盘和策略文案进行脱敏替换 ---
     # 遍历所有股票，将文案中的"全名"替换为"脱敏名"
@@ -476,64 +432,7 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     if tomorrow_strategy:
         footer_content += f"💡 次日策略\n{tomorrow_strategy}"
 
-    prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
-
-Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
-
-**CRITICAL: VERTICAL PORTRAIT FORMAT (10:16)**
-- The image MUST be significantly taller than it is wide (Phone wallpaper style).
-- Aspect Ratio: 10:16.
-- Canvas Size: 1600x2560.
-
-**CRITICAL: HAND-DRAWN AESTHETIC**
-- Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
-- Visible paper grain texture throughout
-- Line wobbles and imperfections (authentic hand-drawn feel)
-- NO digital smoothness, NO vector graphics
-- Shading: crosshatching, stippling, charcoal smudges only
-- Background: Hand-drawn red-gold gradient with visible pencil strokes
-
-
-Left: Robot mascot wearing red scarf, holding gear + rocket, thumbs-up, hand-sketched
-Right: Speech bubble: "先进制造+军工+新能源三大主线齐发力！KDJ超卖区间 短期修复窗口已开启💰"
-Center: "AI大模型量化策略" + "{datetime.now().strftime('%Y-%m-%d')}"
-
-10 stock cards (5 per column) in a 2-Column Grid:
-Left column: Pale blue background with paper texture
-Right column: Pale yellow background with paper texture
-
-**DESENSITIZATION RULES:**
-All cards must use masked names and codes.
-
-**CONTENT TO RENDER:**
-{json.dumps(stock_summary, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
-
-For each stock, create card with:
-Line 1: #[index] [name_masked] | [code_masked]
-Line 2: [industry_icon] [industry]
-Line 3: [signal_icon] [signals] | J=[J] RSI=[RSI]
-
-Industry icons: 🔋 batteries, ✈️ aerospace, 🔌 electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
-Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
-
-
-{footer_content}
-
-
-**ENHANCED HAND-DRAWN STYLE:**
-1. Paper texture visible throughout (sketch paper grain)
-2. All lines with wobbles, varying thickness
-3. Shading only via crosshatching/stippling - NO smooth gradients  
-4. Hand-lettered text with irregularities
-5. Background: Red-gold gradient with visible pencil strokes
-6. Card borders: Hand-drawn rounded rectangles
-7. Overall: Professional architect sketch, NOT polished digital
-
-TECHNICAL:
-- Aspect ratio: 10:16 (Vertical Phone Wallpaper)
-- Resolution: 1600x2560 (2K Vertical)
-- Chinese text must be clear and readable
-"""
+    prompt = get_image_prompt(stock_summary, footer_content, datetime.now().strftime('%Y-%m-%d'))
 
     # 保存任务到文件供Agent处理
     agent_task_dir = os.path.join(date_dir, "agent_tasks")
