@@ -14,6 +14,7 @@ import requests
 import base64
 import time
 import numpy as np
+from tqdm import tqdm
 
 # 导入配置和Prompt模块
 from config import MAX_WORKERS, MIN_MARKET_CAP
@@ -23,6 +24,10 @@ from prompts import (
     get_xiaohongshu_prompt, 
     get_image_prompt
 )
+
+# 导入数据获取和信号检测模块
+from data_fetcher import get_all_stock_list, get_stock_data
+from signals import check_stock_signal
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

@@ -145,3 +145,6 @@ TECHNICAL:
 - Resolution: 1600x2560 (2K Vertical)
 - Chinese text must be clear and readable
 - Footer section should take up at least 15% of poster height
+
+
+(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)
