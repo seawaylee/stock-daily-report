@@ -1,0 +1,34 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (sketch style), (marker pen art), (infographic), (concept art)
+
+Create a TALL VERTICAL PORTRAIT (10:16) HAND-DRAWN SKETCH FINANCIAL POSTER.
+
+**VISUAL STYLE: 'ANALYST NOTEBOOK'**
+- A textured paper background (grid paper or sketchbook).
+- **Drawing Style**: Loose pencil sketches combined with bold MARKER PEN highlights.
+- **Top Half (INFLOW)**: Red Marker arrows sketching UPWARDS. Dynamic, energetic strokes.
+- **Bottom Half (OUTFLOW)**: Green Marker strokes raining DOWNWARDS. Heavy, messy lines.
+- Central Element: A hand-sketched Bull vs Bear doodle in the center.
+
+**TEXT LAYOUT (Hand-written font style):**
+
+-- HEADER --
+"主力资金流向" (Bold Red Calligraphy)
+"2026-01-19" (Pencil date)
+
+-- UPPER SECTION (RED INK - INFLOW) --
+Title: "🚀 资金抢筹 TOP 5" (Red Marker)
+List (Hand-written):
+1. 电网设备 (+68.4亿)\n2. 航天航空 (+22.2亿)\n3. 贵金属 (+15.5亿)\n4. 风电设备 (+11.0亿)\n5. 玻璃玻纤 (+10.2亿)
+
+-- LOWER SECTION (GREEN INK - OUTFLOW) --
+Title: "📉 资金抛售 TOP 5" (Green Marker)
+List (Hand-written):
+1. 互联网服务 (-87.2亿)\n2. 通信设备 (-81.6亿)\n3. 半导体 (-77.6亿)\n4. 软件开发 (-58.6亿)\n5. 消费电子 (-38.4亿)
+
+**DETAILS:**
+- Paper wrinkles and coffee stain textures.
+- Doodles of coins and arrows.
+- "Simple", "Clean", "Authentic".
+- NO neon, NO glowing effects, NO 3D renders.
+
+(Optimized for Nano Banana Pro: Focus on the paper texture and ink quality.)

@@ -28,6 +28,8 @@ from prompts import (
 # 导入数据获取和信号检测模块
 from data_fetcher import get_all_stock_list, get_stock_data
 from signals import check_stock_signal
+from sector_flow import run_daily_analysis
+from generate_ladder_prompt import generate_ladder_prompt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -615,6 +617,21 @@ def main():
         # }
         # save_prompts(prompts_dict, today)
         
+        # 5. 执行板块资金流分析 (集成)
+        print("\n[5/5] 执行板块资金流分析...")
+        try:
+            run_daily_analysis(date_dir=date_dir)
+        except Exception as e:
+            print(f"⚠️ 板块分析执行失败: {e}")
+
+        # 6. 生成涨停阶梯图 Prompt
+        print("\n[6/6] 生成涨停阶梯图AI提示词...")
+        try:
+            date_str = today.split('_')[0]
+            generate_ladder_prompt(date_str)
+        except Exception as e:
+            print(f"⚠️ 涨停阶梯Prompt生成失败: {e}")
+
         # 4. 保存报告
         save_reports(gemini_analysis, xiaohongshu_post, today)
         

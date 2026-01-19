@@ -1,0 +1,35 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (illustration), (vintage style), (surrealism)
+
+**SUBJECT**: A surreal conceptual illustration with the title "**今日真神**" written at the top.
+
+**HEADER TEXT**:
+- At the very top of the image, write the text "**今日真神**" in **Bold Chinese Calligraphy** style. 
+- The text should be large, imposing, and possibly glowing (Gold or Red).
+
+1. **THE GIANTS (Top Inflow Sectors)**:
+   Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center, representing the top winning industries. (NON-HUMANOID OBJECTS)
+   - **CENTER (Largest)**: A giant symbolic object representing **"电网设备"**. It should be a physical object or structure, NOT A PERSON. 
+     **Text label on it**: "电网设备" (Black Bold) and "+68.4亿" (Small RED text next to it).
+   - **LEFT**: A massive symbolic object representing **"航天航空"**. (Physical object, non-human).
+     **Text label on it**: "航天航空" (Black Bold) and "+22.2亿" (Small RED text).
+   - **RIGHT**: A massive symbolic object representing **"贵金属"**. (Physical object, non-human).
+     **Text label on it**: "贵金属" (Black Bold) and "+15.5亿" (Small RED text).
+
+2. **THE WORSHIPPERS (Top Outflow Sectors)**:
+   In the **FOREGROUND**, a group of **LARGE**, kneeling figures (pilgrims) with their backs facing the viewer. 
+   - They should be **CLOSE TO THE CAMERA** so their backs take up significant space.
+   - **CRITICAL**: The text labels on their backs must be **LARGE and CLEARLY LEGIBLE**.
+   - **Labels on backs**: 互联网服务 (-87.2亿), 通信设备 (-81.6亿), 半导体 (-77.6亿), 软件开发 (-58.6亿), 消费电子 (-38.4亿), 有色金属 (-33.2亿), 文化传媒 (-32.2亿), 电池 (-21.3亿), 电子元件 (-20.3亿), 医疗服务 (-18.3亿)
+   - (Note for Text: The outflow numbers should be in Small GREEN text if possible)
+
+
+**ART STYLE**: 
+- **Vintage Hand-drawn Illustration**: Warm paper texture background, ink lines, watercolor washes.
+- **Atmosphere**: Epic, religious scale, slightly dystopian but artistic.
+- **Colors**: Sepia, warm brown, faded red (giants), dull green/grey (worshippers).
+
+**TEXT RENDERING**:
+- Please ensure the Chinese text labels for sectors are visible.
+- Font style: Hand-written Chinese calligraphy or block print.
+
+(Optimized for Nano Banana Pro: Focus on the contrast between the giant objects and the tiny kneeling crowd.)
