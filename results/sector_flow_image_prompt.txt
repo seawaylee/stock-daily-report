@@ -1,10 +1,12 @@
 (masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (illustration), (vintage style), (surrealism)
 
-**SUBJECT**: A surreal conceptual illustration with the title "**今日真神**" written at the top.
+**SUBJECT**: A surreal conceptual illustration.
 
 **HEADER TEXT**:
-- At the very top of the image, write the text "**今日真神**" in **Bold Chinese Calligraphy** style. 
-- The text should be large, imposing, and possibly glowing (Gold or Red).
+- At the top of the image, elegantly integrate the text "**大金融爆发**" using **Artistic Chinese Calligraphy**.
+- **BACKGROUND for Text**: Place the text on a **Red Ink Grunge / Paint Brush Stroke** background to make it pop.
+- **Text Color**: Use **Gold or White** text to contrast strongly against the red background.
+- The text should be **clearly visible** and distinct from the rest of the illustration.
 
 1. **THE GIANTS (Top Inflow Sectors)**:
    Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center, representing the top winning industries. (NON-HUMANOID OBJECTS)
@@ -20,7 +22,12 @@
    - They should be **CLOSE TO THE CAMERA** so their backs take up significant space.
    - **CRITICAL**: The text labels on their backs must be **LARGE and CLEARLY LEGIBLE**.
    - **Labels on backs**: 通信设备 (-157.4亿), 电子元件 (-106.6亿), 光伏设备 (-73.0亿), 消费电子 (-70.1亿), 互联网服务 (-58.2亿), 软件开发 (-57.7亿), 专用设备 (-49.7亿), 电网设备 (-49.2亿), 航天航空 (-45.9亿), 汽车零部件 (-40.0亿)
-   - (Note for Text: The outflow numbers should be in Small GREEN text if possible)
+   - **TEXT STYLING (Split Style)**:
+     - **Sector Name**: Use **White or Light Grey** text. Uniform font.
+     - **Money Number**: Use **Bright Neon Green** text (e.g., -157.4亿) to represent outflow. 
+     - **NO BACKGROUND PATCH**. Just the text floating on the dark clothing.
+     - Ensure the text has a slight **Glow** for high visibility.
+   - **COLOR**: These figures must be **DARK GREEN, GREY, or COLD COLORS** to represent outflow/loss. **ABSOLUTELY NO RED CLOTHING** for these figures. They should look gloomy.
 
 
 **ART STYLE**: 

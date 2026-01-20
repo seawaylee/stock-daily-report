@@ -1,5 +1,19 @@
 # 📈 AI Stock Analysis & Report Generator (AI大模型量化研报工具)
 
+## 🚀 Environment Setup (Global)
+**CRITICAL**: This project requires the `py311` conda environment.
+- **Python Path**: `/Users/seawaylee/opt/anaconda3/envs/py311/bin/python`
+- **Universal Runner**: We have provided a wrapper script `run.sh` to ensure the correct environment is always used.
+
+**Usage**:
+```bash
+./run.sh run_ai_analysis.py  # Run main analysis
+./run.sh sector_flow.py      # Run sector flow only
+```
+**ALWAYS use `./run.sh` instead of `python` directly.**
+
+
+
 这是一个自动化的A股选股、分析及内容生成工具。它结合了传统量化指标（KDJ, RSI, 均线）与AI大模型（Gemini/OpenAI），每日自动生成高质量的小红书复盘文案和专业的行情海报提示词。
 
 ## ✨ 核心特性 (v2.0 Update)
