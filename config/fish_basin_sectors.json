@@ -1,0 +1,188 @@
+[
+    {
+        "name": "半导体",
+        "type": "THS",
+        "code": "881121"
+    },
+    {
+        "name": "工业金属",
+        "type": "THS",
+        "code": "881168",
+        "alias": "有色金属"
+    },
+    {
+        "name": "商业航天",
+        "type": "THS_CONCEPT",
+        "code": "309130"
+    },
+    {
+        "name": "光伏设备",
+        "type": "THS",
+        "code": "881279"
+    },
+    {
+        "name": "白酒",
+        "type": "THS",
+        "code": "881273"
+    },
+    {
+        "name": "煤炭开采加工",
+        "type": "THS",
+        "alias": "煤炭",
+        "code": "881105"
+    },
+    {
+        "name": "养殖业",
+        "type": "THS",
+        "alias": "养殖",
+        "code": "881102"
+    },
+    {
+        "name": "机器人概念",
+        "type": "THS_CONCEPT",
+        "alias": "机器人",
+        "code": "300816"
+    },
+    {
+        "name": "人工智能",
+        "type": "THS_CONCEPT",
+        "code": "302035"
+    },
+    {
+        "name": "稀土永磁",
+        "type": "THS_CONCEPT",
+        "alias": "稀土",
+        "code": "300382"
+    },
+    {
+        "name": "房地产",
+        "type": "THS",
+        "code": "881153"
+    },
+    {
+        "name": "旅游及酒店",
+        "type": "THS",
+        "alias": "旅游",
+        "code": "881160"
+    },
+    {
+        "name": "创新药",
+        "type": "THS_CONCEPT",
+        "code": "308014"
+    },
+    {
+        "name": "细分化工",
+        "type": "INDEX",
+        "code": "sz399813"
+    },
+    {
+        "name": "新能源",
+        "type": "INDEX",
+        "code": "sz399808"
+    },
+    {
+        "name": "中证医疗",
+        "type": "INDEX",
+        "code": "sz399989"
+    },
+    {
+        "name": "中证红利",
+        "type": "INDEX",
+        "code": "sh000922"
+    },
+    {
+        "name": "证券公司",
+        "type": "INDEX",
+        "code": "sz399975"
+    },
+    {
+        "name": "中证消费",
+        "type": "INDEX",
+        "code": "sh000932"
+    },
+    {
+        "name": "电网设备",
+        "code": "881278",
+        "type": "THS"
+    },
+    {
+        "name": "汽车零部件",
+        "code": "881126",
+        "type": "THS"
+    },
+    {
+        "name": "通信设备",
+        "code": "881129",
+        "type": "THS"
+    },
+    {
+        "name": "电池",
+        "code": "881281",
+        "type": "THS"
+    },
+    {
+        "name": "软件开发",
+        "code": "881272",
+        "type": "THS"
+    },
+    {
+        "name": "消费电子",
+        "code": "881124",
+        "type": "THS"
+    },
+    {
+        "name": "电力",
+        "code": "881145",
+        "type": "THS"
+    },
+    {
+        "name": "医疗服务",
+        "code": "881175",
+        "type": "THS"
+    },
+    {
+        "name": "白色家电",
+        "code": "881131",
+        "type": "THS"
+    },
+    {
+        "name": "计算机设备",
+        "code": "881130",
+        "type": "THS"
+    },
+    {
+        "name": "贵金属",
+        "code": "881169",
+        "type": "THS"
+    },
+    {
+        "name": "风电设备",
+        "code": "881280",
+        "type": "THS"
+    },
+    {
+        "name": "银行",
+        "code": "881155",
+        "type": "THS"
+    },
+    {
+        "name": "医疗器械",
+        "code": "881144",
+        "type": "THS"
+    },
+    {
+        "name": "食品加工制造",
+        "code": "881134",
+        "type": "THS"
+    },
+    {
+        "name": "保险",
+        "code": "881156",
+        "type": "THS"
+    },
+    {
+        "name": "石油加工贸易",
+        "code": "881180",
+        "type": "THS"
+    }
+]

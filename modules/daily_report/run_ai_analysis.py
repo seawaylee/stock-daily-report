@@ -17,8 +17,8 @@ import numpy as np
 from tqdm import tqdm
 
 # 导入配置和Prompt模块
-from config import MAX_WORKERS, MIN_MARKET_CAP
-from prompts import (
+from common.config import MAX_WORKERS, MIN_MARKET_CAP
+from common.prompts import (
     NumpyEncoder, 
     get_analysis_prompt, 
     get_xiaohongshu_prompt, 
@@ -26,10 +26,10 @@ from prompts import (
 )
 
 # 导入数据获取和信号检测模块
-from data_fetcher import get_all_stock_list, get_stock_data
-from signals import check_stock_signal
-from sector_flow import run_daily_analysis
-from generate_ladder_prompt import generate_ladder_prompt
+from common.data_fetcher import get_all_stock_list, get_stock_data
+from common.signals import check_stock_signal
+from modules.daily_report.sector_flow import run_daily_analysis
+from modules.daily_report.generate_ladder_prompt import generate_ladder_prompt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
