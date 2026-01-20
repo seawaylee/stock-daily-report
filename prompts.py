@@ -171,12 +171,16 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 
 
 **FOOTER CONTENT (Bottom Area):**
-Please render the following content at the bottom, BUT:
-1. **SUMMARIZE IT**: Condense the text below into 1-2 short, punchy sentences suitable for a poster footer. Do NOT paste long paragraphs.
-2. **CLEAN IT**: Remove any Markdown symbols like `**` or `##`.
-3. **DESENSITIZE**: Ensure no full stock names appear (should already be masked, but double check).
+Please render the following content at the bottom. Use these EXACT 3 lines (translate/summarize fit if needed):
 
-{footer_content}
+1. **Top Line (Summary)**: Extract key market summary from here: "{footer_content}". Keep it under 20 words.
+2. **Middle Line (Strategy)**: Extract key focus stocks/strategy from here: "{footer_content}". Keep it under 15 words.
+3. **Bottom Line (CALL TO ACTION)**: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路"
+
+**IMPORTANT**: 
+- All footer text MUST be in CHINESE.
+- Ensure the CTA line is exactly as specified above.
+- Remove Markdown symbols like `**`.
 
 
 **ENHANCED HAND-DRAWN STYLE:**

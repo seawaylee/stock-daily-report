@@ -118,6 +118,12 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
         
         sorted_items = sorted(items, key=sort_key)
         
+        # 限制每层最多显示100只 (用户需求)
+        if len(sorted_items) > 100:
+            original_count = len(sorted_items)
+            sorted_items = sorted_items[:100]
+            status_note += f" (显示前100只，共{original_count}只)"
+        
         # 格式化股票数据 - 只显示股票名和题材，不显示时间
         col_limit = 5 if board == 1 else 4
         
@@ -164,6 +170,7 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append("- Hot sectors row below title")
     prompt_lines.append("- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label")
     prompt_lines.append("- **Within each board**: stocks flow freely in rows, **NO grid lines or cell borders between individual stocks**")
+    prompt_lines.append("- **CRITICAL**: You MUST render EVERY SINGLE STOCK listed below. Do not skip any. Make font smaller if necessary to fit all.")
     prompt_lines.append("")
     prompt_lines.append("**Stock display format**:")
     prompt_lines.append("```")
