@@ -1,96 +1,84 @@
-# 📈 AI Stock Analysis & Report Generator (AI大模型量化研报工具)
+# 📈 AI Stock Analysis & Report Generator
 
-## 🚀 Environment Setup (Global)
-**CRITICAL**: This project requires the `py311` conda environment.
-- **Python Path**: `/Users/seawaylee/opt/anaconda3/envs/py311/bin/python`
-- **Universal Runner**: We have provided a wrapper script `run.sh` to ensure the correct environment is always used.
+> A股智能选股、研报生成与可视化工具
 
-**Usage**:
-```bash
-./run.sh run_ai_analysis.py  # Run main analysis
-./run.sh sector_flow.py      # Run sector flow only
+## 📁 项目结构
+
 ```
-**ALWAYS use `./run.sh` instead of `python` directly.**
-
-
-
-这是一个自动化的A股选股、分析及内容生成工具。它结合了传统量化指标（KDJ, RSI, 均线）与AI大模型（Gemini/OpenAI），每日自动生成高质量的小红书复盘文案和专业的行情海报提示词。
-
-## ✨ 核心特性 (v2.0 Update)
-
-*   **🎯 严选 Top 10**：严格限制每日仅输出前10只最强信号个股，宁缺毋滥。
-*   **🎨 动态吉利海报**：
-    *   **风格**：专业手绘/建筑素描风 (Professional Architectural Sketch) + 喜庆红金渐变背景。
-    *   **动态吉祥物**：AI根据当日**最火板块**自动生成吉祥物（如芯片拟人、火箭拟人、跑车拟人），告别千篇一律的机器人。
-    *   **吉利元素**：卡片内仅保留单一核心吉利图标（🚀 火箭 / 🔥 火焰），拒绝下跌暗示。
-*   **📝 深度小红书文案**：
-    *   **排版**：强制“每股2行”格式（第1行信息，第2行核心理由），清晰易读。
-    *   **全自动题材匹配**：自动补全缺失的行业/题材信息。
-*   **💸 资金流向神图 (New!)**：
-    *   **巨物 vs 跪拜**：Top 3 流入板块化身“非人形象征巨物” (Symbolic Monuments)，Top 10 流出板块化身“跪拜小人”。
-    *   **随机霸气标题**：自动生成如“今日真神”、“榜一大哥”等标题，红金书法字。
-    *   **数据可视化**：直接在画面中标注资金净流入/流出额（红/绿）。
-*   **🪜 涨停阶梯图 (New!)**：
-    *   **层级分明**：自动生成当日涨停股的晋级阶梯 Prompt。
-    *   **视觉优化**：红色“一字”徽章，失败股打叉标记。
-*   **🛡️ 专业术语**：统一使用“标准买点” (Standard Buy Point) 等专业表述。
+stock-daily-report/
+├── common/                 # 公共模块
+│   ├── config.py           # 配置参数
+│   ├── data_fetcher.py     # 数据拉取
+│   ├── prompts.py          # AI Prompt 模板
+│   └── signals.py          # 信号检测逻辑
+├── modules/
+│   ├── fish_basin/         # 鱼盆趋势模型
+│   │   ├── fish_basin.py         # 指数分析
+│   │   └── fish_basin_sectors.py # 题材板块分析
+│   └── daily_report/       # 日报生成
+│       ├── run_ai_analysis.py    # 主程序入口
+│       ├── sector_flow.py        # 板块资金流
+│       ├── limit_up_ladder.py    # 涨停阶梯
+│       └── generate_ladder_prompt.py
+├── config/                 # 配置文件
+│   └── fish_basin_sectors.json   # 板块列表配置
+├── scripts/                # 启动脚本
+│   ├── run.sh              # 通用脚本运行器
+│   ├── run_all.sh          # 鱼盆全量运行
+│   └── run_fish_basin.sh   # 单独运行鱼盆
+└── results/                # 输出目录 (按日期)
+    └── YYYYMMDD/
+        ├── fish_basin_report.xlsx
+        ├── fish_basin_sectors.xlsx
+        ├── stock_list_*.csv
+        └── ...
+```
 
 ## 🚀 快速开始
 
-### 1. 执行选股与分析
-运行主程序：
+### 环境要求
+- Python 3.11 (Conda: `py311`)
+- 依赖: `pip install -r requirements.txt`
+
+### 运行鱼盆模型
 ```bash
-python run_ai_analysis.py
+bash scripts/run_all.sh
 ```
-**脚本执行流程：**
-1.  **数据获取**：拉取最新的A股日线数据。
-2.  **量化选股**：根据策略（超卖反弹、回踩支撑等）筛选股票。
-    -   *默认配置：并发100线程，仅测试前500只股票（可修改）。*
-3.  **AI分析**：调用大模型分析 **Top 10** 股票的题材与技术面，并生成“动态吉祥物”方案。
-4.  **内容生成**：
-    -   生成 **小红书文案** (`results/YYYYMMDD/xiaohongshu_*.txt`)
-    -   生成 **吉利海报提示词** (`results/YYYYMMDD/image_prompt_*.txt`)
-5.  **资金流向分析**：生成“巨物 vs 跪拜”风格 AI 提示词 (`sector_flow_image_prompt.txt`)。
-6.  **涨停阶梯**：生成涨停晋级图 AI 提示词 (`limit_up_ladder_prompt.md`)。
 
-### 2. 生成海报图片 (必须步骤)
-**⚠️ 注意：脚本仅生成提示词文件，需要您配合绘图工具使用。**
+### 运行日报分析
+```bash
+bash scripts/run.sh modules/daily_report/run_ai_analysis.py
+```
 
-1.  打开生成的提示词文件：`results/YYYYMMDD/image_prompt_YYYYMMDD_*.txt`
-2.  **操作**：
-    -   复制文件中的完整英文 Prompt。
-    -   发送给 **AI绘图工具** (推荐模型: Nano Banana Pro3 / DALL-E 3 / Midjourney v6)。
-    -   **检查**：确认生成的图片包含“动态吉祥物”（如芯片人/火箭人）及“红金喜庆背景”。
+## 📊 输出说明
 
----
+所有结果保存在 `results/{YYYYMMDD}/` 目录：
 
-## 📂 输出文件说明
-所有结果保存在 `results/YYYYMMDD/` 目录下：
+| 文件 | 说明 |
+|------|------|
+| `fish_basin_report.xlsx` | 指数鱼盆分析（颜色标注） |
+| `fish_basin_sectors.xlsx` | 板块题材鱼盆分析 |
+| `stock_list_*.csv` | 当日股票列表缓存 |
+| `xiaohongshu_*.txt` | 小红书文案 |
+| `image_prompt_*.txt` | AI海报提示词 |
+| `sector_flow_image_prompt.txt` | 资金流提示词 |
 
-| 文件名 | 说明 | 用途 |
-| :--- | :--- | :--- |
-| `xiaohongshu_*.txt` | **小红书文案** | **核心产出**，Emoji风格 + 2行排版，直接复制发布。 |
-| `image_prompt_*.txt` | **海报提示词** | **核心产出**，包含动态吉祥物、吉利图标、垂直9:16布局指令。 |
-| `sector_flow_image_prompt.txt` | **资金流向 Prompt** | **新特性**，“巨物 vs 跪拜”风格，含随机标题与资金数值。 |
-| `limit_up_ladder_prompt.md` | **涨停阶梯 Prompt** | **新特性**，用于生成当日涨停晋级图。 |
-| `ai_analysis_*.md` | AI分析报告 | 详细的逻辑分析与板块点评（Markdown格式）。 |
-| `selected_*.json` | 原始选股结果 | 数据备份/调试。 |
-| `stock_list_summary_*.txt` | 私信汇总列表 | 包含股票代码及规则，适合私信回复用户。 |
+## ⚙️ 配置
 
-## ⚙️ 配置与维护
-编辑 `run_ai_analysis.py` 文件头部进行配置：
+### 板块列表
+编辑 `config/fish_basin_sectors.json` 以自定义监控的板块：
+```json
+[
+  {"name": "半导体", "type": "THS", "code": "881121"},
+  {"name": "人工智能", "type": "THS_CONCEPT", "code": "302035"}
+]
+```
 
-- **`MAX_WORKERS`**: 并发线程数（默认100）。
-- **`MIN_MARKET_CAP`**: 最小市值过滤（单位：亿）。
-- **API Key**: 目前在代码中配置。**建议**：生产环境请使用 `k = os.getenv("API_KEY")` 替代硬编码。
-- **全市场扫描**：
-  注释掉以下代码以扫描全市场：
-  ```python
-  # stock_list = stock_list.head(500)
-  ```
+### 环境变量
+复制 `.env.example` 为 `.env` 并填写 API Key：
+```
+GOOGLE_API_KEY=your_key_here
+```
 
-## 📝 常见问题
-*   **Q: 为什么生成的图片里没有K线图？**
-    *   A: 设计如此。我们用“吉利图标” (🚀/🔥) 替代了复杂的K线，为了海报更简洁喜庆。
-*   **Q: 只有10只股票？**
-    *   A: 是的，策略严格限制 Top 10，确保只关注最强标的。
+## 📝 License
+MIT

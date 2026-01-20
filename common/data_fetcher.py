@@ -23,8 +23,9 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
     """
     # 检查是否有今日缓存
     today = datetime.now().strftime('%Y%m%d')
-    os.makedirs('data', exist_ok=True)
-    cache_file = f"data/stock_list_{today}.csv"
+    date_dir = f"results/{today}"
+    os.makedirs(date_dir, exist_ok=True)
+    cache_file = f"{date_dir}/stock_list_{today}.csv"
     
     if os.path.exists(cache_file):
         print(f"Loading stock list from cache: {cache_file}")
