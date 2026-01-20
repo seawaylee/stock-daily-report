@@ -300,8 +300,16 @@ def run_sector_analysis():
         output_path = f"results/{curr_date}/fish_basin_sectors.xlsx"
         print(f"Saving to {output_path}...")
         save_to_excel_colored(df_res, output_path)
+        
+        # Generate image prompts
+        try:
+            from generate_trend_prompts import generate_all_prompts
+            generate_all_prompts(curr_date)
+        except Exception as e:
+            print(f"⚠️ Prompt generation failed: {e}")
     else:
         print("No results generated.")
 
 if __name__ == "__main__":
     run_sector_analysis()
+
