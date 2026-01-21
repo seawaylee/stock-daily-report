@@ -12,6 +12,13 @@ import os
 import argparse
 from datetime import datetime
 
+# Enable Simple Network Logging (No Proxies/Retries)
+try:
+    from common import network
+    network.apply_patch()
+except ImportError:
+    pass
+
 # Convert string "YYYYMMDD" to path "results/YYYYMMDD" 
 def get_date_dir(date_str=None):
     if not date_str:
