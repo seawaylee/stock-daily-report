@@ -12,38 +12,86 @@ def get_sector_flow(sector_type='行业资金流'):
     """获取板块资金流排名 (返回 Top 10 流入和 Top 10 流出)"""
     try:
         print(f"正在获取 {sector_type} 数据...")
-        df = ak.stock_sector_fund_flow_rank(indicator='今日', sector_type=sector_type)
+        import time
+        df = None
         
+        # Plan A: THS (Tonghuashun) - prioritized
+        # Plan B: EastMoney (Fallback)
+        
+        data_source = "THS" 
+        
+        # --- THS Implementation ---
+        try:
+            print("尝试数据源: 同花顺 (THS)...")
+            df_ths = ak.stock_board_industry_summary_ths()
+            if df_ths is not None and not df_ths.empty:
+                # Columns: ['序号', '板块', '涨跌幅', '总成交量', '总成交额', '净流入', ...]
+                # Renaming for compatibility
+                df_ths = df_ths.rename(columns={'板块': '名称', '净流入': 'net_flow'})
+                
+                # Assume 'net_flow' from THS is already in '亿' (Billions) based on debug.
+                df_ths['net_flow_billion'] = pd.to_numeric(df_ths['net_flow'], errors='coerce')
+                
+                # Ensure we have both Inflow and Outflow
+                top_inflow = df_ths.sort_values(by='net_flow_billion', ascending=False).head(10)
+                top_outflow = df_ths.sort_values(by='net_flow_billion', ascending=True).head(10)
+                
+                # Rename columns to match expected output for prompt generator
+                return top_inflow, top_outflow, '名称', 'net_flow_billion'
+
+        except Exception as e:
+            print(f"THS source failed: {e}")
+            df_ths = None # Ensure df_ths is cleared if it failed
+            
+        # --- Fallback to EastMoney if THS fails ---
+        print("尝试数据源: 东方财富 (EastMoney)...")
+        df_em = None
+        for i in range(2): # Reduced retries for EM
+            try:
+                df_em = ak.stock_sector_fund_flow_rank(indicator='今日', sector_type=sector_type)
+                if df_em is not None and not df_em.empty:
+                     data_source = "EM"
+                     break
+            except Exception as e:
+                print(f"尝试 {i+1}/2 失败: {e}")
+                time.sleep(1)
+        
+        if df_em is None or df_em.empty:
+            print(f"❌ 最终获取 {sector_type} 失败 (THS和EM均失败)")
+            return None
+             
+        # Process EastMoney data if it was successfully retrieved
         target_col = None
         name_col = None
         
         # 优先寻找 "主力净流入"
-        for col in df.columns:
+        for col in df_em.columns:
             if "主力" in col and "净流入" in col and "净额" in col:
                 target_col = col
                 break
         
         # Fallback
         if not target_col:
-             for col in df.columns:
+             for col in df_em.columns:
                 if "净流入" in col and "净额" in col and "今日" in col:
                     target_col = col
                     break
 
-        for col in df.columns:
+        for col in df_em.columns:
              if "名称" in col:
                 name_col = col
                 break
                 
         if not target_col or not name_col:
+            print(f"❌ 东方财富数据列识别失败: target_col={target_col}, name_col={name_col}")
             return None
             
         # 确保数值类型
-        df['net_flow_billion'] = pd.to_numeric(df[target_col], errors='coerce') / 100000000
+        df_em['net_flow_billion'] = pd.to_numeric(df_em[target_col], errors='coerce') / 100000000
         
         # 排序
-        top_inflow = df.sort_values(by='net_flow_billion', ascending=False).head(10)
-        top_outflow = df.sort_values(by='net_flow_billion', ascending=True).head(10)
+        top_inflow = df_em.sort_values(by='net_flow_billion', ascending=False).head(10)
+        top_outflow = df_em.sort_values(by='net_flow_billion', ascending=True).head(10)
         
         return top_inflow, top_outflow, name_col, 'net_flow_billion'
         
@@ -257,7 +305,8 @@ def generate_prompt(industry_inflow, industry_outflow, output_path="results/sect
     print(f"Image Prompt saved to {output_path} (Title: {selected_title})")
 
 
-def run_daily_analysis(date_dir=None):
+
+def run(date_dir=None):
     """每日定期运行的入口函数"""
     print(f"\n=== A股板块资金流向统计 ({datetime.now().strftime('%Y-%m-%d')}) ===")
     
@@ -279,22 +328,27 @@ def run_daily_analysis(date_dir=None):
             
         # 3. 确定输出路径
         if date_dir:
-            if not os.path.exists(date_dir):
-                os.makedirs(date_dir, exist_ok=True)
-            prompt_path = os.path.join(date_dir, "sector_flow_image_prompt.txt")
+            prompt_dir = os.path.join(date_dir, "AI提示词")
+            if not os.path.exists(prompt_dir):
+                os.makedirs(prompt_dir, exist_ok=True)
+            prompt_path = os.path.join(prompt_dir, "资金流向_Prompt.txt")
         else:
-            # 默认路径
-            if not os.path.exists("results"):
-                os.makedirs("results", exist_ok=True)
-            prompt_path = "results/sector_flow_image_prompt.txt"
+            # 默认路径: 自动获取今日日期
+            today_dir = datetime.now().strftime('%Y%m%d')
+            prompt_dir = os.path.join("results", today_dir, "AI提示词")
+            if not os.path.exists(prompt_dir):
+                os.makedirs(prompt_dir, exist_ok=True)
+            prompt_path = os.path.join(prompt_dir, "资金流向_Prompt.txt")
 
         # 4. 生成提示词
         generate_prompt(inflow, outflow, output_path=prompt_path)
         
         print("✅ 板块资金流分析已完成")
+        return True
     else:
         print("⚠️ 数据获取不完整，跳过板块分析")
+        return False
 
 
 if __name__ == "__main__":
-    run_daily_analysis()
+    run()

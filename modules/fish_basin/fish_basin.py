@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import time
+import os
+from .fish_basin_helper import save_to_excel
 
 # Symbol Mapping
 # Format: "Name": "Code"
@@ -17,9 +19,9 @@ SYMBOLS = {
     "沪深300": "sh000300",
     "中证500": "sz399905",
     "中证1000": "sz399852", 
-    "中证A500": "sh000510", # Updated from sz399935 to Sina source
-    "国证2000": "sz399303", # Proxy for CSI 2000 (932000 not available)
-    "国证微盘": "sz399852", # Proxy for Micro Cap
+    "中证A500": "sh000510", # Updated to sh000510
+    "国证2000": "sz399303", 
+    "国证微盘": "sz399852", 
 
     # --- HK ---
     "恒生指数": "hkHSI",
@@ -29,9 +31,10 @@ SYMBOLS = {
     "纳斯达克": "us.IXIC",
     "标普500": "us.INX",
 
-    # --- Commodities (COMEX Futures) ---
+    # --- Commodities / FX ---
     "COMEX黄金": "GC", 
     "COMEX白银": "SI",
+    "美元离岸人民币": "FX_USDCNH", # Added (Using CNY proxy if CNH unavailable)
 }
 
 def fetch_data(name, code):
@@ -42,6 +45,28 @@ def fetch_data(name, code):
     try:
         df = None
         
+        # 0. FX (USD/CNH)
+        if code == "FX_USDCNH":
+            try:
+                # Attempt to get USD/CNY from BOC as a proxy for USD/CNH
+                # Akshare free APIs for CNH history are limited. 
+                # currency_boc_sina returns '中行折算价' (Conversion Rate) which is a good daily reference.
+                df = ak.currency_boc_sina(symbol="美元", start_date="20240101", end_date="20261231")
+                if df is not None:
+                     # Rename columns
+                     # '日期', '中行汇买价', '中行钞买价', '中行钞卖价/汇卖价', '央行中间价', '中行折算价'
+                     df = df.rename(columns={'日期': 'date', '中行折算价': 'close'})
+                     # Data is per 100 units (e.g. 720.0), scale to 7.20
+                     df['close'] = pd.to_numeric(df['close'], errors='coerce') / 100.0
+                     df['volume'] = 0 # No volume for FX rate
+                     
+                     # Fill Open/High/Low with Close as we only need Close for trend
+                     df['open'] = df['close']
+                     df['high'] = df['close']
+                     df['low'] = df['close']
+            except: pass
+            if df is not None: return df
+
         # 1. Commodities (COMEX Futures)
         if code in ["GC", "SI"]:
             df = ak.futures_foreign_hist(symbol=code) 
@@ -78,31 +103,26 @@ def fetch_data(name, code):
                      })
              except: pass
 
-        # 5. Specialized A-Share Index (CSI A500)
-        elif code == "932000":
+        # 5. Specialized A-Share Index (CSI A500) - Use EM source first
+        elif code == "sh000510":
              try:
-                 # Try index_zh_a_hist (Newer interface for A-Share Indices)
-                 df = ak.index_zh_a_hist(symbol="932000", period="daily", start_date="20240101", end_date="20260201")
-                 if df is not None:
-                     df = df.rename(columns={
-                        '日期': 'date', '开盘': 'open', '最高': 'high', '最低': 'low', 
-                        '收盘': 'close', '成交量': 'volume'
-                     })
+                 # Use EM source (Plan A)
+                 df = ak.stock_zh_index_daily_em(symbol="sh000510")
              except:
-                 # Fallback to EM with prefix
+                 # Fallback to Sina (Plan B)
                  try:
-                     df = ak.stock_zh_index_daily_em(symbol="sh932000")
+                     df = ak.stock_zh_index_daily(symbol="sh000510")
                  except: pass
 
         # 6. Generic A-Share Indices (Default)
         else:
-             # Try Sina Daily first
+             # Try EM Daily first
              try:
-                df = ak.stock_zh_index_daily(symbol=code)
+                df = ak.stock_zh_index_daily_em(symbol=code)
              except:
-                # Fallback to EM Daily
+                # Fallback to Sina Daily
                 try:
-                    df = ak.stock_zh_index_daily_em(symbol=code)
+                    df = ak.stock_zh_index_daily(symbol=code)
                 except: pass
 
         if df is not None and not df.empty:
@@ -236,95 +256,45 @@ def get_fish_basin_analysis(symbols_map):
     # But fish_basin.py might just convert all. Let's select columns explicitly or drop.
     return pd.DataFrame(results).drop(columns=['_deviation_raw'], errors='ignore')
 
-def save_to_excel(df, filename="results/fish_basin_report.xlsx"):
-    """
-    Save the dataframe to an Excel file with conditional formatting.
-    Red for Bullish/Positive, Green for Bearish/Negative.
-    """
-    if df.empty: return
-    
-    # Ensure directory exists
-    import os
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    
-    # 1. Create a Styler
-    # Helper to color text
-    def color_status(val):
-        color = 'red' if val == 'YES' else 'green'
-        return f'color: {color}'
-        
-    def color_pct(val):
-        # val is string like "+1.23%" or "-0.5%"
-        try:
-            v = float(val.strip('%'))
-            color = 'red' if v > 0 else 'green'
-            return f'color: {color}'
-        except:
-            return ''
+# Export Default Targets for external use
+DEFAULT_TARGETS = {
+    "白银现货": "SI", # COMEX Silver
+    "黄金现货": "GC", # COMEX Gold
+    "中证500": "sz399905",
+    "科创50": "sh000688",
+    # "中证2000": "sz932000", # EM Daily 932000 might fail, let's use proxy if found
+    "中证2000": "sz399303", # CNI 2000 proxy
+    "中证1000": "sz399852",
+    "中证A500": "sh000510", # Use Sina source (tested)
+    "微盘股": "ths_微盘股", # Use THS Concept
+    "北证50": "bj899050",
+    "创业板指": "sz399006",
+    "恒生科技": "hkHSTECH",
+    "恒生指数": "hkHSI",
+    "沪深300": "sh000300",
+    "上证50": "sh000016",
+    "标普500": "us.INX",
+    "纳指100": "us.IXIC",
+    "上证指数": "sh000001" 
+}
 
-    # Apply styles
-    # Note: subset needs columns to exist
-    try:
-        styler = df.style.map(color_status, subset=['状态'])\
-                        .map(color_pct, subset=['涨幅%', '偏离率', '区间涨幅%'])
-                         
-        # 2. Save
-        styler.to_excel(filename, index=False, engine='openpyxl')
-        print(f"Excel report saved to: {filename}")
-        
-        # 3. Post-process for column widths (Optional but nice)
-        from openpyxl import load_workbook
-        wb = load_workbook(filename)
-        ws = wb.active
-        for column in ws.columns:
-            max_length = 0
-            column = [cell for cell in column]
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            adjusted_width = (max_length + 2)
-            ws.column_dimensions[column[0].column_letter].width = adjusted_width
-        wb.save(filename)
-        
-    except Exception as e:
-        print(f"Failed to save Excel: {e}")
-
-if __name__ == "__main__":
-    # Expanded monitoring list
-    # Expanded monitoring list
-    # Format: "Name": "Code"
-    targets = {
-        "白银现货": "SI", # COMEX Silver
-        "黄金现货": "GC", # COMEX Gold
-        "中证500": "sz399905",
-        "科创50": "sh000688",
-        # "中证2000": "sz932000", # EM Daily 932000 might fail, let's use proxy if found
-        "中证2000": "sz399303", # CNI 2000 proxy
-        "中证1000": "sz399852",
-        "中证A500": "932000", # Use official code via new fetcher
-        "微盘股": "ths_微盘股", # Use THS Concept
-        "北证50": "bj899050",
-        "创业板指": "sz399006",
-        "恒生科技": "hkHSTECH",
-        "恒生指数": "hkHSI",
-        "沪深300": "sh000300",
-        "上证50": "sh000016",
-        "标普500": "us.INX",
-        "纳指100": "us.IXIC",
-        "上证指数": "sh000001" 
-    }
-    
-    df = get_fish_basin_analysis(targets)
-    
+def run(date_dir=None):
+    """
+    Main entry point for Fish Basin Index Analysis.
+    """
     print("\n=== 鱼盆趋势模型v2.0 (Fish Basin Model) ===")
     print(f"Date: {datetime.now().strftime('%Y.%m.%d')}")
     
+    df = get_fish_basin_analysis(DEFAULT_TARGETS)
+    
     if not df.empty:
         curr_date = datetime.now().strftime('%Y%m%d')
-        output_path = f"results/{curr_date}/fish_basin_report.xlsx"
+        # Allow overriding output dir
+        if date_dir:
+             output_path = os.path.join(date_dir, "趋势模型_指数.xlsx")
+        else:
+             output_path = f"results/{curr_date}/趋势模型_指数.xlsx"
+             
         # Save Excel
         save_to_excel(df, output_path)
 
@@ -381,5 +351,10 @@ if __name__ == "__main__":
             except Exception as e:
                 # Fallback if parsing fails
                 print(row.to_string())
+        return True
     else:
         print("No data generated.")
+        return False
+
+if __name__ == "__main__":
+    run()

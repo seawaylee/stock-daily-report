@@ -3,7 +3,7 @@
 """
 import pandas as pd
 import numpy as np
-from indicators import (
+from common.indicators import (
     ref, ma, ema, sma, hhv, llv, hhvbars, count, every, exist, barslast, cross,
     kdj, rsi, bbi, trend_white_line, dage_yellow_line, short_term, long_term,
     calculate_all_indicators

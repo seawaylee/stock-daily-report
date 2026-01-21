@@ -26,10 +26,12 @@ from common.prompts import (
 )
 
 # 导入数据获取和信号检测模块
+
+# 导入数据获取和信号检测模块
 from common.data_fetcher import get_all_stock_list, get_stock_data
 from common.signals import check_stock_signal
-from modules.daily_report.sector_flow import run_daily_analysis
-from modules.daily_report.generate_ladder_prompt import generate_ladder_prompt
+# from modules.daily_report.sector_flow import run_daily_analysis (Refactored)
+# from modules.daily_report.generate_ladder_prompt import generate_ladder_prompt (Refactored)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -61,7 +63,7 @@ def process_single_stock(args):
             'RSI': float(result.get('RSI', 0)),
             'near_amplitude': float(result.get('近期振幅', 0)),
             'far_amplitude': float(result.get('远期振幅', 0)),
-            'raw_data': last_row
+            'raw_data_mock': last_row
         }
     except Exception as e:
         return None
@@ -224,7 +226,7 @@ def call_gemini_analysis(selected_stocks, date_dir):
     # 准备分析数据
     stocks_info = []
     for s in selected_stocks:
-        raw = s['raw_data']
+        raw = s['raw_data_mock']
         stocks_info.append({
             '代码': s['code'],
             '名称': s['name'],
@@ -536,109 +538,116 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
 
 
 
-def main():
+
+
+def run(date_dir=None):
+    """
+    Main entry point for Daily Stock Selection & AI Analysis.
+    """
     # 1. 全市场选股
+    # DEBUG: Mock selection to test downstream
+    # print("⚠️ DEBUG MODE: Using mocked stock list to skip slow selection")
+    # today = datetime.now().strftime('%Y%m%d')
+    # selected = [
+    #     {
+    #         'code': 'sz002931', 'name': '锋龙股份', 'price': 10.5, 'reason': 'Debug', 
+    #         'market_cap': 20.0, 'signals': ['B1'], 'K': 50, 'D': 50, 'J': 50, 'RSI': 50, 'near_amplitude': 5.0, 'far_amplitude': 10.0,
+    #         'raw_data_mock': {'收盘': 10.5, '换手%': 5.0, 'close': 10.5, 'volume': 100000}
+    #     },
+    #     {
+    #         'code': 'sh603078', 'name': '江化微', 'price': 20.0, 'reason': 'Debug', 
+    #         'market_cap': 30.0, 'signals': ['B1'], 'K': 60, 'D': 60, 'J': 60, 'RSI': 60, 'near_amplitude': 6.0, 'far_amplitude': 12.0,
+    #         'raw_data_mock': {'收盘': 20.0, '换手%': 3.2, 'close': 20.0, 'volume': 200000}
+    #     },
+    #     {
+    #         'code': 'sz000063', 'name': '中兴通讯', 'price': 30.0, 'reason': 'Debug',
+    #         'market_cap': 1000.0, 'signals': ['B1'], 'K': 70, 'D': 70, 'J': 70, 'RSI': 70, 'near_amplitude': 3.0, 'far_amplitude': 8.0,
+    #         'raw_data_mock': {'收盘': 30.0, '换手%': 2.1, 'close': 30.0, 'volume': 500000}
+    #     }
+    # ]
     selected, today = run_full_selection()
     
     # 确保日期文件夹存在
     date_str = today.split('_')[0]
-    date_dir = os.path.join("results", date_str)
+    
+    # Use passed in date_dir if provided, otherwise default
+    if not date_dir:
+        date_dir = os.path.join("results", date_str)
+        
     os.makedirs(date_dir, exist_ok=True)
     
-    # 注释：stock_list_summary 已移至 agent_outputs/result_analysis.txt
-    # if selected:
-    #     save_stock_summary(selected, date_dir, today)
+    gemini_analysis = None
+    xiaohongshu_post = None
     
-    # 4. 调用AI分析
+    # 4. 调用AI分析 (仅当有选股时)
     if not selected:
-        print("❌ 没有选出股票，跳过分析")
-        return
-
-    try:
-        # 传入所有选中的股票供Agent分析
-        # Agent会从中选出Top10进行深度分析
-        all_stocks = selected
-        
-        # 调用Agent分析（传入全部候选）
-        gemini_analysis, analysis_prompt = call_gemini_analysis(all_stocks, date_dir)
-        
-        # 如果Agent还未生成结果，等待用户运行工作流
-        if gemini_analysis is None:
-            print("\n⏸️  脚本暂停：等待Agent工作流处理任务")
-            print("请运行 Agent 工作流完成分析，然后再次执行此脚本")
-            return
-        
-        print("\n✅ Agent分析完成")
-        
-        # 加载 Top 10 中间文件
-        top10_file = os.path.join(date_dir, "selected_top10.json")
-        top_stocks_list = all_stocks # 默认
-        
-        if os.path.exists(top10_file):
-             with open(top10_file, 'r', encoding='utf-8') as f:
-                top_stocks_list = json.load(f)
-             print(f"⚡ 加载 Top 10 股票池: {len(top_stocks_list)} 只")
-        else:
-             print("⚠️ 未找到 selected_top10.json，将使用全部股票")
-
-        # 生成小红书文案
-        xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, top_stocks_list, date_dir)
-        if xiaohongshu_post is None:
-            print("\n⏸️  脚本暂停：等待Agent工作流处理小红书文案")
-            return
-        print("✅ 小红书文案生成完成")
-        
-        # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
-        # 目的：解耦对小红书文案的依赖，直接使用分析结果
-        # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
-        enrich_stocks_from_analysis(top_stocks_list, date_dir)
-        # -------------------------------------------------------------------
-
-
-        # 生成图片提示词
-        image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis, top_stocks_list, date_dir)
-        if image_prompt is None:
-            print("\n⏸️  脚本暂停：等待Agent工作流处理图片提示词")
-            return
-        print("✅ 图片提示词生成完成")
-        print(f"\n[Image Prompt]:\n{image_prompt}\n")
-        
-        # 保存独立图片提示词文件
-        img_prompt_file = os.path.join(date_dir, f"image_prompt_{today}.txt")
-        with open(img_prompt_file, 'w', encoding='utf-8') as f:
-            f.write(image_prompt)
-        print(f"📁 图片提示词已保存: {img_prompt_file}")
-        
-        # 注释：提示词已保存在 agent_tasks/ 目录，不需要重复保存
-        # prompts_dict = {
-        #     "Top10分析 Prompt": analysis_prompt,
-        #     "小红书文案 Prompt": xhs_prompt,
-        #     "图片生成 Prompt": img_gen_prompt
-        # }
-        # save_prompts(prompts_dict, today)
-        
-        # 5. 执行板块资金流分析 (集成)
-        print("\n[5/5] 执行板块资金流分析...")
+        print("❌ 没有选出股票，跳过 B1 AI 分析，继续执行其他模块...")
+        return False
+    else:
         try:
-            run_daily_analysis(date_dir=date_dir)
-        except Exception as e:
-            print(f"⚠️ 板块分析执行失败: {e}")
+            # 传入所有选中的股票供Agent分析
+            # Agent会从中选出Top10进行深度分析
+            all_stocks = selected
+            
+            # 调用Agent分析（传入全部候选）
+            gemini_analysis, analysis_prompt = call_gemini_analysis(all_stocks, date_dir)
+            
+            # 如果Agent还未生成结果，等待用户运行工作流
+            if gemini_analysis is None:
+                print("\n⏸️  脚本暂停：等待Agent工作流处理任务")
+                print("请运行 Agent 工作流完成分析，然后再次执行此脚本")
+                return True # Not a failure, just a pause
+            
+            print("\n✅ Agent分析完成")
+            
+            # 加载 Top 10 中间文件
+            top10_file = os.path.join(date_dir, "selected_top10.json")
+            top_stocks_list = all_stocks # 默认
+            
+            if os.path.exists(top10_file):
+                 with open(top10_file, 'r', encoding='utf-8') as f:
+                    top_stocks_list = json.load(f)
+                 print(f"⚡ 加载 Top 10 股票池: {len(top_stocks_list)} 只")
+            else:
+                 print("⚠️ 未找到 selected_top10.json，将使用全部股票")
 
-        # 6. 生成涨停阶梯图 Prompt
-        print("\n[6/6] 生成涨停阶梯图AI提示词...")
+            # 生成小红书文案
+            xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, top_stocks_list, date_dir)
+            if xiaohongshu_post is None:
+                print("\n⏸️  脚本暂停：等待Agent工作流处理小红书文案")
+                return True
+            print("✅ 小红书文案生成完成")
+            
+            # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
+            # 目的：解耦对小红书文案的依赖，直接使用分析结果
+            enrich_stocks_from_analysis(top_stocks_list, date_dir)
+            # -------------------------------------------------------------------
+        except Exception as e_ai:
+             print(f"⚠️ AI分析模块出错: {e_ai}")
+             return False
+
+    # (Skip Image Prompt generation if no analysis, logically)
+    if gemini_analysis:
         try:
-            date_str = today.split('_')[0]
-            generate_ladder_prompt(date_str)
-        except Exception as e:
-            print(f"⚠️ 涨停阶梯Prompt生成失败: {e}")
+            # 生成图片提示词
+            image_prompt, img_gen_prompt = generate_image_prompt(gemini_analysis, top_stocks_list, date_dir)
+            if image_prompt is not None:
+                print("✅ 图片提示词生成完成")
+                
+                # 保存独立图片提示词文件
+                prompt_dir = os.path.join(date_dir, "AI提示词")
+                os.makedirs(prompt_dir, exist_ok=True)
+                img_prompt_file = os.path.join(prompt_dir, "趋势B1选股_Prompt.txt")
+                with open(img_prompt_file, 'w', encoding='utf-8') as f:
+                    f.write(image_prompt)
+                print(f"📁 图片提示词已保存: {img_prompt_file}")
+        except Exception as e_img:
+            print(f"⚠️ 图片提示词生成失败: {e_img}")
 
-        # 4. 保存报告
-        save_reports(gemini_analysis, xiaohongshu_post, today)
-        
-    except Exception as e:
-        print(f"\n❌ AI分析出错: {e}")
-        print("请确保已设置 GOOGLE_API_KEY 环境变量")
+    # 4. 保存报告
+    save_reports(gemini_analysis, xiaohongshu_post, today)
+    return True
 
 
 if __name__ == "__main__":
-    main()
+    run()

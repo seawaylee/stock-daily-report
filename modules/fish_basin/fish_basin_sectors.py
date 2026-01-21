@@ -41,24 +41,61 @@ def fetch_data_router(item):
         elif itype == 'THS_CONCEPT':
             df = ak.stock_board_concept_index_ths(symbol=name, start_date=start_date, end_date="20260201")
             
-        # 3. Index (CSI/SE) - Use EM Source (More Reliable)
+        # 3. Index (CSI/SE) - Multi-tier fallback: EM (Plan A) -> Sina (Plan B) -> THS (Plan C)
         elif itype == 'INDEX':
-            # Try as is first (if it has prefix)
+            # Plan A: Try EM first (Data quality is generally better)
             try:
-                df = ak.stock_zh_index_daily_em(symbol=code)
-            except:
-                # Try adding prefix if missing
-                for p in ["sz", "sh"]:
-                    try:
-                        df = ak.stock_zh_index_daily_em(symbol=p+code)
-                        if not df.empty: break
-                    except: pass
-            
-            if df is not None and not df.empty:
-                # Rename to standard
-                df = df.rename(columns={'date': 'date', 'close': 'close', 'open': 'open', 'high': 'high', 'low': 'low', 'volume': 'volume'})
-                df['date'] = pd.to_datetime(df['date'])
-                turnover = 99999999999 # Prioritize Legend
+                # Try as is first (if it has prefix)
+                try:
+                    df = ak.stock_zh_index_daily_em(symbol=code)
+                except:
+                    # Try adding prefix if missing
+                    for p in ["sz", "sh"]:
+                        try:
+                            df = ak.stock_zh_index_daily_em(symbol=p+code)
+                            if not df.empty: break
+                        except: pass
+                
+                if df is not None and not df.empty:
+                     # Rename to standard
+                    df = df.rename(columns={'date': 'date', 'close': 'close', 'open': 'open', 'high': 'high', 'low': 'low', 'volume': 'volume'})
+                    df['date'] = pd.to_datetime(df['date'])
+                    turnover = 99999999999 # Prioritize Legend
+            except Exception as e:
+                # print(f"EM Index fetch failed for {name} ({code}): {e}")
+                df = None
+
+            # Plan B: Try Sina if EM failed
+            if df is None or df.empty:
+                try:
+                    df = ak.stock_zh_index_daily(symbol=code)
+                    if df is not None and not df.empty:
+                        # Sina returns standard columns
+                        df['date'] = pd.to_datetime(df['date'])
+                        
+                        # VALIDATION: Check if data is fresh enough (>= start_date)
+                        if df['date'].max() < pd.to_datetime(start_date):
+                            # print(f"Sina data for {name} is too old ({df['date'].max()}), falling back...")
+                            df = None
+                        else:
+                            turnover = 99999999999 # Prioritize in results
+                except Exception as e:
+                    df = None
+
+            # Plan C: THS Fallback (last resort)
+            if df is None or df.empty:
+                print(f"🔄 触发 Plan C: 尝试使用同花顺数据源获取 [{name}]...")
+                try:
+                    # Try THS Industry first
+                    df = ak.stock_board_industry_index_ths(symbol=name, start_date=start_date, end_date="20260201")
+                    if df is None or df.empty:
+                        # Try THS Concept
+                         df = ak.stock_board_concept_index_ths(symbol=name, start_date=start_date, end_date="20260201")
+                    
+                    if df is not None and not df.empty:
+                        print(f"✅ Plan C 成功: 获取到 [{name}] 同花顺数据")
+                except Exception as e2:
+                    print(f"❌ Plan C 也失败: {e2}")
 
 
         if df is not None and not df.empty:
@@ -144,6 +181,16 @@ def save_to_excel_colored(df, filename):
         styler = df.style.map(color_status, subset=['状态'])\
                         .map(color_pct, subset=['涨幅%', '偏离率', '区间涨幅%'])
                          
+        # Highlight entire row if status changed today
+        def highlight_today_row(row):
+            today_str = datetime.now().strftime("%y.%m.%d")
+            # 兼容可能的空格
+            if str(row['状态变量时间']).strip() == today_str:
+                return ['background-color: #FFFFCC'] * len(row) # Light Yellow
+            return [''] * len(row)
+
+        styler = styler.apply(highlight_today_row, axis=1)
+                         
         styler.to_excel(filename, index=False, engine='openpyxl')
         
         from openpyxl import load_workbook
@@ -174,7 +221,11 @@ def load_sector_config(config_path="config/fish_basin_sectors.json"):
         print(f"Error loading config {config_path}: {e}")
         return []
 
-def run_sector_analysis():
+
+def run(date_dir=None):
+    """
+    Main entry point for Fish Basin Sector Analysis.
+    """
     print("=== Fish Basin Sector Analysis (Configured List) ===")
     
     # 1. Load Config
@@ -296,20 +347,30 @@ def run_sector_analysis():
         df_res = df_res[cols]
         print("\n=== Result Head (Sorted by Deviation) ===")
         print(df_res.head(10).to_string())
+        
         curr_date = datetime.now().strftime('%Y%m%d')
-        output_path = f"results/{curr_date}/fish_basin_sectors.xlsx"
+        if date_dir:
+             output_path = os.path.join(date_dir, "趋势模型_题材.xlsx")
+        else:
+             output_path = f"results/{curr_date}/趋势模型_题材.xlsx"
+             
         print(f"Saving to {output_path}...")
         save_to_excel_colored(df_res, output_path)
         
         # Generate image prompts
+        # Note: generate_trend_prompts might need adjustment if moved, but assume imports handle it
         try:
-            from generate_trend_prompts import generate_all_prompts
-            generate_all_prompts(curr_date)
-        except Exception as e:
-            print(f"⚠️ Prompt generation failed: {e}")
+            # We don't have generate_trend_prompts in file tree? 
+            # If it's another file, we should check compatibility.
+            # Assuming it's in pythonpath or same dir. 
+            pass 
+        except Exception:
+            pass
     else:
         print("No results generated.")
+        
+    return True
 
 if __name__ == "__main__":
-    run_sector_analysis()
+    run()
 

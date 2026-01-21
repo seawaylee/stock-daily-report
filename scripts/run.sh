@@ -4,6 +4,7 @@
 # ----------------
 # Standardize the python environment for all scripts in this repo.
 PYTHON_PATH="/Users/seawaylee/opt/anaconda3/envs/py311/bin/python"
+export PYTHONPATH=$PYTHONPATH:.
 
 # Validation
 # ----------------
@@ -13,21 +14,26 @@ if [ ! -f "$PYTHON_PATH" ]; then
     exit 1
 fi
 
+
+
+USAGE="Usage: ./run.sh [all | fish_basin | b1 | sector_flow | ladder]"
+
 if [ -z "$1" ]; then
     echo "========================================================"
-    echo "Usage: ./run.sh <script_name.py> [args...]"
+    echo "$USAGE"
     echo "========================================================"
-    echo "Examples:"
-    echo "  ./run.sh run_ai_analysis.py"
-    echo "  ./run.sh sector_flow.py"
+    echo "Modules:"
+    echo "  all          : Run all 4 modules in PARALLEL"
+    echo "  fish_basin   : [Module 1] Trend Analysis (Indices + Sectors)"
+    echo "  b1           : [Module 2] B1 Stock Selection & AI Analysis"
+    echo "  sector_flow  : [Module 3] Sector Funds Flow"
+    echo "  ladder       : [Module 4] Market Limit-up Ladder"
     echo "========================================================"
     exit 1
 fi
 
-SCRIPT=$1
-shift
+# Forward args to main.py
+"$PYTHON_PATH" main.py "$@"
 
-# Execution
-# ----------------
-echo "🐍 Running $SCRIPT using py311..."
-"$PYTHON_PATH" "$SCRIPT" "$@"
+
+

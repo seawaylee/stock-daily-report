@@ -42,7 +42,54 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
 
     try:
         # 获取A股股票列表（包含市值和行业信息）
-        stock_info = ak.stock_zh_a_spot_em()
+        stock_info = None
+        import time
+        for i in range(3):
+            try:
+                stock_info = ak.stock_zh_a_spot_em()
+                if stock_info is not None and not stock_info.empty:
+                    break
+            except Exception as e:
+                print(f"尝试 {i+1}/3 获取股票列表失败: {e}")
+                time.sleep(2)
+                
+        if stock_info is None or stock_info.empty:
+             # Try loading from previous cache if available (Fallback)
+             # Check for any stock_list_*.csv in results/
+             import glob
+             cached_files = glob.glob("results/*/stock_list_*.csv")
+             if cached_files:
+                 latest_cache = max(cached_files, key=os.path.getctime)
+                 print(f"⚠️ Network failed. Fallback to latest cache: {latest_cache}")
+                 result = pd.read_csv(latest_cache, dtype={'code': str})
+                 if exclude_st:
+                     result = result[~result['name'].str.contains('ST', case=False, na=False)]
+                 if min_market_cap > 0:
+                     result = result[result['market_cap'] >= min_market_cap]
+                 return result
+
+             # --- Plan B: Persistent Cache Fallback ---
+             persistent_cache = "results/stock_list_cache.csv"
+             print(f"⚠️ Network failed. Checking persistent cache: {persistent_cache}")
+             
+             if os.path.exists(persistent_cache):
+                 print(f"✅ Found persistent cache file.")
+                 try:
+                     result = pd.read_csv(persistent_cache, dtype={'code': str})
+                     
+                     # Re-apply filters
+                     if exclude_st:
+                         result = result[~result['name'].str.contains('ST', case=False, na=False)]
+                     if min_market_cap > 0:
+                         result['market_cap'] = pd.to_numeric(result['market_cap'], errors='coerce').fillna(0)
+                         result = result[result['market_cap'] >= min_market_cap]
+
+                     print(f"✅ Loaded {len(result)} stocks from persistent cache.")
+                     return result
+                 except Exception as e:
+                     print(f"❌ Failed to load persistent cache: {e}")
+
+             raise Exception("无法获取股票列表 (重试3次失败, 且无任何本地缓存)")
         
         # 检查是否有行业列
         industry_col = '所属行业' if '所属行业' in stock_info.columns else None
@@ -84,6 +131,11 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
         try:
             result.to_csv(cache_file, index=False)
             print(f"Saved stock list cache to {cache_file}")
+            
+            # Persistent Cache Update (User Requested)
+            persistent_path = "results/stock_list_cache.csv"
+            result.to_csv(persistent_path, index=False)
+            print(f"Updated persistent stock list cache: {persistent_path}")
         except Exception as e:
             print(f"Failed to save cache: {e}")
 
@@ -108,14 +160,23 @@ def get_stock_data(code: str, days: int = 300) -> Optional[pd.DataFrame]:
         DataFrame 包含: date, open, high, low, close, volume
     """
     try:
-        # 使用东方财富数据源
-        df = ak.stock_zh_a_hist(
-            symbol=code,
-            period="daily",
-            start_date=(datetime.now() - timedelta(days=days*2)).strftime('%Y%m%d'),
-            end_date=datetime.now().strftime('%Y%m%d'),
-            adjust="qfq"  # 前复权
-        )
+        # 使用东方财富数据源 (增加重试机制)
+        df = None
+        import time
+        for i in range(3):
+            try:
+                df = ak.stock_zh_a_hist(
+                    symbol=code,
+                    period="daily",
+                    start_date=(datetime.now() - timedelta(days=days*2)).strftime('%Y%m%d'),
+                    end_date=datetime.now().strftime('%Y%m%d'),
+                    adjust="qfq"  # 前复权
+                )
+                if df is not None and not df.empty:
+                    break
+            except:
+                time.sleep(0.5)
+
         
         if df is None or len(df) == 0:
             return None

@@ -11,9 +11,13 @@ import os
 def generate_table_prompt(df, title_suffix, output_filename, date_dir):
     """Generate hand-drawn style table prompt."""
     
+    # Ensure '偏离率' is float for sorting
+    # Remove '%' and convert to float
+    df['dev_val'] = df['偏离率'].astype(str).str.rstrip('%').astype(float)
+    
     # Split by status
-    bullish = df[df['状态'] == 'YES']
-    bearish = df[df['状态'] == 'NO']
+    bullish = df[df['状态'] == 'YES'].sort_values('dev_val', ascending=False)
+    bearish = df[df['状态'] == 'NO'].sort_values('dev_val', ascending=True)
     
     # Format table rows
     def format_row(row, rank):
@@ -22,10 +26,15 @@ def generate_table_prompt(df, title_suffix, output_filename, date_dir):
         dev = row['偏离率']
         interval = row['区间涨幅%']
         signal_date = row['状态变量时间']
-        return f"{rank}. {status} {name} | 偏离率: {dev} | 信号日: {signal_date} | 期间涨幅: {interval}"
+        
+        # New fields
+        daily_chg = row['涨幅%']
+        # Removed Price and Critical due to AI rendering complexity
+        
+        return f"{rank}. {status} {name} | 涨幅: {daily_chg} | 偏离: {dev} | 信号: {signal_date} | 期间: {interval}"
     
-    bull_rows = [format_row(r, i+1) for i, (_, r) in enumerate(bullish.head(12).iterrows())]
-    bear_rows = [format_row(r, i+1) for i, (_, r) in enumerate(bearish.head(5).iterrows())]
+    bull_rows = [format_row(r, i+1) for i, (_, r) in enumerate(bullish.head(20).iterrows())]
+    bear_rows = [format_row(r, i+1) for i, (_, r) in enumerate(bearish.head(20).iterrows())]
     
     prompt = f"""(masterpiece, best quality), (hand drawn), (illustration), (vintage style), (ink sketch), (vertical 10:16), (warm paper texture)
 
@@ -47,7 +56,7 @@ def generate_table_prompt(df, title_suffix, output_filename, date_dir):
 - Accents: Red circles for bullish (●), hollow circles for bearish (○)
 
 **Column Headers** (Draw as a header row):
-| 排名 | 名称 | 偏离率 | 信号日 | 期间涨幅 |
+| 排名 | 名称 | 涨幅 | 偏离 | 信号 | 期间 |
 
 ---
 
@@ -55,10 +64,11 @@ def generate_table_prompt(df, title_suffix, output_filename, date_dir):
 
 Draw each row as a handwritten entry with:
 - A RED filled circle (●) on the left
-- Sector/Index name in bold brush calligraphy
-- 偏离率 (Deviation) in RED ink
-- 信号日 (Signal Date) in black ink
-- 期间涨幅 (Interval Change) in RED ink
+- Sector/Index name in **BOLD BLACK** brush calligraphy
+- 涨幅 (Daily %) in RED ink
+- 偏离 (Deviation) in RED ink
+- 信号 (Date) in black ink
+- 期间 (Interval %) in RED ink
 
 {chr(10).join(bull_rows)}
 
@@ -68,8 +78,8 @@ Draw each row as a handwritten entry with:
 
 Draw each row with:
 - A HOLLOW circle (○) on the left
-- Name in lighter/grey ink
-- 偏离率 in GREEN ink
+- Sector/Index name in **BOLD BLACK** brush calligraphy
+- 偏离率 in GREEN ink (Sorted by distance from SMA20)
 - 期间涨幅 in GREEN ink
 
 {chr(10).join(bear_rows) if bear_rows else "(无)"}
@@ -116,21 +126,25 @@ def generate_all_prompts(date_str=None):
     
     date_dir = f"results/{date_str}"
     
+    # Create output directory
+    prompt_dir = os.path.join(date_dir, "AI提示词")
+    os.makedirs(prompt_dir, exist_ok=True)
+    
     # 1. Indices
     try:
-        df_indices = pd.read_excel(f"{date_dir}/fish_basin_report.xlsx")
-        generate_table_prompt(df_indices, "指数榜", "fish_basin_indices_prompt.txt", date_dir)
+        df_indices = pd.read_excel(f"{date_dir}/趋势模型_指数.xlsx")
+        generate_table_prompt(df_indices, "指数榜", "趋势模型_指数_Prompt.txt", prompt_dir)
     except Exception as e:
         print(f"⚠️ Indices prompt failed: {e}")
     
     # 2. Sectors
     try:
-        df_sectors = pd.read_excel(f"{date_dir}/fish_basin_sectors.xlsx")
-        generate_table_prompt(df_sectors, "题材榜", "fish_basin_sectors_prompt.txt", date_dir)
+        df_sectors = pd.read_excel(f"{date_dir}/趋势模型_题材.xlsx")
+        generate_table_prompt(df_sectors, "题材榜", "趋势模型_题材_Prompt.txt", prompt_dir)
     except Exception as e:
         print(f"⚠️ Sectors prompt failed: {e}")
     
-    print("\n✅ All prompts generated!")
+    print(f"\n✅ All prompts generated in: {prompt_dir}")
 
 
 if __name__ == "__main__":

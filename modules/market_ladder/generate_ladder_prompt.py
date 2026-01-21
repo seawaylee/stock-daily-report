@@ -8,8 +8,16 @@
 import os
 from datetime import datetime
 from collections import Counter
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from limit_up_ladder import get_limit_up_data, repair_board_counts, process_ladder_data
 
+
+def run(date_str=None, output_dir=None):
+    """
+    生成涨停阶梯的AI绘图Prompt (Wrapper for generate_ladder_prompt)
+    """
+    return generate_ladder_prompt(date_str, output_dir)
 
 def generate_ladder_prompt(date_str=None, output_dir=None):
     """
@@ -169,14 +177,14 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append(f'- Title: "{display_date} A股涨停复盘" (涨停 in red)')
     prompt_lines.append("- Hot sectors row below title")
     prompt_lines.append("- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label")
-    prompt_lines.append("- **Within each board**: stocks flow freely in rows, **NO grid lines or cell borders between individual stocks**")
-    prompt_lines.append("- **CRITICAL**: You MUST render EVERY SINGLE STOCK listed below. Do not skip any. Make font smaller if necessary to fit all.")
+    prompt_lines.append(f"- **Within each board**: stocks flow freely in rows")
     prompt_lines.append("")
-    prompt_lines.append("**Stock display format**:")
+    prompt_lines.append("**Stock display format (CRITICAL COLORS)**:")
     prompt_lines.append("```")
-    prompt_lines.append(" 股票名 (bold, black)")
-    prompt_lines.append("  题材 (small, red)")
+    prompt_lines.append(" [Stock Name]  (In BOLD BLACK ink)")
+    prompt_lines.append("  [Industry]   (In SMALL RED ink underneath)")
     prompt_lines.append("```")
+    prompt_lines.append("Example: **锋龙股份** (Black) / 电网设备 (Red)")
     prompt_lines.append("")
     prompt_lines.append("**Special markers**:")
     prompt_lines.append("- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)")
@@ -194,6 +202,7 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     if top_inds:
         prompt_lines.append(f"- {top_inds[0][0]} dominates with {top_inds[0][1]} stocks")
     prompt_lines.append(f"- Total {total_stocks} stocks ({first_board_count} first-time + {total_stocks - first_board_count} 连板)")
+    prompt_lines.append(f"- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)")
     prompt_lines.append("")
     prompt_lines.append("---")
     prompt_lines.append("")
@@ -202,8 +211,11 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append("")
     prompt_lines.append("（居中显示，小字，温馨提示风格）")
     
-    # 保存文件
-    output_path = os.path.join(output_dir, "limit_up_ladder_prompt.md")
+    # 保存文件到子文件夹
+    prompt_dir = os.path.join(output_dir, "AI提示词")
+    os.makedirs(prompt_dir, exist_ok=True)
+    
+    output_path = os.path.join(prompt_dir, "涨停天梯_Prompt.txt")
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(prompt_lines))
     
@@ -219,4 +231,4 @@ if __name__ == "__main__":
     else:
         date_str = datetime.now().strftime('%Y%m%d')
     
-    generate_ladder_prompt(date_str)
+    run(date_str)

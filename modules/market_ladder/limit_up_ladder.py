@@ -62,18 +62,32 @@ def get_limit_up_data(date_str):
     print(f"Fetching data for {date_str}...")
     
     # 1. Today's Limit Up
+    import time
+    df_zt = None
+    cols_needed = ['代码', '名称', '首次封板时间', '最后封板时间', '连板数', '所属行业', '涨停统计']
+    
+    for i in range(3):
+        try:
+            df_zt = ak.stock_zt_pool_em(date=date_str)
+            if df_zt is not None and not df_zt.empty:
+                # Validate columns
+                if all(col in df_zt.columns for col in cols_needed):
+                    break
+        except Exception as e:
+            print(f"Fetch ZT attempt {i+1}/3 failed: {e}")
+            time.sleep(2)
+
     try:
-        df_zt = ak.stock_zt_pool_em(date=date_str)
         # Ensure columns exist
         if df_zt is None or df_zt.empty:
-            print("No Limit Up data found.")
+            print("No Limit Up data found (after retries).")
             return None, None, None
         
         # Renaissance (Columns mapping)
         # Code, Name, Time, BoardCount, Industry
-        df_zt = df_zt[['代码', '名称', '首次封板时间', '最后封板时间', '连板数', '所属行业', '涨停统计']]
+        df_zt = df_zt[cols_needed]
     except Exception as e:
-        print(f"Error fetching ZT pool: {e}")
+        print(f"Error processing ZT pool: {e}")
         return None, None, None
 
     # 2. Today's Fried Board
@@ -97,11 +111,15 @@ def get_limit_up_data(date_str):
 
 def get_stock_history(symbol, start_date, end_date):
     """Fetch daily history for a stock"""
-    try:
-        df = ak.stock_zh_a_hist(symbol=symbol, start_date=start_date, end_date=end_date, adjust='qfq')
-        return df
-    except:
-        return None
+    import time
+    for i in range(3):
+        try:
+            df = ak.stock_zh_a_hist(symbol=symbol, start_date=start_date, end_date=end_date, adjust='qfq')
+            if df is not None:
+                return df
+        except:
+             time.sleep(1)
+    return None
 
 def repair_board_counts(df_zt, date_str):
     """
@@ -112,7 +130,7 @@ def repair_board_counts(df_zt, date_str):
     if df_zt is None: return df_zt
     
     print("Checking for board count repairs...")
-    # Calculate start date for history (e.g. 30 days ago)
+    # Calculate start date for history (e.g. 40 days ago)
     end_date = date_str
     start_date = (datetime.strptime(date_str, "%Y%m%d") - timedelta(days=40)).strftime("%Y%m%d")
     
@@ -122,30 +140,25 @@ def repair_board_counts(df_zt, date_str):
         code = row['代码']
         
         # Generic Repair Logic
-        # If Board Count is significantly less than recent ZT count, it implies a possible reset (e.g. data provider reset after suspension)
-        # We trust our own calculation based on continuous limit-ups in trading history
         if '/' in zt_stat:
             try:
                 days_range, zts_count = map(int, zt_stat.split('/'))
                 
-                # Heuristic: Check repair if ZT count is higher than current board count
+                # Check based on ZT Count > Board Count
                 if zts_count > boards:
-                    # print(f"Inspecting {row['名称']} ({code}) for repair (Stat: {zt_stat}, Board: {boards})...")
+                    print(f"Inspecting {row['名称']} ({code}) for repair (Stat: {zt_stat}, Board: {boards})...")
                     hist = get_stock_history(code, start_date, end_date)
                     
                     if hist is not None and not hist.empty:
-                        # Count consecutive limit ups backwards in TRADING DAYS (ignoring suspension gaps)
+                        # ... Existing Logic ...
                         cnt = 0
-                        # Ensure sorted by date descending (latest first)
                         hist = hist.sort_values('日期', ascending=False)
                         
-                        # Verify the latest record matches our date (or is very recent) to ensure we aren't counting old history
-                        # But for now, just counting backwards from the top is fine as we fetched up to date_str
-                        
                         for i in range(len(hist)):
-                            pct = hist.iloc[i]['涨跌幅']
-                            # Check for Limit Up (approx > 9.5% for 10% stocks, >19.5% for 20% stocks)
-                            # Also handle ST 5% (>4.8%)
+                            row_data = hist.iloc[i]
+                            if row_data['成交量'] == 0: continue
+                                
+                            pct = row_data['涨跌幅']
                             is_limit_up = False
                             if pct > 9.5 or (pct > 19.5):
                                 is_limit_up = True
@@ -155,17 +168,19 @@ def repair_board_counts(df_zt, date_str):
                             if is_limit_up:
                                 cnt += 1
                             else:
-                                if i == 0: 
-                                    # If today (first record) is not limit up, then boards should be 0 or it's a fried board.
-                                    # But we are in df_zt, so it MUST be a limit up today. 
-                                    # If data mismatch (hist says not ZT), we stop.
-                                    pass 
-                                else:
-                                    break # Chain broken
+                                if i == 0: pass 
+                                else: break 
                         
                         if cnt > boards:
                             print(f"  -> Repaired {row['名称']} from {boards} to {cnt} boards.")
                             df_zt.at[idx, '连板数'] = cnt
+                    else:
+                        # Fallback: If history fetch fails but ZT Stat is perfect (e.g. 16/16), assume it's true
+                        # This handles the case where network fails but we know it's a strong stock
+                        if days_range == zts_count and zts_count > boards:
+                             print(f"  -> Network failed, but Stat is {zt_stat}. Fallback repair {row['名称']} to {zts_count}.")
+                             df_zt.at[idx, '连板数'] = zts_count
+                             
             except Exception as e:
                 # print(f"Repair check failed for {code}: {e}")
                 pass
