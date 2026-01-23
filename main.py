@@ -80,15 +80,15 @@ def run_abnormal_alert(args):
     from modules.abnormal_alert import abnormal_monitor
     return abnormal_monitor.run(args.date_str, args.date_dir)
 
-def run_jin10(args):
+def run_core_news(args):
     print("\n=== [Module 7] Core News Monitor ===")
-    from modules.jin10 import jin10_monitor
+    from modules.core_news import core_news_monitor
     
     # Check if Fri/Sat/Sun
     dt = datetime.strptime(args.date_str, '%Y%m%d')
     is_weekend = dt.weekday() >= 4
     
-    return jin10_monitor.run(args.date_str, args.date_dir, run_weekly=is_weekend)
+    return core_news_monitor.run(args.date_str, args.date_dir, run_weekly=is_weekend)
 
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
@@ -107,7 +107,7 @@ def run_all(args):
     # 2. B1 Selection (might be slow)
     # 3. Sector Flow
     # 4. Market Ladder
-    # 5. Core News (Jin10)
+    # 5. Core News (EastMoney)
     # 6. Calendar
     # 7. Abnormal Alert
     
@@ -126,7 +126,7 @@ def run_all(args):
         (run_market_ladder, args),
         (run_market_calendar, args),
         (run_abnormal_alert, args),
-        (run_jin10, args)
+        (run_core_news, args)
     ]
     
     with ProcessPoolExecutor(max_workers=4) as executor:
@@ -160,7 +160,7 @@ def main():
     subparsers.add_parser('ladder', parents=[parent_parser], help='Run Market Ladder')
     subparsers.add_parser('calendar', parents=[parent_parser], help='Run Market Calendar')
     subparsers.add_parser('abnormal', parents=[parent_parser], help='Run Abnormal Alert')
-    subparsers.add_parser('jin10', parents=[parent_parser], help='Run Jin10 Monitor')
+    subparsers.add_parser('core_news', parents=[parent_parser], help='Run Core News Monitor')
 
     args = parser.parse_args()
     
@@ -188,8 +188,8 @@ def main():
         run_market_calendar(args)
     elif args.command == 'abnormal':
         run_abnormal_alert(args)
-    elif args.command == 'jin10':
-        run_jin10(args)
+    elif args.command == 'core_news':
+        run_core_news(args)
     elif args.command == 'all':
         run_all(args)
     else:
