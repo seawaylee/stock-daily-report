@@ -276,71 +276,7 @@ def save_prompt(content, filename, output_dir):
         f.write(content)
     print(f"Saved: {path}")
 
-def run(date_str, output_dir):
-    date_disp = datetime.strptime(date_str, '%Y%m%d').strftime('%m月%d日')
-    
-    # 1. Daily Summary
-    daily_data = fetch_eastmoney_data(target_window_hours=24)
-    daily_top, d_bull, d_bear = filter_top_news(daily_data, limit=10, is_weekly=False)
-    
-    daily_txt = "\n".join([f"- {news}" for news in daily_top]) or "- [暂无重大A股题材消息]"
-    
-    d_bull_str = "、".join(d_bull) if d_bull else "无"
-    d_bear_str = "、".join(d_bear) if d_bear else "无"
-    
-    daily_content = f"""# A股财经日历 24h - AI绘图Prompt ({date_disp})
-# 数据来源: 东方财富 (Top 10 题材精选)
 
-## 图片规格
-- 比例: 9:16 竖版
-- 风格: 手绘/手账风格，暖色纸张质感
-- 背景色: #F5E6C8 纸黄色
-
-## 标题
-**📅 重要资讯精选** (红色)
-**Daily Market Focus | {date_disp}**
-
----
-
-## 🇨🇳 A股/题材/政策 (Top 10)
-
-{daily_txt}
-
----
-
-## 💡 交易提醒
-- 🔺 **利多**：{d_bull_str}
-- 💚 **利空**：{d_bear_str}
-- 总结不易，每天收盘后推送，点赞关注不迷路！
-
-## AI绘图Prompt (English)
-
-Hand-drawn financial infographic poster, China A-share market news, 24h summary {date_disp}.
-
-**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
-
-**Layout**:
-- Title: "Important Selection" hand-drawn style.
-- Section 1: Top 10 News List with Sector Tags.
-- Footer: "Like & Follow".
-"""
-    save_prompt(daily_content, "核心要闻_Prompt.txt", output_dir)
-    
-    # 2. Weekly Summary (Only run if required by caller, but for now we generate it)
-    # The caller (main.py) might control this, but here we just generate function.
-    # Actually, main.py will likely call this module. 
-    # Let's keep the logic here but add a check?
-    # No, the user said "Run only on Fri/Sat/Sun IN THE WORKFLOW".
-    # So main.py controls correct? 
-    # Wait, the module `run` function does both. 
-    # I should let main.py pass a flag or just handle it here?
-    # User said "Solidify into workflow... Weekly tasks only on Fri/Sat/Sun".
-    # I'll add an argument `run_weekly=True/False` to `run`.
-    
-    # Let's assume generic run for now, will modify signature in next step if needed.
-    # Actually I should modify it now.
-    
-    pass 
 
 def run(date_str, output_dir, run_weekly=False):
     date_disp = datetime.strptime(date_str, '%Y%m%d').strftime('%m月%d日')
@@ -361,10 +297,11 @@ def run(date_str, output_dir, run_weekly=False):
 - 比例: 9:16 竖版
 - 风格: 手绘/手账风格，暖色纸张质感
 - 背景色: #F5E6C8 纸黄色
+- 配色: 利多=红色, 利空=绿色 (中国A股红涨绿跌)
 
 ## 标题
-**📅 重要资讯精选** (红色)
-**Daily Market Focus | {date_disp}**
+**📅 A股24小时重要资讯精选** (红色)
+**A-Share Daily Focus | {date_disp}**
 
 ---
 
@@ -384,6 +321,7 @@ def run(date_str, output_dir, run_weekly=False):
 Hand-drawn financial infographic poster, China A-share market news, 24h summary {date_disp}.
 
 **Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+**Color Coding**: Tags "利多" MUST be RED. Tags "利空" MUST be GREEN.
 
 **Layout**:
 - Title: "Important Selection" hand-drawn style.
@@ -409,10 +347,11 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
 - 比例: 9:16 竖版
 - 风格: 手绘/手账风格，暖色纸张质感
 - 背景色: #F5E6C8 纸黄色
+- 配色: 利多=红色, 利空=绿色 (中国A股红涨绿跌)
 
 ## 标题
-**📅 本周 核心回顾** (红色)
-**Weekly Market Focus**
+**📅 A股本周重要回顾** (红色)
+**A-Share Weekly Review**
 
 ---
 
@@ -424,8 +363,8 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
 ---
 
 ## 💡 投资笔记
-- 🔺 **利多**：{w_bull_str}
-- 💚▼ **利空**：{w_bear_str}
+- **利多** (红色)：{w_bull_str}
+- **利空** (绿色)：{w_bear_str}
 - 总结不易，每天收盘后推送，点赞关注不迷路！
 
 ## AI绘图Prompt (English)
@@ -433,6 +372,7 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
 Hand-drawn financial infographic poster, China A-share weekly summary.
 
 **Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+**Color Coding**: Tags "利多" MUST be RED. Tags "利空" MUST be GREEN.
 
 **Layout**:
 - Title: "Weekly Focus" hand-drawn style.
