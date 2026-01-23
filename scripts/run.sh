@@ -69,7 +69,7 @@ export PYTHONPATH=$PYTHONPATH:.
 
 
 
-USAGE="Usage: ./run.sh [all | fish_basin | b1 | sector_flow | ladder | calendar | abnormal]"
+USAGE="Usage: ./run.sh [all | fish_basin | b1 | sector_flow | ladder | calendar | abnormal | jin10]"
 
 if [ -z "$1" ]; then
     echo "========================================================"
@@ -83,6 +83,7 @@ if [ -z "$1" ]; then
     echo "  ladder       : [Module 4] Market Limit-up Ladder"
     echo "  calendar     : [Module 5] Market Calendar (Tomorrow & Next Week)"
     echo "  abnormal     : [Module 6] Abnormal Fluctuation Alert"
+    echo "  jin10        : [Module 7] Jin10 Economic Monitor"
     echo "========================================================"
     exit 1
 fi

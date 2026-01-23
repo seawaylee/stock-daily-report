@@ -68,22 +68,48 @@ def run_market_ladder(args):
 def run_market_calendar(args):
     print("\n=== [Module 5] Market Calendar (Tomorrow & Next Week) ===")
     from modules.market_calendar import generate_calendar
-    return generate_calendar.run(args.date_str, args.date_dir)
+    
+    # Check if Fri/Sat/Sun
+    dt = datetime.strptime(args.date_str, '%Y%m%d')
+    is_weekend = dt.weekday() >= 4
+    
+    return generate_calendar.run(args.date_str, args.date_dir, run_weekly=is_weekend)
 
 def run_abnormal_alert(args):
     print("\n=== [Module 6] Abnormal Fluctuation Alert ===")
     from modules.abnormal_alert import abnormal_monitor
     return abnormal_monitor.run(args.date_str, args.date_dir)
 
+def run_jin10(args):
+    print("\n=== [Module 7] Core News Monitor ===")
+    from modules.jin10 import jin10_monitor
+    
+    # Check if Fri/Sat/Sun
+    dt = datetime.strptime(args.date_str, '%Y%m%d')
+    is_weekend = dt.weekday() >= 4
+    
+    return jin10_monitor.run(args.date_str, args.date_dir, run_weekly=is_weekend)
+
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
     print(f"Target Directory: {args.date_dir}")
+    
+    # Determine Weekend Status
+    dt = datetime.strptime(args.date_str, '%Y%m%d')
+    is_weekend = dt.weekday() >= 4
+    if is_weekend:
+        print("📅 Weekend Mode Detected (Fri/Sat/Sun) -> Enabling Weekly Summaries")
+    else:
+        print("📅 Weekday Mode -> Daily Summaries Only")
     
     # We can run these in parallel:
     # 1. Fish Basin (Indices & Sectors)
     # 2. B1 Selection (might be slow)
     # 3. Sector Flow
     # 4. Market Ladder
+    # 5. Core News (Jin10)
+    # 6. Calendar
+    # 7. Abnormal Alert
     
     from concurrent.futures import ProcessPoolExecutor, wait
     
@@ -99,7 +125,8 @@ def run_all(args):
         (run_sector_flow, args),
         (run_market_ladder, args),
         (run_market_calendar, args),
-        (run_abnormal_alert, args)
+        (run_abnormal_alert, args),
+        (run_jin10, args)
     ]
     
     with ProcessPoolExecutor(max_workers=4) as executor:
@@ -133,6 +160,7 @@ def main():
     subparsers.add_parser('ladder', parents=[parent_parser], help='Run Market Ladder')
     subparsers.add_parser('calendar', parents=[parent_parser], help='Run Market Calendar')
     subparsers.add_parser('abnormal', parents=[parent_parser], help='Run Abnormal Alert')
+    subparsers.add_parser('jin10', parents=[parent_parser], help='Run Jin10 Monitor')
 
     args = parser.parse_args()
     
@@ -160,6 +188,8 @@ def main():
         run_market_calendar(args)
     elif args.command == 'abnormal':
         run_abnormal_alert(args)
+    elif args.command == 'jin10':
+        run_jin10(args)
     elif args.command == 'all':
         run_all(args)
     else:
