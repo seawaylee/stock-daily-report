@@ -73,6 +73,31 @@ def fetch_data_router(item):
         elif itype == 'THS_CONCEPT':
             df = ak.stock_board_concept_index_ths(symbol=name, start_date=start_date, end_date="20260201")
             
+        # 3. EM Concept (New)
+        elif itype == 'EM_CONCEPT':
+             # Try to Use Code if provided, otherwise find by name
+            target_code = code
+            if not target_code:
+                 # Lookup code by name
+                 board_list = ak.stock_board_concept_name_em()
+                 row = board_list[board_list['板块名称'] == name]
+                 if not row.empty:
+                     target_code = row.iloc[0]['板块代码']
+            
+            if target_code:
+                df = ak.stock_board_concept_hist_em(symbol=target_code, start_date=start_date, end_date="20260201")
+                if df is not None and not df.empty:
+                    # Rename columns to match THS format
+                    # EM: 日期, 开盘, 收盘, 最高, 最低, 成交量, 成交额, ...
+                    df = df.rename(columns={
+                        '开盘': 'open', '收盘': 'close',
+                        '最高': 'high', '最低': 'low',
+                        '成交量': 'volume', '成交额': 'turnover',
+                        '日期': 'date'
+                    })
+                    # EM data usually good quality
+                    turnover = df.iloc[-1]['turnover'] if 'turnover' in df.columns else 0
+            
         # 3. Index (CSI/SE) - Multi-tier fallback: EM (Plan A) -> Sina (Plan B) -> THS (Plan C)
         elif itype == 'INDEX':
             # Plan A: Try EM first (Data quality is generally better)

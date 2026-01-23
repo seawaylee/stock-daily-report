@@ -22,22 +22,59 @@ def get_sector_flow(sector_type='行业资金流'):
         
         # --- THS Implementation ---
         try:
-            print("尝试数据源: 同花顺 (THS)...")
-            df_ths = ak.stock_board_industry_summary_ths()
-            if df_ths is not None and not df_ths.empty:
-                # Columns: ['序号', '板块', '涨跌幅', '总成交量', '总成交额', '净流入', ...]
-                # Renaming for compatibility
-                df_ths = df_ths.rename(columns={'板块': '名称', '净流入': 'net_flow'})
-                
-                # Assume 'net_flow' from THS is already in '亿' (Billions) based on debug.
-                df_ths['net_flow_billion'] = pd.to_numeric(df_ths['net_flow'], errors='coerce')
-                
-                # Ensure we have both Inflow and Outflow
-                top_inflow = df_ths.sort_values(by='net_flow_billion', ascending=False).head(10)
-                top_outflow = df_ths.sort_values(by='net_flow_billion', ascending=True).head(10)
-                
-                # Rename columns to match expected output for prompt generator
-                return top_inflow, top_outflow, '名称', 'net_flow_billion'
+            print(f"尝试数据源: 同花顺 (THS) - {sector_type}...")
+            
+            if sector_type == '概念资金流':
+                # use Concept API
+                df_ths = ak.stock_fund_flow_concept(symbol="即时")
+                if df_ths is not None and not df_ths.empty:
+                    # Cols: 序号, 行业, 行业指数, ..., 净额, ...
+                    # Rename '行业' -> '名称', '净额' -> 'net_flow_billion' (Assuming Unit is Yi)
+                    df_ths = df_ths.rename(columns={'行业': '名称', '净额': 'net_flow_billion'})
+                    
+                    # Ensure numeric
+                    df_ths['net_flow_billion'] = pd.to_numeric(df_ths['net_flow_billion'], errors='coerce')
+                    
+                    # --- Filtering Noise (THS Concept) ---
+                    exclude_keywords = [
+                        "同花顺", "板块", "成分", "持股", "股通", "基金", "昨日", "人民币", 
+                        "融资", "融券", "B股", "ST", "转债", "高股息", "破净", "百元", "核心", 
+                        "龙头", "茅", "大盘", "中字头", "AH", "REITs", "ETF", "标准", "普尔", "MSCI", "含H股"
+                    ]
+                    if '名称' in df_ths.columns:
+                         df_ths = df_ths[~df_ths['名称'].apply(lambda x: any(k in str(x) for k in exclude_keywords))]
+
+                    top_inflow = df_ths.sort_values(by='net_flow_billion', ascending=False).head(10)
+                    top_outflow = df_ths.sort_values(by='net_flow_billion', ascending=True).head(10)
+                    
+                    return top_inflow, top_outflow, '名称', 'net_flow_billion'
+
+            else:
+                # Default / Industry API
+                df_ths = ak.stock_board_industry_summary_ths()
+                if df_ths is not None and not df_ths.empty:
+                    # Columns: ['序号', '板块', '涨跌幅', '总成交量', '总成交额', '净流入', ...]
+                    # Renaming for compatibility
+                    df_ths = df_ths.rename(columns={'板块': '名称', '净流入': 'net_flow'})
+                    
+                    # Assume 'net_flow' from THS is already in '亿' (Billions) based on debug.
+                    df_ths['net_flow_billion'] = pd.to_numeric(df_ths['net_flow'], errors='coerce')
+                    
+                    # --- Filtering Noise (THS Industry) ---
+                    exclude_keywords = [
+                        "同花顺", "板块", "成分", "持股", "股通", "基金", "昨日", "人民币", 
+                        "融资", "融券", "B股", "ST", "转债", "高股息", "破净", "百元", "核心", 
+                        "龙头", "茅", "大盘", "中字头", "AH", "REITs", "ETF", "标准", "普尔", "MSCI", "含H股"
+                    ]
+                    if '名称' in df_ths.columns:
+                         df_ths = df_ths[~df_ths['名称'].apply(lambda x: any(k in str(x) for k in exclude_keywords))]
+                    
+                    # Ensure we have both Inflow and Outflow
+                    top_inflow = df_ths.sort_values(by='net_flow_billion', ascending=False).head(10)
+                    top_outflow = df_ths.sort_values(by='net_flow_billion', ascending=True).head(10)
+                    
+                    # Rename columns to match expected output for prompt generator
+                    return top_inflow, top_outflow, '名称', 'net_flow_billion'
 
         except Exception as e:
             print(f"THS source failed: {e}")
@@ -89,6 +126,16 @@ def get_sector_flow(sector_type='行业资金流'):
         # 确保数值类型
         df_em['net_flow_billion'] = pd.to_numeric(df_em[target_col], errors='coerce') / 100000000
         
+        # --- Filtering Noise / Garbage Names ---
+        exclude_keywords = [
+            "同花顺", "板块", "概念", "成分", "持股", "股通", "基金", "昨日", "人民币", 
+            "融资", "融券", "B股", "ST", "转债", "高股息", "破净", "百元", "核心", 
+            "龙头", "茅", "大盘", "中字头", "AH", "REITs", "ETF", "标准", "普尔", "MSCI"
+        ]
+        
+        # If we have name_col, filter
+        df_em = df_em[~df_em[name_col].apply(lambda x: any(k in str(x) for k in exclude_keywords))]
+
         # 排序
         top_inflow = df_em.sort_values(by='net_flow_billion', ascending=False).head(10)
         top_outflow = df_em.sort_values(by='net_flow_billion', ascending=True).head(10)
@@ -223,80 +270,94 @@ def generate_prompt(industry_inflow, industry_outflow, output_path="results/sect
     生成 Nano Banana Pro 优化的 AI 绘画提示词 (手绘风格)
     """
     
-    # 获取数据 Top 3 Inflow (Name, Flow)
+    # -----------------------------------------------------
+    # Helper: Clean Name (Extract Bracket Content, etc.)
+    # -----------------------------------------------------
+    import re
+    def clean_sector_name(raw_name):
+        # 1. If parens exist, prefer content inside if it looks like an acronym or short name
+        # e.g. "共封装光学(CPO)" -> "CPO"
+        match = re.search(r'\((.*?)\)', raw_name)
+        if match:
+            inner = match.group(1).strip()
+            # If inner is not empty, use it. 
+            # (Heuristic: usually bracket content is the core name or acronym in these datasets)
+            if inner: 
+                return inner
+        
+        # 2. Convert "F5G概念" -> "F5G"
+        # User said "others too", assuming removing "概念", "板块" suffices for cleaner look
+        cleaned = raw_name.replace("概念", "").replace("板块", "").replace("行业", "")
+        return cleaned.strip()
+
+    # Apply cleaning
     top_in_data = []
     for i, (_, row) in enumerate(industry_inflow.head(3).iterrows()):
          val = float(row['net_flow_billion'])
-         top_in_data.append({'name': row['名称'], 'flow': f"+{val:.1f}亿"})
+         # Clean Name
+         c_name = clean_sector_name(row['名称'])
+         top_in_data.append({'name': c_name, 'flow': f"+{val:.1f}亿"})
     
-    # 获取 Top 10 Outflow (Name, Flow)
     top_out_list = []
     for i, (_, row) in enumerate(industry_outflow.head(10).iterrows()):
          val = float(row['net_flow_billion'])
-         top_out_list.append(f"{row['名称']} ({val:.1f}亿)")
-         
+         c_name = clean_sector_name(row['名称'])
+         top_out_list.append(f"{c_name} (-{abs(val):.1f}亿)")
     outflow_text = ", ".join(top_out_list)
 
     # 动态构建物体描述
-    # e.g. "Center object representing [Sector]"
-    
     def get_obj_desc(idx):
         if idx < len(top_in_data):
+            # item is now a dict {'name':..., 'flow':...}
             item = top_in_data[idx]
             return item['name'], item['flow']
         return "Unknown", ""
 
+    # ... (Re-map vars for prompt)
     name_c, flow_c = get_obj_desc(0)
     name_l, flow_l = get_obj_desc(1)
     name_r, flow_r = get_obj_desc(2)
-
-    # 智能生成标题
-    top_names = [d['name'] for d in top_in_data]
-    selected_title = get_creative_title(top_names)
+   
+    # Smart Title (using top_names from original data for logic, or cleaned? 
+    # Logic uses original full names for keyword matching, so we keep using original for title logic
+    # but display cleaned in prompt)
+    top_names_for_title = list(industry_inflow.head(3)['名称']) # Keep original for title keywords
+    selected_title = get_creative_title(top_names_for_title)
 
     prompt_content = f"""
 (masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (illustration), (vintage style), (surrealism)
 
-**SUBJECT**: A surreal conceptual illustration.
+**SUBJECT**: A surreal conceptual illustration with CLEAR TEXT.
 
 **HEADER TEXT**:
-- At the top of the image, elegantly integrate the text "**{selected_title}**" using **Artistic Chinese Calligraphy**.
-- **BACKGROUND for Text**: Place the text on a **Red Ink Grunge / Paint Brush Stroke** background to make it pop.
-- **Text Color**: Use **Gold or White** text to contrast strongly against the red background.
-- The text should be **clearly visible** and distinct from the rest of the illustration.
+- At the top of the image, elegantly integrate the text "**{selected_title}**".
+- **Font Style**: **Artistic Chinese Calligraphy** (But CLEAR and LEGIBLE).
+- **BACKGROUND for Text**: Place the text on a **Red Ink Grunge** or **Paint Brush Stroke** background.
+- **Text Color**: **Gold or White**, High Contrast for readability.
 
 1. **THE GIANTS (Top Inflow Sectors)**:
-   Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center, representing the top winning industries. (NON-HUMANOID OBJECTS)
-   - **CENTER (Largest)**: A giant symbolic object representing **"{name_c}"**. It should be a physical object or structure, NOT A PERSON. 
-     **Text label on it**: "{name_c}" (Black Bold) and "{flow_c}" (Small RED text next to it).
-   - **LEFT**: A massive symbolic object representing **"{name_l}"**. (Physical object, non-human).
-     **Text label on it**: "{name_l}" (Black Bold) and "{flow_l}" (Small RED text).
-   - **RIGHT**: A massive symbolic object representing **"{name_r}"**. (Physical object, non-human).
-     **Text label on it**: "{name_r}" (Black Bold) and "{flow_r}" (Small RED text).
+   Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center. (NON-HUMANOID)
+   - **CENTER**: Object for **"{name_c}"**. Label: "**{name_c}**" (Black Bold Ink) & "{flow_c}" (Red).
+   - **LEFT**: Object for **"{name_l}"**. Label: "**{name_l}**" (Black Bold) & "{flow_l}".
+   - **RIGHT**: Object for **"{name_r}"**. Label: "**{name_r}**" (Black Bold) & "{flow_r}".
 
 2. **THE WORSHIPPERS (Top Outflow Sectors)**:
-   In the **FOREGROUND**, a group of **LARGE**, kneeling figures (pilgrims) with their backs facing the viewer. 
-   - They should be **CLOSE TO THE CAMERA** so their backs take up significant space.
-   - **CRITICAL**: The text labels on their backs must be **LARGE and CLEARLY LEGIBLE**.
-   - **Labels on backs**: {outflow_text}
-   - **TEXT STYLING (Split Style)**:
-     - **Sector Name**: Use **White or Light Grey** text. Uniform font.
-     - **Money Number**: Use **Bright Neon Green** text (e.g., -157.4亿) to represent outflow. 
-     - **NO BACKGROUND PATCH**. Just the text floating on the dark clothing.
-     - Ensure the text has a slight **Glow** for high visibility.
-   - **COLOR**: These figures must be **DARK GREEN, GREY, or COLD COLORS** to represent outflow/loss. **ABSOLUTELY NO RED CLOTHING** for these figures. They should look gloomy.
-
+   In the **FOREGROUND**, a group of **LARGE** figures (pilgrims) with their backs facing the viewer.
+   - **POSES**: **Varying kneeling and bowing poses**. Some slumped forward, some upright, some prostrate. **Chaotic and non-uniform arrangement**.
+   - **BACK LABELS**: The text on their backs must be **LARGE, CLEAR and LEGIBLE**.
+   - **Label Styling**: **Varying Font Sizes**. Larger losses (e.g. -300亿) should have **LARGER TEXT**.
+   - **Labels**: {outflow_text}
+   - **Style**: **Hand-written Style but Clean**.
+   - **TEXT COLOR - Name**: **Bright Glowing White** (High Visibility).
+   - **TEXT COLOR - Number**: **Light Green / Pastel Green** (Clear distinction).
+   - **Text Quality**: (perfect text:1.4), (correct chinese characters:1.2).
 
 **ART STYLE**: 
 - **Vintage Hand-drawn Illustration**: Warm paper texture background, ink lines, watercolor washes.
 - **Atmosphere**: Epic, religious scale, slightly dystopian but artistic.
 - **Colors**: Sepia, warm brown, faded red (giants), dull green/grey (worshippers).
 
-**TEXT RENDERING**:
-- Please ensure the Chinese text labels for sectors are visible.
-- Font style: Hand-written Chinese calligraphy or block print.
-
-(Optimized for Nano Banana Pro: Focus on the contrast between the giant objects and the tiny kneeling crowd.)
+(Optimized for Nano Banana Pro: Vintage Art Style + Clear Text enforcement)
 """
     
     with open(output_path, "w", encoding='utf-8') as f:
@@ -314,17 +375,27 @@ def run(date_dir=None):
     res_industry = get_sector_flow('行业资金流')
     res_concept = get_sector_flow('概念资金流')
     
-    if res_industry and res_concept:
+    if res_industry or res_concept:
         # 2. 打印文本表格
-        inflow, outflow, name_col, flow_col = res_industry
-        
-        print("\\n🏆 行业板块 - 主力净流入 Top 10")
-        for i, (_, row) in enumerate(inflow.iterrows()):
-            print(f"{i+1}. {row[name_col]:<10} {row[flow_col]:.2f}亿")
+        if res_industry:
+            inflow, outflow, name_col, flow_col = res_industry
+            print("\\n🏆 行业板块 - 主力净流入 Top 10")
+            for i, (_, row) in enumerate(inflow.iterrows()):
+                print(f"{i+1}. {row[name_col]:<10} {row[flow_col]:.2f}亿")
 
-        print("\\n😭 行业板块 - 主力净流出 Top 10")
-        for i, (_, row) in enumerate(outflow.iterrows()):
-            print(f"{i+1}. {row[name_col]:<10} {row[flow_col]:.2f}亿")
+            print("\\n😭 行业板块 - 主力净流出 Top 10")
+            for i, (_, row) in enumerate(outflow.iterrows()):
+                print(f"{i+1}. {row[name_col]:<10} {row[flow_col]:.2f}亿")
+        else:
+             print("\\n⚠️ 行业资金流获取失败")
+
+        if res_concept:
+            print("\\n🏆 概念板块 - 主力净流入 Top 10")
+            inflow_c, outflow_c, name_col_c, flow_col_c = res_concept
+            for i, (_, row) in enumerate(inflow_c.iterrows()):
+                print(f"{i+1}. {row[name_col_c]:<10} {row[flow_col_c]:.2f}亿")
+        else:
+            print("\\n⚠️ 概念资金流获取失败")
             
         # 3. 确定输出路径
         if date_dir:
@@ -340,13 +411,18 @@ def run(date_dir=None):
                 os.makedirs(prompt_dir, exist_ok=True)
             prompt_path = os.path.join(prompt_dir, "资金流向_Prompt.txt")
 
-        # 4. 生成提示词
-        generate_prompt(inflow, outflow, output_path=prompt_path)
+        # 4. 生成提示词 (Prioritize Concept data for "Hot Themes" visualization)
+        if res_concept:
+             # Use Concept data for the visual prompt (more narrative)
+             generate_prompt(inflow_c, outflow_c, output_path=prompt_path)
+             print("✅ 板块资金流分析已完成 (使用概念数据生成提示词)")
+        elif res_industry:
+             generate_prompt(inflow, outflow, output_path=prompt_path)
+             print("✅ 板块资金流分析已完成 (使用行业数据生成提示词)")
         
-        print("✅ 板块资金流分析已完成")
         return True
     else:
-        print("⚠️ 数据获取不完整，跳过板块分析")
+        print("⚠️ 数据(行业/概念)均获取失败，跳过板块分析")
         return False
 
 
