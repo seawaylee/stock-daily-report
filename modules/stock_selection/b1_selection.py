@@ -69,26 +69,33 @@ def process_single_stock(args):
         return None
 
 
-def run_full_selection():
-    """全市场选股"""
+def run_full_selection(force=False):
+    """全市场选股
+    
+    Args:
+        force: 是否强制重新选股，忽略今日已有结果
+    """
     today_date = datetime.now().strftime('%Y%m%d')
     date_dir = os.path.join("results", today_date)
     os.makedirs(date_dir, exist_ok=True)
     
     # 检查是否已有今日结果
-    import glob
-    existing_files = glob.glob(os.path.join(date_dir, f"selected_{today_date}_*.json"))
-    if existing_files:
-        latest_file = max(existing_files, key=os.path.getctime)
-        print(f"⚡ 发现今日已有选股结果: {latest_file}")
-        with open(latest_file, 'r', encoding='utf-8') as f:
-            selected = json.load(f)
-        # 从文件名提取完整时间戳 (selected_YYYYMMDD_HHMMSS.json)
-        filename = os.path.basename(latest_file)
-        # filename格式: selected_20260118_004725.json
-        # 去掉前缀 selected_ (9 chars) 和后缀 .json (5 chars)
-        timestamp = filename[9:-5] 
-        return selected, timestamp
+    if not force:
+        import glob
+        existing_files = glob.glob(os.path.join(date_dir, f"selected_{today_date}_*.json")) 
+        if existing_files:
+            latest_file = max(existing_files, key=os.path.getctime)
+            print(f"⚡ 发现今日已有选股结果: {latest_file}")
+            with open(latest_file, 'r', encoding='utf-8') as f:
+                selected = json.load(f)
+            # 从文件名提取完整时间戳 (selected_YYYYMMDD_HHMMSS.json)
+            filename = os.path.basename(latest_file)
+            # filename格式: selected_20260118_004725.json
+            # 去掉前缀 selected_ (9 chars) 和后缀 .json (5 chars)
+            timestamp = filename[9:-5] 
+            return selected, timestamp
+    else:
+        print("🔄 --force 模式：忽略今日缓存，强制重新选股")
 
     print("=" * 70)
     print("  东方财富 - 知行B1选股策略 (AI智能分析版)")
@@ -540,9 +547,13 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
 
 
 
-def run(date_dir=None):
+def run(date_dir=None, force=False):
     """
     Main entry point for Daily Stock Selection & AI Analysis.
+    
+    Args:
+        date_dir: 输出目录
+        force: 是否强制重新生成，忽略今日缓存
     """
     # 1. 全市场选股
     # DEBUG: Mock selection to test downstream
@@ -565,7 +576,7 @@ def run(date_dir=None):
     #         'raw_data_mock': {'收盘': 30.0, '换手%': 2.1, 'close': 30.0, 'volume': 500000}
     #     }
     # ]
-    selected, today = run_full_selection()
+    selected, today = run_full_selection(force=force)
     
     # 确保日期文件夹存在
     date_str = today.split('_')[0]

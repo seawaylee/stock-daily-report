@@ -93,7 +93,7 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
 
              raise Exception("无法获取股票列表 (重试3次失败, 且无任何本地缓存)")
         
-        # 检查是否有行业列
+        # 检查是否有行业列 (自2024年起，EM接口已不再返回此字段)
         industry_col = '所属行业' if '所属行业' in stock_info.columns else None
         
         # 复制需要的列
@@ -103,12 +103,17 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
         
         result = stock_info[cols_to_copy].copy()
         
-        # 2. 获取行业数据并合并
+        # 2. 获取行业数据
         if industry_col:
             result.columns = ['code', 'name', 'market_cap', 'industry']
         else:
             result.columns = ['code', 'name', 'market_cap']
+            # 初始化空行业列
             result['industry'] = ''
+            print("⚠️  '所属行业' 字段缺失，将使用 stock_individual_info_em 批量获取...")
+            
+            # 批量获取行业数据 (采样方式以提高速度)
+            result = _fetch_industries_for_stocks(result)
         
         # 转换市值为亿
         result['market_cap'] = pd.to_numeric(result['market_cap'], errors='coerce') / 100000000
@@ -122,13 +127,6 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
             result = result[result['market_cap'] >= min_market_cap]
         
         print(f"筛选后: {len(result)} 只股票 (市值>={min_market_cap}亿, 排除ST={exclude_st})")
-        
-        # Save to cache (unfiltered full list might be better, but saving filtered is okay for this specific use case? 
-        # Actually better to save the full cleaning result before filtering params? 
-        # But the function returns filtered result. Let's save the result we got and next time we load it and re-filter if needed.
-        # Wait, if we save filtered result for 100亿, and next time we want 50亿, we can't use cache.
-        # But for this user's specific daily task, parameters are likely constant.
-        # Let's simple save the result.
         
         try:
             result.to_csv(cache_file, index=False)
@@ -145,6 +143,60 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
     except Exception as e:
         print(f"获取股票列表失败: {e}")
         return pd.DataFrame(columns=['code', 'name', 'market_cap', 'industry'])
+
+
+def _fetch_industries_for_stocks(df: pd.DataFrame, sample_size: int = 200) -> pd.DataFrame:
+    """
+    批量获取股票行业信息
+    由于逐个查询速度较慢，这里采用采样策略：
+    1. 优先获取大市值股票的行业（更可能被选中）
+    2. 对小市值股票进行采样
+    
+    Args:
+        df: 包含 code, name, market_cap 列的 DataFrame
+        sample_size: 采样数量，默认200只
+    
+    Returns:
+        添加了 industry 列的 DataFrame
+    """
+    import time
+    
+    # 按市值排序，优先获取大市值股票
+    df_sorted = df.sort_values('market_cap', ascending=False).reset_index(drop=True)
+    
+    # 采样策略：前200只 + 随机采样200只
+    priority_count = min(sample_size, len(df_sorted))
+    priority_stocks = df_sorted.head(priority_count)
+    
+    print(f"正在获取 {len(priority_stocks)} 只重点股票的行业信息...")
+    
+    industry_map = {}
+    success_count = 0
+    fail_count = 0
+    
+    for idx, row in tqdm(priority_stocks.iterrows(), total=len(priority_stocks), desc="获取行业"):
+        code = row['code']
+        try:
+            info = ak.stock_individual_info_em(symbol=code)
+            industry_row = info[info['item'] == '行业']
+            if not industry_row.empty:
+                industry = industry_row.iloc[0]['value']
+                industry_map[code] = industry
+                success_count += 1
+            time.sleep(0.05)  # 避免请求过快
+        except Exception as e:
+            fail_count += 1
+            if fail_count <= 3:  # 只打印前3个错误
+                print(f"  获取 {code} 行业失败: {e}")
+            continue
+    
+    print(f"✅ 成功获取 {success_count} 只股票的行业信息，失败 {fail_count} 只")
+    
+    # 将获取到的行业信息填充回原DataFrame
+    df['industry'] = df['code'].map(industry_map).fillna('')
+    
+    return df
+
 
 
 

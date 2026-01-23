@@ -48,7 +48,8 @@ def run_fish_basin(args):
 def run_b1_selection(args):
     print("\n=== [Module 2] B1 Stock Selection & AI Analysis ===")
     from modules.stock_selection import b1_selection
-    return b1_selection.run(args.date_dir)
+    force = getattr(args, 'force', False)
+    return b1_selection.run(args.date_dir, force=force)
 
 def run_sector_flow(args):
     print("\n=== [Module 3] Sector Funds Flow ===")
@@ -63,6 +64,16 @@ def run_market_ladder(args):
     # args.date_dir is full path "results/20260122"
     # generate_ladder_prompt expects (date_str, output_dir)
     return generate_ladder_prompt.run(args.date_str, args.date_dir)
+
+def run_market_calendar(args):
+    print("\n=== [Module 5] Market Calendar (Tomorrow & Next Week) ===")
+    from modules.market_calendar import generate_calendar
+    return generate_calendar.run(args.date_str, args.date_dir)
+
+def run_abnormal_alert(args):
+    print("\n=== [Module 6] Abnormal Fluctuation Alert ===")
+    from modules.abnormal_alert import abnormal_monitor
+    return abnormal_monitor.run(args.date_str, args.date_dir)
 
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
@@ -86,7 +97,9 @@ def run_all(args):
         (run_fish_basin, args),
         (run_b1_selection, args),
         (run_sector_flow, args),
-        (run_market_ladder, args)
+        (run_market_ladder, args),
+        (run_market_calendar, args),
+        (run_abnormal_alert, args)
     ]
     
     with ProcessPoolExecutor(max_workers=4) as executor:
@@ -110,6 +123,7 @@ def main():
     # Shared args
     parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument('--date', type=str, help='Date YYYYMMDD (default: today)')
+    parent_parser.add_argument('--force', action='store_true', help='Force regeneration, bypass cache')
     
     # Subcommands
     subparsers.add_parser('all', parents=[parent_parser], help='Run all modules in parallel')
@@ -117,6 +131,8 @@ def main():
     subparsers.add_parser('b1', parents=[parent_parser], help='Run B1 Stock Selection')
     subparsers.add_parser('sector_flow', parents=[parent_parser], help='Run Sector Flow')
     subparsers.add_parser('ladder', parents=[parent_parser], help='Run Market Ladder')
+    subparsers.add_parser('calendar', parents=[parent_parser], help='Run Market Calendar')
+    subparsers.add_parser('abnormal', parents=[parent_parser], help='Run Abnormal Alert')
 
     args = parser.parse_args()
     
@@ -140,6 +156,10 @@ def main():
         run_sector_flow(args)
     elif args.command == 'ladder':
         run_market_ladder(args)
+    elif args.command == 'calendar':
+        run_market_calendar(args)
+    elif args.command == 'abnormal':
+        run_abnormal_alert(args)
     elif args.command == 'all':
         run_all(args)
     else:
