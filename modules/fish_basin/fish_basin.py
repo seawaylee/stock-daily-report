@@ -79,11 +79,42 @@ def fetch_data(name, code):
 
         # 2. HK Indices
         if code.startswith("hk"):
-             # Use hk_index_daily_sina? or similar
-             # Current akshare might use stock_hk_index_daily_sina(symbol=code[2:])
+             # Use hk_index_daily_sina (History)
              try:
-                 df = ak.stock_hk_index_daily_sina(symbol=code[2:])
-             except: pass
+                 symbol_clean = code[2:] # Remove 'hk' prefix
+                 df = ak.stock_hk_index_daily_sina(symbol=symbol_clean)
+                 
+                 # Check if we need to append today's spot data
+                 if df is not None and not df.empty:
+                     df['date'] = pd.to_datetime(df['date'])
+                     last_date = df['date'].iloc[-1].date()
+                     today_date = datetime.now().date()
+                     
+                     if last_date < today_date:
+                         # Fetch Spot Data
+                         try:
+                             spot_df = ak.stock_hk_index_spot_em()
+                             # Filter by code (e.g. HSI or HSTECH)
+                             target_row = spot_df[spot_df['代码'] == symbol_clean]
+                             if not target_row.empty:
+                                 row = target_row.iloc[0]
+                                 new_data = {
+                                     'date': pd.to_datetime(today_date),
+                                     'open': row['今开'],
+                                     'high': row['最高'],
+                                     'low': row['最低'],
+                                     'close': row['最新价'],
+                                     'volume': row['成交量']
+                                 }
+                                 # Convert new_data to DataFrame and concat
+                                 # Ensure types are correct
+                                 new_df = pd.DataFrame([new_data])
+                                 df = pd.concat([df, new_df], ignore_index=True)
+                         except Exception as e_spot:
+                             print(f"Failed to fetch HK spot data for {code}: {e_spot}")
+             except Exception as e: 
+                 print(f"Error fetching HK history: {e}")
+
 
         # 3. US Indices
         elif code.startswith("us."):

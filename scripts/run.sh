@@ -3,7 +3,7 @@
 # Configuration
 # ----------------
 # Standardize the python environment for all scripts in this repo.
-PYTHON_PATH="/Users/seawaylee/opt/anaconda3/envs/py311/bin/python"
+PYTHON_PATH="/Users/NikoBelic/anaconda3/envs/stock311/bin/python"
 export PYTHONPATH=$PYTHONPATH:.
 
 # Validation

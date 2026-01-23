@@ -42,15 +42,17 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
 
     try:
         # 获取A股股票列表（包含市值和行业信息）
+        # Explicitly using EastMoney Source
         stock_info = None
         import time
         for i in range(3):
             try:
+                # stock_zh_a_spot_em is the standard EM spot interface
                 stock_info = ak.stock_zh_a_spot_em()
                 if stock_info is not None and not stock_info.empty:
                     break
             except Exception as e:
-                print(f"尝试 {i+1}/3 获取股票列表失败: {e}")
+                print(f"尝试 {i+1}/3 获取股票列表(EM)失败: {e}")
                 time.sleep(2)
                 
         if stock_info is None or stock_info.empty:

@@ -26,16 +26,48 @@ def fetch_data_router(item):
     try:
         # 1. THS Industry
         if itype == 'THS':
-            # Note: name provided might not match '工业金属' if mapped. 
-            # Need to pass correct symbol to fetcher if name differs.
-            # But fetcher usually takes Name. 
-            # If we call '有色金属' but code is 881168 (Industrial Metals), fetcher needs '工业金属'.
-            # Hack: The fetcher function below takes 'name' (symbol).
-            # If name is '有色金属' but THS doesn't have it, we must ensure 'name' passed to akshare is valid.
-            # Updated: LEGEND mapping should align Name with THS official name or we use code?
-            # akshare THS fetcher usually needs exact Name match or Code? Code is safer if supported.
-            # Check function doc: stock_board_industry_index_ths(symbol="半导体") -> Symbol is Chinese Name.
-            df = ak.stock_board_industry_index_ths(symbol=name, start_date=start_date, end_date="20260201")
+            # Try fetching THS data first
+            try:
+                df = ak.stock_board_industry_index_ths(symbol=name, start_date=start_date, end_date="20260201")
+            except: 
+                df = None
+
+            # CHECK DATA FRESHNESS & FALLBACK TO EM
+            # If df is empty OR df date is old, try EM
+            is_old = True
+            if df is not None and not df.empty:
+                df['日期'] = pd.to_datetime(df['日期'])
+                last_date = df['日期'].max().date()
+                today_date = datetime.now().date()
+                if last_date >= today_date:
+                    is_old = False
+            
+            if is_old:
+                # print(f"⚠️ THS data for {name} is old/missing, trying EM fallback...")
+                try:
+                    # 1. Find EM Code by Name
+                    board_list = ak.stock_board_industry_name_em()
+                    row = board_list[board_list['板块名称'] == name]
+                    
+                    if not row.empty:
+                        em_code = row.iloc[0]['板块代码']
+                        # 2. Fetch EM History
+                        df_em = ak.stock_board_industry_hist_em(symbol=em_code, start_date=start_date, end_date="20260201")
+                        
+                        if df_em is not None and not df_em.empty:
+                            # Standardize columns to match THS format for downstream processing
+                            # EM: 日期, 开盘, 收盘, 最高, 最低, 成交量, 成交额, ...
+                            df_em = df_em.rename(columns={
+                                '开盘': '开盘价', '收盘': '收盘价',
+                                '最高': '最高价', '最低': '最低价'
+                            })
+                            # Use this if it's fresher or if we had nothing
+                            df = df_em
+                            # print(f"✅ Switched to EM data for {name}")
+                except Exception as e_em:
+                    # print(f"EM fallback failed for {name}: {e_em}")
+                    pass
+
 
         # 2. THS Concept
         elif itype == 'THS_CONCEPT':

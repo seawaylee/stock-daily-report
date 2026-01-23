@@ -90,12 +90,14 @@ def get_limit_up_data(date_str):
         print(f"Error processing ZT pool: {e}")
         return None, None, None
 
-    # 2. Today's Fried Board
+    # 2. Today's Fried Board (Zha Ban)
+    # Use EastMoney Source: stock_zt_pool_zbgc_em
     try:
         df_fried = ak.stock_zt_pool_zbgc_em(date=date_str)
         if df_fried is not None and not df_fried.empty:
             df_fried = df_fried[['代码', '名称', '首次封板时间', '所属行业', '涨停统计']]
-    except:
+    except Exception as e:
+        print(f"Fetch Fried Pool failed: {e}")
         df_fried = pd.DataFrame()
 
     # 3. Yesterday's Limit Up (to find Broken Boards)
