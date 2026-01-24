@@ -235,21 +235,37 @@ def save_to_excel_colored(df, filename):
         except: return ''
 
     try:
+        # 动态检测可用的百分比列
+        pct_columns = [c for c in ['涨幅%', '黄线偏离率', '白线偏离率', '偏离率', '区间涨幅%'] if c in df.columns]
         styler = df.style.map(color_status, subset=['状态'])\
-                        .map(color_pct, subset=['涨幅%', '偏离率', '区间涨幅%'])
+                        .map(color_pct, subset=pct_columns)
                          
-        # Highlight entire row if status changed today
-        def highlight_today_row(row):
+        # 高亮条件: 金叉=1天、死叉=1天、或状态转换日期是今天
+        def highlight_important_row(row):
             today_str = datetime.now().strftime("%y.%m.%d")
-            # 兼容可能的空格
-            if str(row['状态变量时间']).strip() == today_str:
-                return ['background-color: #FFFFCC'] * len(row) # Light Yellow
+            should_highlight = False
+            
+            # 检查金叉天数=1
+            if '金叉天数' in row and row['金叉天数'] == 1:
+                should_highlight = True
+            # 检查死叉天数=1
+            if '死叉天数' in row and row['死叉天数'] == 1:
+                should_highlight = True
+            # 检查状态变量时间是否是今天
+            if '状态变量时间' in row:
+                status_time = str(row['状态变量时间']).strip()
+                if status_time == today_str:
+                    should_highlight = True
+            
+            if should_highlight:
+                return ['background-color: #FFFFCC'] * len(row)  # Light Yellow
             return [''] * len(row)
 
-        styler = styler.apply(highlight_today_row, axis=1)
+        styler = styler.apply(highlight_important_row, axis=1)
                          
         styler.to_excel(filename, index=False, engine='openpyxl')
         
+        # 优化列宽 - 考虑中文字符
         from openpyxl import load_workbook
         wb = load_workbook(filename)
         ws = wb.active
@@ -258,10 +274,15 @@ def save_to_excel_colored(df, filename):
             column = [cell for cell in column]
             for cell in column:
                 try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
+                    cell_value = str(cell.value) if cell.value else ""
+                    # 中文字符按2个字符宽度计算
+                    length = sum(2 if ord(c) > 127 else 1 for c in cell_value)
+                    if length > max_length:
+                        max_length = length
                 except: pass
-            ws.column_dimensions[column[0].column_letter].width = max_length + 2
+            # 确保最小宽度为8，加上padding
+            adjusted_width = max(max_length + 3, 8)
+            ws.column_dimensions[column[0].column_letter].width = adjusted_width
         wb.save(filename)
         print(f"Saved: {filename}")
     except Exception as e:
@@ -323,9 +344,19 @@ def run(date_dir=None):
         code = item['code']
         df = item['df']
         
-        # Fish Basin Logic
+        # Fish Basin Logic - 使用大哥黄线和趋势白线
         close = df['close']
-        df['SMA20'] = close.rolling(window=20).mean()
+        
+        # 大哥黄线: (MA14 + MA28 + MA57 + MA114) / 4
+        df['MA14'] = close.rolling(window=14).mean()
+        df['MA28'] = close.rolling(window=28).mean()
+        df['MA57'] = close.rolling(window=57).mean()
+        df['MA114'] = close.rolling(window=114).mean()
+        df['大哥黄线'] = (df['MA14'] + df['MA28'] + df['MA57'] + df['MA114']) / 4
+        
+        # 趋势白线: EMA(EMA(C,10),10)
+        ema10 = close.ewm(span=10, adjust=False).mean()
+        df['趋势白线'] = ema10.ewm(span=10, adjust=False).mean()
         
         if 'volume' in df.columns:
             vol_ma5 = df['volume'].rolling(window=5).mean()
@@ -333,30 +364,34 @@ def run(date_dir=None):
         else:
             df['vol_ratio'] = np.nan
             
-        df_valid = df.dropna(subset=['SMA20']).copy()
+        df_valid = df.dropna(subset=['大哥黄线']).copy()
         if df_valid.empty: continue
         
         last_row = df_valid.iloc[-1]
         current_price = last_row['close']
-        sma20_current = last_row['SMA20']
+        dage_yellow_current = last_row['大哥黄线']
+        white_line_current = last_row['趋势白线']
         vol_ratio = last_row.get('vol_ratio', 0)
         
-        status_str = "YES" if current_price >= sma20_current else "NO"
-        deviation = (current_price - sma20_current) / sma20_current
+        status_str = "YES" if current_price >= dage_yellow_current else "NO"
+        deviation = (current_price - dage_yellow_current) / dage_yellow_current
+        white_deviation = (current_price - white_line_current) / white_line_current
         
         # Backtrack
         price_arr = df['close'].values
-        sma_arr = df['SMA20'].values
+        yellow_arr = df['大哥黄线'].values
+        white_arr = df['趋势白线'].values
         dates_arr = df['date'].values
         
         idx = len(df) - 1
-        curr_state = (price_arr[idx] >= sma_arr[idx])
+        curr_state = (price_arr[idx] >= yellow_arr[idx])
         
         signal_idx = -1
-        for i in range(idx - 1, 20, -1):
+        min_idx = min(114, len(df) - 1)
+        for i in range(idx - 1, min_idx, -1):
             if i < 0: break
-            if pd.isna(sma_arr[i]): break
-            state_i = (price_arr[i] >= sma_arr[i])
+            if pd.isna(yellow_arr[i]): break
+            state_i = (price_arr[i] >= yellow_arr[i])
             if state_i != curr_state:
                 signal_idx = i + 1
                 break
@@ -373,6 +408,31 @@ def run(date_dir=None):
                 interval_change = (current_price - base_price) / base_price
             except: pass
 
+        # 计算金叉/死叉持续天数 (白线vs黄线)
+        golden_cross_days = 0  # 白线在黄线之上的持续天数
+        death_cross_days = 0   # 白线在黄线之下的持续天数
+        
+        # 当前状态：白线 > 黄线 = 金叉状态
+        current_is_golden = white_arr[idx] > yellow_arr[idx]
+        
+        for i in range(idx, min_idx, -1):
+            if i < 0: break
+            if pd.isna(white_arr[i]) or pd.isna(yellow_arr[i]): break
+            is_golden = white_arr[i] > yellow_arr[i]
+            if is_golden == current_is_golden:
+                if current_is_golden:
+                    golden_cross_days += 1
+                else:
+                    death_cross_days += 1
+            else:
+                break
+        
+        # 如果不是对应状态，设为0
+        if current_is_golden:
+            death_cross_days = 0
+        else:
+            golden_cross_days = 0
+
         daily_change = 0.0
         if len(df_valid) >= 2:
             prev_row = df_valid.iloc[-2]
@@ -386,9 +446,13 @@ def run(date_dir=None):
             "状态": status_str,
             "涨幅%": f"{daily_change*100:+.2f}%",
             "现价": int(current_price) if current_price > 5 else f"{current_price:.2f}",
-            "临界值点": int(sma20_current),
-            "偏离率": f"{deviation*100:.2f}%",
+            "黄线": int(dage_yellow_current),
+            "白线": int(white_line_current) if white_line_current > 5 else f"{white_line_current:.2f}",
+            "黄线偏离率": f"{deviation*100:.2f}%",
+            "白线偏离率": f"{white_deviation*100:.2f}%",
             "量比": vr_str,
+            "金叉天数": golden_cross_days if golden_cross_days > 0 else "-",
+            "死叉天数": death_cross_days if death_cross_days > 0 else "-",
             "状态变量时间": change_date_str,
             "区间涨幅%": f"{interval_change*100:.2f}%",
             "_deviation_raw": deviation # Hidden field for sorting
@@ -399,9 +463,44 @@ def run(date_dir=None):
 
     df_res = pd.DataFrame(results)
     if not df_res.empty:
-        # Reorder columns
-        cols = ["代码", "名称", "状态", "涨幅%", "现价", "临界值点", "偏离率", "量比", "状态变量时间", "区间涨幅%"]
-        df_res = df_res[cols]
+        # 计算排名变化 - 读取前一天的数据
+        df_res['排名变化'] = "-"
+        try:
+            # 查找前一天的文件
+            from datetime import timedelta
+            today = datetime.now()
+            for days_back in range(1, 8):  # 最多往前找7天
+                prev_date = (today - timedelta(days=days_back)).strftime('%Y%m%d')
+                prev_path = f"results/{prev_date}/趋势模型_题材.xlsx"
+                if os.path.exists(prev_path):
+                    prev_df = pd.read_excel(prev_path)
+                    if '名称' in prev_df.columns:
+                        # 创建前一天的排名映射 (名称 -> 排名)
+                        prev_rank = {name: idx+1 for idx, name in enumerate(prev_df['名称'].tolist())}
+                        # 计算今天的排名变化
+                        rank_changes = []
+                        for idx, row in df_res.iterrows():
+                            name = row['名称']
+                            today_rank = idx + 1
+                            if name in prev_rank:
+                                change = prev_rank[name] - today_rank  # 上升为正，下降为负
+                                if change > 0:
+                                    rank_changes.append(f"+{change}")
+                                elif change < 0:
+                                    rank_changes.append(str(change))
+                                else:
+                                    rank_changes.append("-")
+                            else:
+                                rank_changes.append("新")
+                        df_res['排名变化'] = rank_changes
+                        print(f"📊 已加载前一交易日({prev_date})数据计算排名变化")
+                    break
+        except Exception as e:
+            print(f"排名变化计算失败: {e}")
+        
+        # Reorder columns - drop _deviation_raw, 排名变化放最后
+        cols = ["代码", "名称", "状态", "涨幅%", "现价", "黄线", "白线", "黄线偏离率", "白线偏离率", "金叉天数", "死叉天数", "量比", "状态变量时间", "区间涨幅%", "排名变化"]
+        df_res = df_res[[c for c in cols if c in df_res.columns]]
         print("\n=== Result Head (Sorted by Deviation) ===")
         print(df_res.head(10).to_string())
         
@@ -414,15 +513,30 @@ def run(date_dir=None):
         print(f"Saving to {output_path}...")
         save_to_excel_colored(df_res, output_path)
         
-        # Generate image prompts
-        # Note: generate_trend_prompts might need adjustment if moved, but assume imports handle it
+        # 自动合并指数和题材Excel
         try:
-            # We don't have generate_trend_prompts in file tree? 
-            # If it's another file, we should check compatibility.
-            # Assuming it's in pythonpath or same dir. 
-            pass 
-        except Exception:
-            pass
+            from modules.fish_basin.fish_basin_helper import merge_excel_sheets
+            if date_dir:
+                index_path = os.path.join(date_dir, "趋势模型_指数.xlsx")
+                merged_path = os.path.join(date_dir, "趋势模型_合并.xlsx")
+            else:
+                index_path = f"results/{curr_date}/趋势模型_指数.xlsx"
+                merged_path = f"results/{curr_date}/趋势模型_合并.xlsx"
+                
+            print("正在合并指数和题材Excel...")
+            merge_excel_sheets(index_path, output_path, merged_path)
+        except Exception as e:
+            print(f"合并Excel失败: {e}")
+            
+        # Generate image prompts
+        try:
+            from modules.fish_basin.generate_combined_prompt import generate_combined_prompt
+            print("正在生成合并版生图Prompt...")
+            generate_combined_prompt(curr_date)
+        except Exception as e:
+            print(f"生成Prompt失败: {e}")
+            import traceback
+            traceback.print_exc()
     else:
         print("No results generated.")
         

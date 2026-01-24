@@ -195,12 +195,19 @@ def get_fish_basin_analysis(symbols_map):
             if df is None or df.empty:
                 print(f"No data for {name}")
                 continue
-                
             close = df['close']
             
             # 2. Indicators
-            # SMA20
-            df['SMA20'] = close.rolling(window=20).mean()
+            # 大哥黄线: (MA14 + MA28 + MA57 + MA114) / 4
+            df['MA14'] = close.rolling(window=14).mean()
+            df['MA28'] = close.rolling(window=28).mean()
+            df['MA57'] = close.rolling(window=57).mean()
+            df['MA114'] = close.rolling(window=114).mean()
+            df['大哥黄线'] = (df['MA14'] + df['MA28'] + df['MA57'] + df['MA114']) / 4
+            
+            # 趋势白线: EMA(EMA(C,10),10)
+            ema10 = close.ewm(span=10, adjust=False).mean()
+            df['趋势白线'] = ema10.ewm(span=10, adjust=False).mean()
             
             # Volume Ratio (Vol / MA5_Vol)
             if 'volume' in df.columns:
@@ -209,7 +216,7 @@ def get_fish_basin_analysis(symbols_map):
             else:
                 df['vol_ratio'] = np.nan
 
-            df_valid = df.dropna(subset=['SMA20']).copy()
+            df_valid = df.dropna(subset=['大哥黄线']).copy()
             if df_valid.empty: continue
             
             last_row = df_valid.iloc[-1]
@@ -220,27 +227,29 @@ def get_fish_basin_analysis(symbols_map):
             # if day_diff > 5: print(f"Warning: Data for {name} is old ({current_date.date()})")
 
             current_price = last_row['close']
-            sma20_current = last_row['SMA20']
+            dage_yellow_current = last_row['大哥黄线']
+            white_line_current = last_row['趋势白线']
             vol_ratio = last_row.get('vol_ratio', 0)
             
             # Status
-            status_str = "YES" if current_price >= sma20_current else "NO"
+            status_str = "YES" if current_price >= dage_yellow_current else "NO"
             
             # Deviation
-            deviation = (current_price - sma20_current) / sma20_current
+            deviation = (current_price - dage_yellow_current) / dage_yellow_current
             
-            # Signal Date (Backtrack)
+            # Signal Date (Backtrack for price crossing yellow line)
             price_arr = df['close'].values
-            sma_arr = df['SMA20'].values
+            indicator_arr = df['大哥黄线'].values
+            white_arr = df['趋势白线'].values
             dates_arr = df['date'].values
             
             idx = len(df) - 1
-            curr_state = (price_arr[idx] >= sma_arr[idx])
+            curr_state = (price_arr[idx] >= indicator_arr[idx])
             
             signal_idx = -1
-            for i in range(idx - 1, 20, -1):
-                if pd.isna(sma_arr[i]): break
-                state_i = (price_arr[i] >= sma_arr[i])
+            for i in range(idx - 1, 114, -1):  # 大哥黄线需要114天数据
+                if pd.isna(indicator_arr[i]): break
+                state_i = (price_arr[i] >= indicator_arr[i])
                 if state_i != curr_state:
                     signal_idx = i + 1
                     break
@@ -254,9 +263,36 @@ def get_fish_basin_analysis(symbols_map):
                 base_price = price_arr[signal_idx]
                 interval_change = (current_price - base_price) / base_price
 
+            # 计算金叉/死叉持续天数 (白线vs黄线)
+            golden_cross_days = 0  # 白线在黄线之上的持续天数
+            death_cross_days = 0   # 白线在黄线之下的持续天数
+            
+            # 当前状态：白线 > 黄线 = 金叉状态
+            current_is_golden = white_arr[idx] > indicator_arr[idx]
+            
+            for i in range(idx, 114, -1):
+                if pd.isna(white_arr[i]) or pd.isna(indicator_arr[i]): break
+                is_golden = white_arr[i] > indicator_arr[i]
+                if is_golden == current_is_golden:
+                    if current_is_golden:
+                        golden_cross_days += 1
+                    else:
+                        death_cross_days += 1
+                else:
+                    break
+            
+            # 如果不是对应状态，设为0
+            if current_is_golden:
+                death_cross_days = 0
+            else:
+                golden_cross_days = 0
+
             # Daily Change
             prev_close = df.iloc[-2]['close']
             daily_change = (current_price - prev_close) / prev_close
+            
+            # 白线偏离率
+            white_deviation = (current_price - white_line_current) / white_line_current
             
             # Vol Ratio Format
             vr_str = f"{vol_ratio:.2f}" if pd.notna(vol_ratio) else "-"
@@ -267,9 +303,13 @@ def get_fish_basin_analysis(symbols_map):
                 "状态": status_str,
                 "涨幅%": f"{daily_change*100:+.2f}%",
                 "现价": int(current_price) if current_price > 5 else f"{current_price:.2f}",
-                "临界值点": int(sma20_current),
-                "偏离率": f"{deviation*100:.2f}%",
+                "黄线": int(dage_yellow_current),
+                "白线": int(white_line_current) if white_line_current > 5 else f"{white_line_current:.2f}",
+                "黄线偏离率": f"{deviation*100:.2f}%",
+                "白线偏离率": f"{white_deviation*100:.2f}%",
                 "量比": vr_str,
+                "金叉天数": golden_cross_days if golden_cross_days > 0 else "-",
+                "死叉天数": death_cross_days if death_cross_days > 0 else "-",
                 "状态变量时间": change_date_str,
                 "区间涨幅%": f"{interval_change*100:.2f}%",
                 "_deviation_raw": deviation
@@ -325,7 +365,42 @@ def run(date_dir=None):
              output_path = os.path.join(date_dir, "趋势模型_指数.xlsx")
         else:
              output_path = f"results/{curr_date}/趋势模型_指数.xlsx"
-             
+        
+        # 计算排名变化 - 读取前一天的数据
+        df['排名变化'] = "-"
+        try:
+            # 查找前一天的文件
+            from datetime import timedelta
+            today = datetime.now()
+            for days_back in range(1, 8):  # 最多往前找7天
+                prev_date = (today - timedelta(days=days_back)).strftime('%Y%m%d')
+                prev_path = f"results/{prev_date}/趋势模型_指数.xlsx"
+                if os.path.exists(prev_path):
+                    prev_df = pd.read_excel(prev_path)
+                    if '名称' in prev_df.columns:
+                        # 创建前一天的排名映射 (名称 -> 排名)
+                        prev_rank = {name: idx+1 for idx, name in enumerate(prev_df['名称'].tolist())}
+                        # 计算今天的排名变化
+                        rank_changes = []
+                        for idx, row in df.iterrows():
+                            name = row['名称']
+                            today_rank = idx + 1
+                            if name in prev_rank:
+                                change = prev_rank[name] - today_rank  # 上升为正，下降为负
+                                if change > 0:
+                                    rank_changes.append(f"+{change}")
+                                elif change < 0:
+                                    rank_changes.append(str(change))
+                                else:
+                                    rank_changes.append("-")
+                            else:
+                                rank_changes.append("新")
+                        df['排名变化'] = rank_changes
+                        print(f"📊 已加载前一交易日({prev_date})数据计算排名变化")
+                    break
+        except Exception as e:
+            print(f"排名变化计算失败: {e}")
+              
         # Save Excel
         save_to_excel(df, output_path)
 
@@ -335,11 +410,11 @@ def run(date_dir=None):
         RESET = '\033[0m'
         BOLD = '\033[1m'
         
-        # Columns to display - Added Volume Ratio
-        headers = ["代码", "名称", "状态", "涨幅%", "现价", "临界值点", "偏离率", "量比", "状态变量时间", "区间涨幅%"]
+        # Columns to display - Updated with new columns
+        headers = ["代码", "名称", "状态", "涨幅%", "现价", "黄线", "白线", "黄线偏离率", "白线偏离率", "金叉天数", "死叉天数", "排名变化"]
         
         # Print Header
-        header_str = "  ".join([f"{h:<8}" for h in headers])
+        header_str = "  ".join([f"{h:<10}" for h in headers])
         print(f"{BOLD}{header_str}{RESET}")
         
         for _, row in df.iterrows():
@@ -354,28 +429,39 @@ def run(date_dir=None):
                 chg_val = float(chg_str.strip('%'))
                 chg_color = RED if chg_val > 0 else GREEN
                 
-                # Deviation Color
-                dev_str = row['偏离率']
+                # Yellow Deviation Color
+                dev_str = row['黄线偏离率']
                 dev_val = float(dev_str.strip('%'))
                 dev_color = RED if dev_val > 0 else GREEN
                 
-                # Interval Color
-                int_str = row['区间涨幅%']
-                int_val = float(int_str.strip('%'))
-                int_color = RED if int_val > 0 else GREEN
+                # White Deviation Color
+                white_dev_str = row['白线偏离率']
+                white_dev_val = float(white_dev_str.strip('%'))
+                white_dev_color = RED if white_dev_val > 0 else GREEN
+                
+                # Rank Change Color
+                rank_change = str(row.get('排名变化', '-'))
+                if rank_change.startswith('+'):
+                    rank_color = RED
+                elif rank_change.startswith('-') and rank_change != '-':
+                    rank_color = GREEN
+                else:
+                    rank_color = RESET
                 
                 # Format the line
                 line = [
-                    f"{row['代码']:<8}",
-                    f"{row['名称']:<8}",
-                    f"{status_color}{status:<8}{RESET}",
-                    f"{chg_color}{chg_str:<8}{RESET}",
-                    f"{str(row['现价']):<8}",
-                    f"{str(row['临界值点']):<8}",
-                    f"{dev_color}{dev_str:<8}{RESET}",
-                    f"{str(row['量比']):<8}",
-                    f"{row['状态变量时间']:<12}",
-                    f"{int_color}{int_str:<8}{RESET}"
+                    f"{row['代码']:<10}",
+                    f"{row['名称']:<10}",
+                    f"{status_color}{status:<10}{RESET}",
+                    f"{chg_color}{chg_str:<10}{RESET}",
+                    f"{str(row['现价']):<10}",
+                    f"{str(row['黄线']):<10}",
+                    f"{str(row['白线']):<10}",
+                    f"{dev_color}{dev_str:<10}{RESET}",
+                    f"{white_dev_color}{white_dev_str:<10}{RESET}",
+                    f"{str(row['金叉天数']):<10}",
+                    f"{str(row['死叉天数']):<10}",
+                    f"{rank_color}{rank_change:<6}{RESET}"
                 ]
                 print("  ".join(line))
                 
