@@ -1,0 +1,84 @@
+(masterpiece, best quality), (hand drawn), (illustration), (vintage style), (ink sketch), (vertical 10:16), (warm paper texture)
+
+**SUBJECT**: A hand-drawn financial ranking chart titled "**AI量化趋势模型 · 指数榜**"
+
+**HEADER**:
+- Title: "**AI量化趋势模型**" in bold Chinese calligraphy brush style
+- Subtitle: "**指数榜** | 2026.01.22"
+- Style: Red-gold ink brush strokes on aged paper background
+
+---
+
+**TABLE DESIGN**:
+
+**Style**: Hand-drawn vintage ranking list
+- Background: Warm aged paper texture (sepia, cream)
+- Lines: Ink brush strokes, slightly uneven for organic feel
+- Text: Black ink calligraphy for Chinese, neat handwritten numbers
+- Accents: Red circles for bullish (●), hollow circles for bearish (○)
+
+**Column Headers** (Draw as a header row):
+| 排名 | 名称 | 涨幅 | 偏离 | 信号 | 期间 |
+
+---
+
+**SECTION 1: 趋势向上** (Bullish - Above SMA20)
+
+Draw each row as a handwritten entry with:
+- A RED filled circle (●) on the left
+- Sector/Index name in **BOLD BLACK** brush calligraphy
+- 涨幅 (Daily %) in RED ink
+- 偏离 (Deviation) in RED ink
+- 信号 (Date) in black ink
+- 期间 (Interval %) in RED ink
+
+1. ● 白银现货 | 涨幅: -1.89% | 偏离: 13.37% | 信号: 25.11.10 | 期间: 83.85%
+2. ● 科创50 | 涨幅: +3.53% | 偏离: 7.14% | 信号: 25.12.22 | 期间: 14.99%
+3. ● 黄金现货 | 涨幅: +1.27% | 偏离: 6.46% | 信号: 26.01.05 | 期间: 8.30%
+4. ● 中证500 | 涨幅: +1.12% | 偏离: 6.19% | 信号: 25.12.17 | 期间: 16.84%
+5. ● 中证2000 | 涨幅: +0.95% | 偏离: 4.39% | 信号: 25.12.19 | 期间: 12.85%
+6. ● 中证1000 | 涨幅: +0.79% | 偏离: 4.08% | 信号: 25.12.19 | 期间: 12.52%
+7. ● 中证A500 | 涨幅: +0.44% | 偏离: 1.89% | 信号: 25.12.17 | 期间: 6.95%
+8. ● 上证指数 | 涨幅: +0.08% | 偏离: 1.57% | 信号: 25.12.19 | 期间: 5.82%
+9. ● 北证50 | 涨幅: +0.14% | 偏离: 1.07% | 信号: 25.12.11 | 期间: 5.31%
+10. ● 恒生指数 | 涨幅: +0.37% | 偏离: 0.97% | 信号: 26.01.02 | 期间: 0.94%
+11. ● 恒生科技 | 涨幅: +1.11% | 偏离: 0.84% | 信号: 26.01.21 | 期间: 0.00%
+12. ● 沪深300 | 涨幅: +0.09% | 偏离: 0.27% | 信号: 25.12.17 | 期间: 3.13%
+13. ● 创业板指 | 涨幅: +0.54% | 偏离: 0.08% | 信号: 26.01.21 | 期间: 0.00%
+
+---
+
+**SECTION 2: 趋势向下** (Bearish - Below SMA20)
+
+Draw each row with:
+- A HOLLOW circle (○) on the left
+- Sector/Index name in **BOLD BLACK** brush calligraphy
+- 偏离率 in GREEN ink (Sorted by distance from SMA20)
+- 期间涨幅 in GREEN ink
+
+1. ○ 上证50 | 涨幅: -0.11% | 偏离: -0.55% | 信号: 26.01.19 | 期间: -0.28%
+
+---
+
+**VISUAL ELEMENTS**:
+1. **Divider Lines**: Horizontal ink brush strokes between sections
+2. **Ranking Numbers**: Hand-drawn numerals with slight ink bleed effect
+3. **Corner Decorations**: Simple ink brush accents (waves, clouds, or geometric)
+4. **Status Legend**: Small legend at top: "● 趋势向上  ○ 趋势向下"
+
+**FOOTER**:
+- Hand-drawn banner at bottom
+- Text: "**点赞关注  每日发布趋势模型**"
+- Style: Elegant brush calligraphy, centered, with decorative underline
+
+**TYPOGRAPHY**:
+- All Chinese text: Traditional brush calligraphy style
+- Numbers: Neat handwritten, slightly slanted
+- Colors: Black ink primary, Red for positive, Green for negative, Gold accents
+
+**ATMOSPHERE**:
+- Warm, inviting, hand-crafted feel
+- Like a traditional Chinese newspaper financial section
+- Professional yet artistic
+
+(Optimized for AI: Hand-drawn aesthetic with legible Chinese text. Vertical 10:16 format. Focus on clean table structure with brush stroke elements.)

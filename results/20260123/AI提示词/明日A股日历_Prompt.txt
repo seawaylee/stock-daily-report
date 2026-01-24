@@ -1,0 +1,90 @@
+# 明日A股日历 - AI绘图Prompt (2026年1月24日 周五)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+## 标题
+**📅 明日A股日历** （红色）
+**01月24日 星期五**（黑色小字）
+
+---
+
+## 日程内容
+
+### 📢 重点关注
+
+#### 💰 新股申购
+无
+
+#### 🎁 新股上市
+**世盟股份** (001220) - 深交所主板
+├─ 发行价: 28.00元
+├─ 所属行业: 建筑装饰
+└─ 影响板块: 次新股
+
+---
+
+### ⏰ 停复牌信息
+
+#### 🔴 继续停牌 (5只)
+- **德邦股份** (603056) - 刊登重要公告，预计01/30复牌
+- **凯龙高科** (300912) - 拟筹划重大资产重组
+- **韩建河山** (603616) - 拟筹划重大资产重组
+- **民爆光电** (301362) - 刊登重要公告
+- **科达制造** (600499) - 拟筹划重大资产重组
+
+#### 🟢 复牌股
+无
+
+---
+
+### 📊 市场提醒
+
+#### ⚠️ 风险提示
+- 周五交易日，注意持股过周末风险
+- 春节临近，资金面趋紧
+
+#### 💡 机会提示
+- 世盟股份上市首日关注打新收益
+- 重组股后续留意复牌时间
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn calendar style infographic poster, Chinese A-share market tomorrow preview, 01月24日 Friday.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts, calendar/planner style layout.
+
+**Layout (9:16 vertical)**:
+- Title: "📅 明日A股日历" (red ink) with "01月24日 星期五" (black, smaller)
+- Main content divided into clear sections with hand-drawn borders
+
+**Section 1: 新股申购/上市**
+- Draw a small gift box icon 🎁
+- Text: "世盟股份 (001220) 上市"
+- Subtext: "发行价: 28.00元 | 建筑装饰"
+
+**Section 2: 停复牌信息**
+- Red dot 🔴 for suspended stocks
+- Hand-drawn list with stock names and reasons
+- 5 stocks listed: 德邦股份, 凯龙高科, 韩建河山, 民爆光电, 科达制造
+
+**Section 3: 市场提醒**
+- Yellow warning triangle ⚠️ icon
+- "周五交易日，注意持股过周末风险"
+- "春节临近，资金面趋紧"
+
+**Bottom Footer**:
+"总结不易，每天收盘后推送，点赞关注不迷路！"
+
+**Visual elements**:
+- Calendar date circled in red
+- Hand-drawn icons (gift box, warning sign, clock)
+- Bullet points with hand-drawn dots
+- Warm sepia tones, ink pen strokes
+- Paper texture background
+
+(Optimized for hand-drawn vintage calendar style)
