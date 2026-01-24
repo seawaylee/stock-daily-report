@@ -14,7 +14,8 @@ This skill encapsulates the workflow for generating the daily stock market analy
 4. **Market Calendar**: IPOs, Suspensions, and Next Week Preview.
 5. **Abnormal Alert**: Regulatory warnings (20% deviation) and "Dragon Tiger Board" analysis.
 6. **Core News Monitor**: Real-time "Important News Selection" and "Weekly Focus" from EastMoney 7x24.
-7. **AI Content Generation**: Produces prompts for images and copywriting for social media (Xiaohongshu).
+7. **Weekly Events Preview**: Next week's major market events, policy catalysts, and sector analysis (Friday-Sunday only).
+8. **AI Content Generation**: Produces prompts for images and copywriting for social media (Xiaohongshu).
 
 ## Execution
 
@@ -44,6 +45,7 @@ If a specific module fails or needs regeneration, run them individually:
 - **Calendar Only**: `./scripts/run.sh calendar`
 - **Abnormal Alert**: `./scripts/run.sh abnormal`
 - **Core News Only**: `./scripts/run.sh core_news`
+- **Weekly Preview Only**: `./scripts/run.sh weekly_preview`
 
 ## Verification Checklist
 Verify outputs in `results/<TODAY_DATE>/` (e.g., `results/20260124/`):
@@ -53,9 +55,10 @@ Verify outputs in `results/<TODAY_DATE>/` (e.g., `results/20260124/`):
 | **Fish Basin** | `趋势模型_指数.xlsx`<br>`趋势模型_题材.xlsx`<br>`AI提示词/趋势模型_指数_Prompt.txt`<br>`AI提示词/趋势模型_题材_Prompt.txt` | Daily |
 | **Ladder** | `AI提示词/涨停天梯_Prompt.txt` | Daily |
 | **B1 Selection** | `agent_outputs/result_analysis.txt`<br>`AI提示词/趋势B1选股_Prompt.txt` | Daily |
-| **Calendar** | `AI提示词/明日A股日历_Prompt.txt`<br>`AI提示词/下周A股日历_Prompt.txt` (Fri-Sun) | Daily / Weekly |
-| **Abnormal** | `AI提示词/异动监管预警_Prompt.txt` | Daily |
-| **Core News** | `AI提示词/核心要闻_Prompt.txt`<br>`AI提示词/本周要闻_Prompt.txt` (Fri-Sun) | Daily / Weekly |
+| **Calendar** | `明日A股日历_Prompt.txt`<br>`下周A股日历_Prompt.txt` (Fri-Sun) | Daily / Weekly |
+| **Abnormal** | `异动监管预警_Prompt.txt` | Daily |
+| **Core News** | `核心要闻_Prompt.txt`<br>`本周要闻_Prompt.txt` (Fri-Sun) | Daily / Weekly |
+| **Weekly Preview** | `weekly_preview_prompt_YYYYMMDD.txt` (Fri-Sun) | Weekly |
 
 ## Troubleshooting Guide
 

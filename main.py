@@ -80,7 +80,7 @@ def run_abnormal_alert(args):
     from modules.abnormal_alert import abnormal_monitor
     return abnormal_monitor.run(args.date_str, args.date_dir)
 
-def run_core_news(args):
+def run_core_news (args):
     print("\n=== [Module 7] Core News Monitor ===")
     from modules.core_news import core_news_monitor
     
@@ -89,6 +89,16 @@ def run_core_news(args):
     is_weekend = dt.weekday() >= 4
     
     return core_news_monitor.run(args.date_str, args.date_dir, run_weekly=is_weekend)
+
+def run_weekly_preview(args):
+    print("\n=== [Module 8] Weekly Events Preview ===")
+    from modules.weekly_preview import generate_weekly_preview
+    
+    # Check if Fri/Sat/Sun
+    dt = datetime.strptime(args.date_str, '%Y%m%d')
+    is_weekend = dt.weekday() >= 4
+    
+    return generate_weekly_preview.run(args.date_str, args.date_dir, run_weekly=is_weekend)
 
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
@@ -126,7 +136,8 @@ def run_all(args):
         (run_market_ladder, args),
         (run_market_calendar, args),
         (run_abnormal_alert, args),
-        (run_core_news, args)
+        (run_core_news, args),
+        (run_weekly_preview, args)
     ]
     
     with ProcessPoolExecutor(max_workers=4) as executor:
@@ -161,6 +172,7 @@ def main():
     subparsers.add_parser('calendar', parents=[parent_parser], help='Run Market Calendar')
     subparsers.add_parser('abnormal', parents=[parent_parser], help='Run Abnormal Alert')
     subparsers.add_parser('core_news', parents=[parent_parser], help='Run Core News Monitor')
+    subparsers.add_parser('weekly_preview', parents=[parent_parser], help='Run Weekly Events Preview')
 
     args = parser.parse_args()
     
@@ -190,6 +202,8 @@ def main():
         run_abnormal_alert(args)
     elif args.command == 'core_news':
         run_core_news(args)
+    elif args.command == 'weekly_preview':
+        run_weekly_preview(args)
     elif args.command == 'all':
         run_all(args)
     else:
