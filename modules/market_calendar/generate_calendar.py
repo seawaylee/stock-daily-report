@@ -154,11 +154,13 @@ Hand-drawn calendar style infographic poster, Chinese A-share market tomorrow pr
         f.write(content)
     print(f"Saved: {path}")
 
-def generate_next_week_prompt(date_str, output_dir):
-    """Generate Next Week's Calendar Prompt (Only on Fridays)"""
+def generate_next_week_prompt(date_str, output_dir, force_run=False):
+    """Generate Next Week's Calendar Prompt (Fridays or Forced)"""
     today = datetime.strptime(date_str, '%Y%m%d')
-    if today.weekday() != 4: # Only run on Friday
-        print("Not Friday, skipping Next Week Calendar.")
+    
+    # Run if Friday OR if forced (e.g. Weekend mode)
+    if today.weekday() != 4 and not force_run: 
+        print("Not Friday (and not forced), skipping Next Week Calendar.")
         return
 
     print(f"Generating Next Week's Calendar (Date: {date_str})...")
@@ -212,12 +214,12 @@ Hand-drawn weekly calendar style infographic, A-share next week preview.
 
 (Optimized for weekly planner style)
 """
-    path = os.path.join(output_dir, "AI提示词", "下周A股日历_Prompt.txt")
+    path = os.path.join(output_dir, "AI提示词", "周刊", "下周A股日历_Prompt.txt")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
     print(f"Saved: {path}")
 
-def run(date_str, output_dir):
+def run(date_str, output_dir, run_weekly=False):
     generate_tomorrow_prompt(date_str, output_dir)
-    generate_next_week_prompt(date_str, output_dir)
+    generate_next_week_prompt(date_str, output_dir, force_run=run_weekly)

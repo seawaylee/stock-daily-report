@@ -2,8 +2,7 @@
 全市场选股 + AI智能分析生成报告
 1. 300并发全市场选股（市值100亿+，排除ST）
 2. 接入Gemini分析Top10值博率
-3. 生成推荐原因MD文档
-4. 生成小红书文案（脱敏处理）
+
 """
 import sys
 import os
@@ -21,7 +20,6 @@ from common.config import MAX_WORKERS, MIN_MARKET_CAP
 from common.prompts import (
     NumpyEncoder, 
     get_analysis_prompt, 
-    get_xiaohongshu_prompt, 
     get_image_prompt
 )
 
@@ -300,48 +298,7 @@ def call_gemini_analysis(selected_stocks, date_dir):
         return None, prompt
 
 
-def generate_xiaohongshu_post(gemini_analysis, selected_stocks, date_dir):
-    """使用Agent生成小红书文案（脱敏处理）"""
-    # 准备脱敏后的股票列表
-    masked_stocks = []
-    for s in selected_stocks:
-        masked_stocks.append({
-            'name': s['name'],
-            'name_masked': desensitize_stock_name(s['name']),
-            'code': s['code'],
-            'code_masked': desensitize_stock_code(s['code']),
-            'industry': s.get('industry', ''),
-        })
-    
-    # 准备脱敏说明
-    prompt = get_xiaohongshu_prompt(
-        gemini_analysis, 
-        json.dumps(masked_stocks, ensure_ascii=False, indent=2), 
-        datetime.now().strftime('%Y-%m-%d')
-    )
 
-    # 保存任务到文件供Agent处理
-    agent_task_dir = os.path.join(date_dir, "agent_tasks")
-    os.makedirs(agent_task_dir, exist_ok=True)
-    
-    task_file = os.path.join(agent_task_dir, "task_xiaohongshu.txt")
-    with open(task_file, 'w', encoding='utf-8') as f:
-        f.write(prompt)
-    
-    print(f"📝 小红书任务已保存: {task_file}")
-    
-    # 读取Agent生成的结果
-    agent_output_dir = os.path.join(date_dir, "agent_outputs")
-    output_file = os.path.join(agent_output_dir, "result_xiaohongshu.txt")
-    
-    if os.path.exists(output_file):
-        with open(output_file, 'r', encoding='utf-8') as f:
-            result = f.read()
-        print("✅ 小红书文案生成完成")
-        return result, prompt
-    else:
-        print(f"⚠️  等待Agent生成结果: {output_file}")
-        return None, prompt
 
 
 def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
@@ -367,7 +324,6 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
             'RSI': round(s.get('RSI', 0), 2),
         })
     
-    # 从小红书文案提取次日策略
     # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
     
@@ -475,7 +431,7 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         return None, prompt
 
 
-def save_reports(gemini_analysis, xiaohongshu_post, today):
+def save_reports(gemini_analysis, today):
     """保存报告（简化版 - 仅保存到agent_outputs）"""
     # 注释：外层重复文件已移除，所有结果集中在 agent_outputs/
     # 此函数保留用于向后兼容，actual saving done in agent workflow
@@ -484,10 +440,10 @@ def save_reports(gemini_analysis, xiaohongshu_post, today):
     
     print(f"� 分析结果已保存到: {date_dir}/agent_outputs/")
     print(f"   - result_analysis.txt")
-    print(f"   - result_xiaohongshu.txt")
+
     print(f"   - result_image_prompt.txt")
     
-    return None, None
+    return None
 
 
 def save_prompts(prompts_dict, today):
@@ -588,7 +544,6 @@ def run(date_dir=None, force=False):
     os.makedirs(date_dir, exist_ok=True)
     
     gemini_analysis = None
-    xiaohongshu_post = None
     
     # 4. 调用AI分析 (仅当有选股时)
     if not selected:
@@ -622,15 +577,8 @@ def run(date_dir=None, force=False):
             else:
                  print("⚠️ 未找到 selected_top10.json，将使用全部股票")
 
-            # 生成小红书文案
-            xiaohongshu_post, xhs_prompt = generate_xiaohongshu_post(gemini_analysis, top_stocks_list, date_dir)
-            if xiaohongshu_post is None:
-                print("\n⏸️  脚本暂停：等待Agent工作流处理小红书文案")
-                return True
-            print("✅ 小红书文案生成完成")
-            
             # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
-            # 目的：解耦对小红书文案的依赖，直接使用分析结果
+            # 目的：直接从分析结果回填信息
             enrich_stocks_from_analysis(top_stocks_list, date_dir)
             # -------------------------------------------------------------------
         except Exception as e_ai:
@@ -656,7 +604,7 @@ def run(date_dir=None, force=False):
             print(f"⚠️ 图片提示词生成失败: {e_img}")
 
     # 4. 保存报告
-    save_reports(gemini_analysis, xiaohongshu_post, today)
+    save_reports(gemini_analysis, today)
     return True
 
 

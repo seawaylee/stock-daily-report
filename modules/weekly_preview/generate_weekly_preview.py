@@ -92,8 +92,10 @@ A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style week
 (Optimized for high-quality vector-style sketch render with professional financial infographic layout)
 """
     
-    # Save prompt following naming convention: weekly_preview_prompt_YYYYMMDD.txt
-    prompt_path = os.path.join(output_dir, f"weekly_preview_prompt_{date_str}.txt")
+    # Save prompt following naming convention: AI提示词/周刊/下周重要事件_Prompt.txt
+    prompt_dir = os.path.join(output_dir, "AI提示词", "周刊")
+    os.makedirs(prompt_dir, exist_ok=True)
+    prompt_path = os.path.join(prompt_dir, "下周重要事件_Prompt.txt")
     with open(prompt_path, 'w', encoding='utf-8') as f:
         f.write(prompt_content)
     print(f"Saved Image Prompt: {prompt_path}")

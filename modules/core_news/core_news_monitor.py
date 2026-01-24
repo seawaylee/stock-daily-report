@@ -379,4 +379,4 @@ Hand-drawn financial infographic poster, China A-share weekly summary.
 - Section 1: Top 10 Weekly News List.
 - Footer: "Like & Follow".
 """
-        save_prompt(weekly_content, "本周要闻_Prompt.txt", output_dir)
+        save_prompt(weekly_content, "周刊/本周要闻_Prompt.txt", output_dir)
