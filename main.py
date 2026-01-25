@@ -100,6 +100,16 @@ def run_weekly_preview(args):
     
     return generate_weekly_preview.run(args.date_str, args.date_dir, run_weekly=is_weekend)
 
+def run_earnings_analysis(args):
+    print("\n=== [Module 9] Earnings Analysis ===")
+    from modules.earnings import run as run_earnings
+    return run_earnings(args.date_str, args.date_dir)
+
+def run_earnings_prompt(args):
+    print("\n=== [Module 10] Earnings Performance Prompt ===")
+    from modules.earnings import run_prompt_gen
+    return run_prompt_gen(args.date_str, args.date_dir)
+
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
     print(f"Target Directory: {args.date_dir}")
@@ -137,7 +147,8 @@ def run_all(args):
         (run_market_calendar, args),
         (run_abnormal_alert, args),
         (run_core_news, args),
-        (run_weekly_preview, args)
+        (run_weekly_preview, args),
+        (run_earnings_prompt, args)
     ]
     
     with ProcessPoolExecutor(max_workers=4) as executor:
@@ -173,6 +184,8 @@ def main():
     subparsers.add_parser('abnormal', parents=[parent_parser], help='Run Abnormal Alert')
     subparsers.add_parser('core_news', parents=[parent_parser], help='Run Core News Monitor')
     subparsers.add_parser('weekly_preview', parents=[parent_parser], help='Run Weekly Events Preview')
+    subparsers.add_parser('earnings', parents=[parent_parser], help='Run Earnings Analysis')
+    subparsers.add_parser('earnings_prompt', parents=[parent_parser], help='Generate Earnings Performance Prompt')
 
     args = parser.parse_args()
     
@@ -206,6 +219,10 @@ def main():
         run_weekly_preview(args)
     elif args.command == 'all':
         run_all(args)
+    elif args.command == 'earnings':
+        run_earnings_analysis(args)
+    elif args.command == 'earnings_prompt':
+        run_earnings_prompt(args)
     else:
         parser.print_help()
 

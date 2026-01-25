@@ -40,6 +40,25 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
         except Exception as e:
             print(f"Error loading cache: {e}, re-fetching...")
 
+        except Exception as e:
+            print(f"Error loading cache: {e}, re-fetching...")
+
+    # --- Optim: Check persistent cache BEFORE network ---
+    persistent_cache = "results/stock_list_cache.csv"
+    if os.path.exists(persistent_cache):
+        print(f"Loading from persistent cache: {persistent_cache}")
+        try:
+            result = pd.read_csv(persistent_cache, dtype={'code': str})
+            if exclude_st:
+                result = result[~result['name'].str.contains('ST', case=False, na=False)]
+            if min_market_cap > 0:
+                result['market_cap'] = pd.to_numeric(result['market_cap'], errors='coerce').fillna(0)
+                result = result[result['market_cap'] >= min_market_cap]
+            print(f"✅ Loaded {len(result)} stocks from persistent cache (Skipping Network).")
+            return result
+        except Exception as e:
+            print(f"Persistent cache load failed: {e}")
+
     try:
         # 获取A股股票列表（包含市值和行业信息）
         # Explicitly using EastMoney Source
@@ -53,7 +72,7 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
                     break
             except Exception as e:
                 print(f"尝试 {i+1}/3 获取股票列表(EM)失败: {e}")
-                time.sleep(2)
+                time.sleep(1)
                 
         if stock_info is None or stock_info.empty:
              # Try loading from previous cache if available (Fallback)
@@ -195,6 +214,73 @@ def _fetch_industries_for_stocks(df: pd.DataFrame, sample_size: int = 200) -> pd
     # 将获取到的行业信息填充回原DataFrame
     df['industry'] = df['code'].map(industry_map).fillna('')
     
+    return df
+
+def fetch_specific_industries(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Fetch industry for specific stocks in the dataframe if missing.
+    Uses ThreadPoolExecutor for parallel fetching.
+    """
+    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    
+    missing_mask = (df['industry'] == '') | (df['industry'].isnull()) | (df['industry'] == '其他')
+    target_df = df[missing_mask]
+    
+    if target_df.empty:
+        return df
+        
+    print(f"Refining Industry info for {len(target_df)} stocks (Parallel)...")
+    
+    industry_map = {}
+    
+    def fetch_one(code):
+        try:
+            info = ak.stock_individual_info_em(symbol=code)
+            industry_row = info[info['item'] == '行业']
+            if not industry_row.empty:
+                return code, industry_row.iloc[0]['value']
+        except Exception:
+            pass
+        return code, None
+
+    max_workers = 8
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(fetch_one, row['code']) for _, row in target_df.iterrows()]
+        
+        for future in tqdm(as_completed(futures), total=len(target_df), desc="补全行业(并行)"):
+            code, ind = future.result()
+            if ind:
+                industry_map[code] = ind
+            
+    # Update
+    for code, ind in industry_map.items():
+        df.loc[df['code'] == code, 'industry'] = ind
+        
+    # --- Optim: Persist updates back to global cache ---
+    try:
+        import os
+        cache_path = "results/stock_list_cache.csv"
+        if os.path.exists(cache_path) and industry_map:
+            print(f"Persisting {len(industry_map)} new industries to {cache_path}...")
+            # Load as string to preserve 'code' (e.g. 000001)
+            full_df = pd.read_csv(cache_path, dtype={'code': str})
+            
+            updated_count = 0
+            for code, ind in industry_map.items():
+                if ind:
+                    # Update if exists in full_df
+                    mask = full_df['code'] == code
+                    if mask.any():
+                        full_df.loc[mask, 'industry'] = ind
+                        updated_count += 1
+            
+            if updated_count > 0:
+                full_df.to_csv(cache_path, index=False)
+                print(f"Saved {updated_count} industry updates to persistent cache.")
+    except Exception as e:
+        print(f"Failed to persist industry updates: {e}")
+        
     return df
 
 
