@@ -3,3 +3,7 @@ __pycache__/
 .env
 .vscode/
 .idea/
+node_modules/
+*.mp4
+remotion-video/public/ladder_data.json
+remotion-video/public/performance_data.json

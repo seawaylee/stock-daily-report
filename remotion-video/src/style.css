@@ -1,0 +1,12 @@
+@import url('https://fonts.font.im/css2?family=ZCOOL+KuaiLe&display=swap');
+@import url('https://fonts.font.im/css2?family=Noto+Serif+SC:wght@700&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #F5E6C8;
+}
+
+* {
+  box-sizing: border-box;
+}
