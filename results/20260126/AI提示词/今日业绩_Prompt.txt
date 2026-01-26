@@ -1,4 +1,4 @@
-# 20260126 今日业绩披露 - AI绘图Prompt (手绘风格)
+# 20260126 今日业绩披露 - AI绘图Prompt
 
 ## 图片规格
 - 比例: 9:16 竖版
@@ -7,9 +7,9 @@
 - 字体: 手写体 (Handwritten Chinese)
 
 ## 标题
-**01月26日 今日业绩速递** (Big Bold Red/Black Brush)
+**01月26日 业绩披露速递** (Big Bold Red/Black Brush)
 
-## 核心列表 (Sticky Note Style)
+### 📅 今日披露 (7家)
 ```
 Header: [股票名称] [涨幅] (行业 | 市值 | 净利润 | 上年同期)
 ------------------------------

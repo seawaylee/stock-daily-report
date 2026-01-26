@@ -256,3 +256,139 @@ def merge_excel_sheets(index_path, sector_path, output_path):
         import traceback
         traceback.print_exc()
         return False
+
+def save_merged_excel(df_index, df_sector, output_path):
+    """
+    Directly save two DataFrame (Index + Sector) into ONE sheet with separator.
+    """
+    import os
+    import pandas as pd
+    from datetime import datetime
+    from openpyxl import load_workbook
+    from openpyxl.styles import PatternFill, Font, Alignment
+    
+    try:
+        # Ensure output directory exists
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        # Create Separator & Titles
+        separator_data = {col: [''] for col in df_index.columns}
+        separator_data[df_index.columns[0]] = ['═══════════ 题材趋势 ═══════════']
+        df_separator = pd.DataFrame(separator_data)
+        
+        index_title_data = {col: [''] for col in df_index.columns}
+        index_title_data[df_index.columns[0]] = ['═══════════ 指数趋势 ═══════════']
+        df_index_title = pd.DataFrame(index_title_data)
+        
+        # Align Columns
+        # Ensure sector df has same columns as index df for concatenation
+        for col in df_index.columns:
+            if col not in df_sector.columns:
+                df_sector[col] = ''
+        
+        # Reorder sector columns to match index
+        df_sector = df_sector[df_index.columns]
+        
+        # Concatenate: Title -> Index -> Separator -> Sector
+        df_combined = pd.concat([
+            df_index_title,
+            df_index,
+            df_separator,
+            df_sector
+        ], ignore_index=True)
+        
+        # --- Styling Logic (Same as before) ---
+        def color_status(val):
+            if not isinstance(val, str): return ''
+            if val == 'YES': return 'color: red'
+            if val == 'NO': return 'color: green'
+            return ''
+            
+        def color_pct(val):
+            try:
+                if not isinstance(val, str): return ''
+                v = float(val.strip('%'))
+                return 'color: red' if v > 0 else 'color: green'
+            except: return ''
+
+        pct_columns = [c for c in ['涨幅%', '黄线偏离率', '白线偏离率', '偏离率', '区间涨幅%'] if c in df_combined.columns]
+        
+        styler = df_combined.style.map(color_status, subset=['状态'])\
+                                .map(color_pct, subset=pct_columns)
+        
+        def highlight_important_row(row):
+            # Skip Separator Rows
+            if '═══════════' in str(row.iloc[0]):
+                return [''] * len(row)
+                
+            today_str = datetime.now().strftime("%y.%m.%d")
+            should_highlight = False
+            
+            try:
+                if '金叉天数' in row and str(row['金叉天数']) == '1': should_highlight = True
+                if '死叉天数' in row and str(row['死叉天数']) == '1': should_highlight = True
+                if '状态变量时间' in row and str(row['状态变量时间']).strip() == today_str: should_highlight = True
+                if '排名变化' in row and str(row['排名变化']) == '新': should_highlight = True
+            except: pass
+            
+            if should_highlight:
+                return ['background-color: #FFFFCC'] * len(row)
+            return [''] * len(row)
+
+        styler = styler.apply(highlight_important_row, axis=1)
+
+        # Save
+        styler.to_excel(output_path, index=False, engine='openpyxl')
+        
+        # --- Post-Processing (Column Widths & Separator Header) ---
+        wb = load_workbook(output_path)
+        ws = wb.active
+        
+        # 1. Adjust Widths
+        for column in ws.columns:
+            max_length = 0
+            column_name = str(column[0].value) if column[0].value else ""
+            column_cells = [cell for cell in column]
+            
+            for cell in column_cells:
+                try:
+                    cell_value = str(cell.value) if cell.value else ""
+                    if '═══════════' in cell_value: continue
+                    length = sum(2 if ord(c) > 127 else 1 for c in cell_value)
+                    if length > max_length: max_length = length
+                except: pass
+            
+            adjusted_width = max(max_length + 2, 8)
+            if column_name == '代码': adjusted_width = min(adjusted_width, 12)
+            elif column_name in ['状态', '涨幅%', '排名变化', '金叉天数', '死叉天数']: adjusted_width = min(adjusted_width, 10)
+                
+            ws.column_dimensions[column_cells[0].column_letter].width = adjusted_width
+        
+        # 2. Style Separator Rows
+        yellow_fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+        bold_font = Font(bold=True, size=12)
+        center_align = Alignment(horizontal='center', vertical='center')
+        
+        for row in ws.iter_rows():
+            cell_value = str(row[0].value) if row[0].value else ""
+            if '═══════════' in cell_value:
+                max_col = ws.max_column
+                start_cell = row[0]
+                end_cell = row[max_col-1]
+                ws.merge_cells(start_row=start_cell.row, start_column=start_cell.column, 
+                               end_row=end_cell.row, end_column=end_cell.column)
+                
+                start_cell.fill = yellow_fill
+                start_cell.font = bold_font
+                start_cell.alignment = center_align
+                for cell in row: cell.fill = yellow_fill
+            else:
+                for cell in row: cell.alignment = center_align
+        
+        wb.save(output_path)
+        print(f"✅ Merged Excel Saved (Single Sheet): {output_path}")
+        return True
+        
+    except Exception as e:
+        print(f"Failed to save Merged Excel: {e}")
+        return False

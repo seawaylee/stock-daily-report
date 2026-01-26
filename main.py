@@ -39,17 +39,13 @@ def run_fish_basin(args):
     print("\n--- Part B: Sectors ---")
     df_sector = fish_basin_sectors.run(args.date_dir, save_excel=False)
     
-    # 3. Save Merged Excel (The only Excel output)
+    # 3. Save Merged Excel (Index and Sector together in ONE sheet)
     if not df_index.empty or not df_sector.empty:
         merged_path = os.path.join(args.date_dir, "趋势模型_合并.xlsx")
         print(f"\nSaving Merged Excel: {merged_path}")
         try:
-            with pd.ExcelWriter(merged_path) as writer:
-                if not df_index.empty:
-                    df_index.to_excel(writer, sheet_name='指数', index=False)
-                if not df_sector.empty:
-                    df_sector.to_excel(writer, sheet_name='题材', index=False)
-            print("Merged Excel Saved.")
+            from modules.fish_basin.fish_basin_helper import save_merged_excel
+            save_merged_excel(df_index, df_sector, merged_path)
         except Exception as e:
             print(f"Failed to save Merged Excel: {e}")
 

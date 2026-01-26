@@ -37,6 +37,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 def process_single_stock(args):
     """处理单只股票"""
     code, name, market_cap, industry = args
+    # Add random delay to prevent request bursts (Anti-Scraping / Flow Control)
+    time.sleep(random.uniform(0.1, 1.0))
     try:
         df = get_stock_data(code, 300)
         if df is None or len(df) < 120:

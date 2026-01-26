@@ -55,7 +55,7 @@ def apply_patch():
                 print(f"❌ Exception (Attempt {attempt+1}/{max_retries}): {url} - {str(e)}")
                 
                 if attempt < max_retries - 1:
-                    time.sleep(random.uniform(1, 2))
+                    time.sleep(random.uniform(2, 5))
                     continue
                 
                 # Raise on final failure

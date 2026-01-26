@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, useVideoConfig, Sequence, useCurrentFrame, interpolate, spring } from 'remotion';
+import { AbsoluteFill, useVideoConfig, Sequence, useCurrentFrame, interpolate, spring, staticFile } from 'remotion';
 import perfData from '../public/performance_data.json';
 
 // Font: Professional Serif/Sans combination
@@ -7,11 +7,7 @@ const FONT_FAMILY_SERIF = '"Noto Serif SC", serif';
 const FONT_FAMILY_SANS = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
 // Theme Configurations: Professional, Red Intro Background, Top 10 Layout
-const STYLES = {
-    paper: {
-        bg: '#F5F5F5', // Clean off-white
-        texture: 'url("https://www.transparenttextures.com/patterns/dust.png")', // Subtle noise
-    },
+const STYLES: Record<string, any> = {
     growth: {
         color: '#D32F2F',
         bg: '#D32F2F', // Header BG
@@ -37,6 +33,8 @@ const STYLES = {
         sub: 'RISK WARNING'
     }
 };
+
+const BACKGROUND_TEXTURE = 'url("https://www.transparenttextures.com/patterns/dust.png")';
 
 const StickyNote: React.FC<{ stock: any; index: number; theme: any }> = ({ stock, index, theme }) => {
     const { fps } = useVideoConfig();
@@ -101,7 +99,7 @@ const StickyNote: React.FC<{ stock: any; index: number; theme: any }> = ({ stock
 };
 
 const SectionSlide: React.FC<{ section: any }> = ({ section }) => {
-    const theme = STYLES[section.key as keyof typeof STYLES] || STYLES.growth;
+    const theme = STYLES[section.key] || STYLES.growth;
 
     // Ensure 10 items for Top 10 density
     let items = [...section.items];
@@ -110,11 +108,11 @@ const SectionSlide: React.FC<{ section: any }> = ({ section }) => {
     }
 
     return (
-        <AbsoluteFill style={{ backgroundColor: STYLES.paper.bg }}>
+        <AbsoluteFill style={{ backgroundColor: '#F5F5F5' }}>
             {/* Texture */}
             <div style={{
                 position: 'absolute', inset: 0,
-                backgroundImage: STYLES.paper.texture,
+                backgroundImage: BACKGROUND_TEXTURE,
                 opacity: 0.4
             }} />
 
@@ -146,7 +144,6 @@ const SectionSlide: React.FC<{ section: any }> = ({ section }) => {
                 }}>{theme.sub}</div>
             </div>
 
-            {/* List Content - Flex Column asking for full height */}
             {/* List Content - Flex Column asking for full height */}
             <div style={{
                 position: 'absolute',
@@ -184,16 +181,17 @@ const SectionSlide: React.FC<{ section: any }> = ({ section }) => {
     );
 };
 
-// Use the generated red background for intro
+// Use staticFile instead of require for reliable asset resolution
 const Intro: React.FC = () => {
     const frame = useCurrentFrame();
     const scale = interpolate(frame, [0, 60], [1, 1.05]);
+    const introImg = staticFile('intro_bg.png');
 
     return (
         <AbsoluteFill>
             <div style={{
                 position: 'absolute', inset: 0,
-                backgroundImage: `url(${require('../public/intro_bg.png')})`,
+                backgroundImage: `url("${introImg}")`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 transform: `scale(${scale})`

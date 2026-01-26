@@ -5,7 +5,8 @@
         "start": "remotion preview src/index.tsx",
         "render": "remotion render src/index.tsx LadderVideo out.mp4",
         "render-ladder": "remotion render src/index.tsx LadderVideo ladder.mp4 --concurrency=1",
-        "render-perf": "remotion render src/index.tsx PerformanceVideo performance.mp4 --concurrency=1"
+        "render-perf": "remotion render src/index.tsx PerformanceVideo performance.mp4 --concurrency=1",
+        "render-news": "remotion render src/index.tsx NewsVideo news.mp4 --concurrency=1"
     },
     "dependencies": {
         "remotion": "^3.0.0",

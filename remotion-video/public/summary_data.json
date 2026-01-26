@@ -1,0 +1,38 @@
+{
+    "date": "2026-01-26",
+    "market_mode": "防御避险 mode",
+    "sentiment_score": 35,
+    "summary_bullets": [
+        "科技全线退潮，机器/华为遭千亿抛售",
+        "资金切换防御，医药/煤炭/黄金爆发",
+        "高标锋龙断板，白银有色5板卡位"
+    ],
+    "hot_sectors": [
+        {
+            "name": "医药流感",
+            "change": "+3.5%",
+            "type": "up"
+        },
+        {
+            "name": "贵金属",
+            "change": "+2.8%",
+            "type": "up"
+        },
+        {
+            "name": "煤炭开采",
+            "change": "+1.9%",
+            "type": "up"
+        },
+        {
+            "name": "机器人",
+            "change": "-4.2%",
+            "type": "down"
+        },
+        {
+            "name": "半导体",
+            "change": "-3.8%",
+            "type": "down"
+        }
+    ],
+    "strategy": "情绪退潮期 | 严控仓位 | 高低切换"
+}
