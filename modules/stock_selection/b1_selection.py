@@ -123,24 +123,31 @@ def run_full_selection(force=False):
     selected = []
     all_results = []
     
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(process_single_stock, args): args[0] for args in args_list}
-        
-        for future in tqdm(as_completed(futures), total=len(futures), desc="选股进度"):
-            result = future.result()
-            if result is not None:
-                all_results.append(result)
-                if result['signal']:
-                    selected.append(result)
-    
     # 保存结果
     today_timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     
-    # 保存所有原始数据
+    # 保存所有原始数据 (Incremental)
     raw_file = os.path.join(date_dir, f"all_stocks_{today_timestamp}.jsonl")
-    with open(raw_file, 'w', encoding='utf-8') as f:
-        for item in all_results:
-            f.write(json.dumps(item, cls=NumpyEncoder, ensure_ascii=False) + '\n')
+    print(f"📁 实时数据将写入: {raw_file}")
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(process_single_stock, args): args[0] for args in args_list}
+        
+        # Open file in append mode for incremental writing
+        with open(raw_file, 'w', encoding='utf-8') as f_out:
+            for future in tqdm(as_completed(futures), total=len(futures), desc="选股进度"):
+                result = future.result()
+                if result is not None:
+                    # Incremental Write
+                    f_out.write(json.dumps(result, cls=NumpyEncoder, ensure_ascii=False) + '\n')
+                    f_out.flush() # Ensure it flows to disk
+                    
+                    all_results.append(result)
+                    if result['signal']:
+                        selected.append(result)
+    
+    # raw_file is already written incrementally
+    
     
     print(f"\n📁 原始数据: {raw_file} ({len(all_results)} 条)")
     

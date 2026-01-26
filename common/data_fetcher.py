@@ -315,7 +315,7 @@ def get_stock_data(code: str, days: int = 300) -> Optional[pd.DataFrame]:
                 if df is not None and not df.empty:
                     break
             except:
-                time.sleep(0.5)
+                time.sleep(1 + (i * 0.5))  # Backoff: 1s, 1.5s, 2s
 
         
         if df is None or len(df) == 0:

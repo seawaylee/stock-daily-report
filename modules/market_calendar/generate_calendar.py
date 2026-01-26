@@ -44,9 +44,17 @@ def fetch_suspension_data(date_str):
     except:
         return pd.DataFrame()
 
-def generate_tomorrow_prompt(date_str, output_dir):
-    """Generate Tomorrow's Calendar Prompt"""
-    print(f"Generating Tomorrow's Calendar for {date_str}...")
+    print(f"Saved: {path}")
+
+def generate_merged_tomorrow_prompt(date_str, output_dir):
+    """
+    Generate Merged Tomorrow's Calendar Prompt
+    Includes:
+    1. IPO/Listing (Data-driven)
+    2. Suspensions (Data-driven)
+    3. Macro/Sector Events (Placeholder for Agent)
+    """
+    print(f"Generating Merged Tomorrow's Calendar for {date_str}...")
     
     # Calculate Tomorrow's date
     today = datetime.strptime(date_str, '%Y%m%d')
@@ -54,24 +62,22 @@ def generate_tomorrow_prompt(date_str, output_dir):
     tomorrow_str = tomorrow.strftime('%Y%m%d')
     tomorrow_disp = tomorrow.strftime('%m月%d日 %A')
     
-    # Fetch Data
+    # --- Part 1: Fetch Data (IPO/Suspensions) ---
     ipo_df = fetch_ipo_data()
     susp_df = fetch_suspension_data(tomorrow_str)
     
-    # Process IPO
     ipo_text = "无"
     listing_text = "无"
     
     if not ipo_df.empty:
-        # Check for IPO Subscription tomorrow
+        # IPO Subscription
         sub_tomorrow = ipo_df[ipo_df['申购日期'] == tomorrow.strftime('%Y-%m-%d')]
         if not sub_tomorrow.empty:
             ipo_text = ""
             for _, row in sub_tomorrow.iterrows():
                 ipo_text += f"**{row['股票简称']}** ({row['股票代码']})\n"
                 
-        # Check for Listing tomorrow (Note: '上市日期' might be NaN or future)
-        # Using a loose check if column exists
+        # IPO Listing
         if '上市日期' in ipo_df.columns:
             list_tomorrow = ipo_df[ipo_df['上市日期'] == tomorrow.strftime('%Y-%m-%d')]
             if not list_tomorrow.empty:
@@ -79,17 +85,13 @@ def generate_tomorrow_prompt(date_str, output_dir):
                 for _, row in list_tomorrow.iterrows():
                     listing_text += f"**{row['股票简称']}** ({row['股票代码']}) - 发行价 {row['发行价格']}元\n"
 
-    # Process Suspension
     susp_text = "无"
     resump_text = "无"
     if not susp_df.empty:
-        # Filter Logic could be complex, simplifying for prompt generation
-        # Just listing top 5 suspensions
         susp_text = ""
         for _, row in susp_df.head(5).iterrows():
             susp_text += f"- **{row['名称']}** ({row['代码']}) - {row['停牌原因']}\n"
             
-        # Check resumption (if column exists or inferred)
         if '预计复牌时间' in susp_df.columns:
             resump = susp_df[susp_df['预计复牌时间'].astype(str).str.contains(tomorrow.strftime('%Y-%m-%d'), na=False)]
             if not resump.empty:
@@ -97,129 +99,66 @@ def generate_tomorrow_prompt(date_str, output_dir):
                 for _, row in resump.iterrows():
                     resump_text += f"**{row['名称']}** ({row['代码']})\n"
 
-    # Create Prompt Content
-    content = f"""# 明日A股日历 - AI绘图Prompt ({tomorrow_disp})
+    # --- Part 2: Generate Merged Content ---
+    content = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
 
-## 图片规格
-- 比例: 9:16 竖版
-- 风格: 手绘/手账风格，暖色纸张质感
-- 背景色: #F5E6C8 纸黄色
+A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style tomorrow events preview infographic poster.
 
-## 标题
-**📅 明日A股日历** （红色）
-**{tomorrow.strftime('%m月%d日')}**（黑色小字）
+**LAYOUT & COMPOSITION:**
+- **Canvas**: 1600x2560 vertical.
+- **Background**: Hand-drawn warm paper texture (#F5E6C8).
+- **Header**: 
+  - Title: "明日A股日历" (Tomorrow's A-Share Calendar)
+  - Date: "{tomorrow_disp}"
+  - Icon: A hand-sketched calendar or sunrise icon.
 
----
+**MAIN CONTENT - EVENT SECTIONS:**
 
-## 日程内容
+### 1. 📢 宏观/政策 (Macro & Policy) - [待补充]
+   - Event: [待补充: 明日重点经济数据/会议]
+   - Impact: [待补充: 预计影响]
 
-### 📢 重点关注
+### 2. 📊 行业/板块 (Sector Focus) - [待补充]
+   - Focus: [待补充: 明日重点关注板块]
+   - Logic: [待补充: 驱动逻辑]
 
-#### 💰 新股申购
+### 3. 💰 新股/交易 (IPO & Market) - [数据生成]
+   - **IPO Subscription (申购)**: 
 {ipo_text}
-
-#### 🎁 新股上市
+   - **IPO Listing (上市)**: 
 {listing_text}
-
----
-
-### ⏰ 停复牌信息
-
-#### 🔴 停牌关注
+   - **Suspension (停牌)**: 
 {susp_text}
-
-#### 🟢 复牌关注
+   - **Resumption (复牌)**: 
 {resump_text}
 
----
+### 4. 📢 个股/业绩 (Stock Events) - [待补充]
+   - [待补充: 明日财报/解禁/事件驱动个股]
 
-## AI绘图Prompt (English)
+**FOOTER SECTION:**
+- **Strategy**: "策略建议: [待补充: 防守/进攻/观望]"
+- **CTA**: "每日盘前更新，点赞关注不迷路"
 
-Hand-drawn calendar style infographic poster, Chinese A-share market tomorrow preview, {tomorrow_disp}.
+**ART STYLE DETAILS:**
+- **Lines**: Charcoal and graphite pencil strokes.
+- **Color Palette**: Vintage hues - faded blue, deep gold, warm yellow.
+- **Icons**: Hand-drawn icons for each section.
 
-**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
-
-**Layout**:
-- Title: "📅 明日A股日历" (Red)
-- Sections for IPO (Goal Icon 💰), Suspension (Red Dot 🔴), Resumption (Green Dot 🟢).
-- Hand-drawn icons and borders.
-
-(Optimized for hand-drawn calendar style)
+(Optimized for high-quality vector-style sketch render)
 """
     
-    # Save
     path = os.path.join(output_dir, "AI提示词", "明日A股日历_Prompt.txt")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
-    print(f"Saved: {path}")
+    print(f"Saved Merged Prompt: {path}")
 
-def generate_next_week_prompt(date_str, output_dir, force_run=False):
-    """Generate Next Week's Calendar Prompt (Fridays or Forced)"""
-    today = datetime.strptime(date_str, '%Y%m%d')
-    
-    # Run if Friday OR if forced (e.g. Weekend mode)
-    if today.weekday() != 4 and not force_run: 
-        print("Not Friday (and not forced), skipping Next Week Calendar.")
-        return
-
-    print(f"Generating Next Week's Calendar (Date: {date_str})...")
-    
-    # Logic similar to Tomorrow's prompt but aggregation for next week
-    dates = get_next_week_dates(date_str)
-    start_date = dates[0]
-    end_date = dates[-1]
-    
-    content = f"""# 下周A股日历 - AI绘图Prompt ({start_date}-{end_date})
-
-## 图片规格
-- 比例: 9:16 竖版
-- 风格: 手绘/手账风格，暖色纸张质感
-- 背景色: #F5E6C8 纸黄色
-
-## 标题
-**📅 下周A股大事件前瞻** （红色）
-**{start_date[4:]}-{end_date[4:]}**
-
----
-
-## 周日历内容 (自动生成占位符，请人工补充大事件)
-
-### 周一 {dates[0][4:6]}/{dates[0][6:]}
-- 关注: 新股申购/停复牌
-
-### 周二 {dates[1][4:6]}/{dates[1][6:]}
-- 关注: 市场走势
-
-### 周三 {dates[2][4:6]}/{dates[2][6:]}
-- 关注: 行业动态
-
-### 周四 {dates[3][4:6]}/{dates[3][6:]}
-- 关注: 资金流向
-
-### 周五 {dates[4][4:6]}/{dates[4][6:]}
-- 关注: 周末效应
-
----
-
-## AI绘图Prompt (English)
-
-Hand-drawn weekly calendar style infographic, A-share next week preview.
-
-**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic.
-
-**Layout**:
-- 5 Day Columns (Mon-Fri)
-- Hand-drawn icons for key events.
-
-(Optimized for weekly planner style)
-"""
-    path = os.path.join(output_dir, "AI提示词", "周刊", "下周A股日历_Prompt.txt")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print(f"Saved: {path}")
 
 def run(date_str, output_dir, run_weekly=False):
-    generate_tomorrow_prompt(date_str, output_dir)
+    # 1. Merged Calendar (Events + IPO/Suspension)
+    generate_merged_tomorrow_prompt(date_str, output_dir)
+    
+    # 2. Next Week (if Friday)
     generate_next_week_prompt(date_str, output_dir, force_run=run_weekly)
+
+

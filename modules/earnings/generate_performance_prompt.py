@@ -173,64 +173,83 @@ def run(date_str, output_dir):
     cand_loss = enrich_with_industry(cand_loss, stock_list)
     
     # 6. Generate Prompts
-    generate_prompt_file(cand_growth, cand_turnaround, cand_to_loss, cand_loss, date_str, output_dir, profit_fmt=parse_profit_str)
-    generate_today_prompt(date_str, output_dir, stock_list, forecast_df, profit_fmt=parse_profit_str)
+    
+    # Check if Fri/Sat/Sun for Weekly "Earnings Gold Digging"
+    dt = datetime.strptime(date_str, '%Y%m%d')
+    is_weekend = dt.weekday() >= 4
+    
+    if is_weekend:
+        print("📅 Weekend detected: Generating Earnings Gold Digging for Weekly Report...")
+        # Save to Weekly folder
+        generate_prompt_file(cand_growth, cand_turnaround, cand_to_loss, cand_loss, date_str, output_dir, profit_fmt=parse_profit_str, is_weekly=True)
+    else:
+        print("📅 Weekday: Skipping Earnings Gold Digging (Weekly Report Only).")
+
+    # Generate Merged Today/Tomorrow Prompt
+    generate_merged_daily_prompt(date_str, output_dir, stock_list, forecast_df, profit_fmt=parse_profit_str)
     
     return True
 
-def generate_today_prompt(date_str, output_dir, valid_stock_df, all_forecast_df, profit_fmt=None):
+def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forecast_df, profit_fmt=None):
     """
-    Generate prompt for Today's Earnings Disclosure.
+    Generate merged prompt for Today's and Tomorrow's Earnings Disclosure.
     """
     try:
-        target_date_hyphen = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+        today_date = datetime.strptime(date_str, '%Y%m%d')
+        tomorrow_date = today_date + timedelta(days=1)
+        
+        target_today_hyphen = today_date.strftime('%Y-%m-%d')
+        target_tomorrow_hyphen = tomorrow_date.strftime('%Y-%m-%d')
+        
         display_date = f"{date_str[4:6]}月{date_str[6:8]}日"
         
-        print(f"🚀 Generating Today's Earnings Prompt for {target_date_hyphen}...")
+        print(f"🚀 Generating Merged Earnings Prompt for {target_today_hyphen} & {target_tomorrow_hyphen}...")
         
-        today_df = pd.DataFrame()
-        if not all_forecast_df.empty and '公告日期' in all_forecast_df.columns:
-            all_forecast_df['公告日期'] = all_forecast_df['公告日期'].astype(str)
-            today_mask = all_forecast_df['公告日期'].str.contains(target_date_hyphen)
-            today_df = all_forecast_df[today_mask].copy()
-            
-        if not today_df.empty:
-            today_df = today_df.drop_duplicates(subset=['code'], keep='first')
-            today_df = pd.merge(today_df, valid_stock_df[['code', 'industry', 'market_cap']], left_on='code', right_on='code', how='left')
-            today_df = today_df.dropna(subset=['market_cap']) 
-            
-            # Enrich Industry
-            from common.data_fetcher import fetch_specific_industries
-            if 'industry' not in today_df.columns: today_df['industry'] = ''
-            today_df['industry'] = today_df['industry'].fillna('')
-            today_df = fetch_specific_industries(today_df) 
-            
-            # Parse pct locally if needed
-            if 'change_pct_avg' not in today_df.columns:
-                 def parse_avg(s):
-                    try:
-                        import re
-                        nums = re.findall(r"[-+]?\d+\.?\d*", str(s))
-                        if nums: return sum(map(float, nums)) / len(nums)
-                    except: pass
-                    return -9999.0
-                 today_df['change_pct_avg'] = today_df['业绩变动幅度'].apply(parse_avg)
+        # --- Helper to get dataframe for a specific date ---
+        def get_disclosure_df(target_date_str):
+            df = pd.DataFrame()
+            if not all_forecast_df.empty and '公告日期' in all_forecast_df.columns:
+                all_forecast_df['公告日期'] = all_forecast_df['公告日期'].astype(str)
+                mask = all_forecast_df['公告日期'].str.contains(target_date_str)
+                df = all_forecast_df[mask].copy()
+                
+            if not df.empty:
+                df = df.drop_duplicates(subset=['code'], keep='first')
+                df = pd.merge(df, valid_stock_df[['code', 'industry', 'market_cap']], left_on='code', right_on='code', how='left')
+                df = df.dropna(subset=['market_cap']) 
+                
+                # Enrich Industry if missing
+                from common.data_fetcher import fetch_specific_industries
+                if 'industry' not in df.columns: df['industry'] = ''
+                df['industry'] = df['industry'].fillna('')
+                df = fetch_specific_industries(df) 
+                
+                # Parse pct locally if needed
+                if 'change_pct_avg' not in df.columns:
+                     def parse_avg(s):
+                        try:
+                            import re
+                            nums = re.findall(r"[-+]?\d+\.?\d*", str(s))
+                            if nums: return sum(map(float, nums)) / len(nums)
+                        except: pass
+                        return -9999.0
+                     df['change_pct_avg'] = df['业绩变动幅度'].apply(parse_avg)
 
-            today_df.sort_values('market_cap', ascending=False, inplace=True)
-            
-        print(f"Today's Disclosures (Valid/Filtered): {len(today_df)}")
+                df.sort_values('market_cap', ascending=False, inplace=True)
+            return df
+
+        today_df = get_disclosure_df(target_today_hyphen)
+        tomorrow_df = get_disclosure_df(target_tomorrow_hyphen)
         
-        if today_df.empty:
-             print("No valid disclosures found for today.")
-             lines = [f"# {date_str} 今日业绩 - 无重要披露"]
-             path = os.path.join(output_dir, "AI提示词", "今日业绩_Prompt.txt")
-             with open(path, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(lines))
+        print(f"Disclosures: Today={len(today_df)}, Tomorrow={len(tomorrow_df)}")
+        
+        if today_df.empty and tomorrow_df.empty:
+             print("No disclosures found for today or tomorrow.")
              return
 
         # Generate Prompt
         lines = []
-        lines.append(f"# {date_str} 今日业绩披露 - AI绘图Prompt (手绘风格)")
+        lines.append(f"# {date_str} 业绩披露速递 (今日&明日) - AI绘图Prompt")
         lines.append("")
         lines.append("## 图片规格")
         lines.append("- 比例: 9:16 竖版")
@@ -239,70 +258,77 @@ def generate_today_prompt(date_str, output_dir, valid_stock_df, all_forecast_df,
         lines.append("- 字体: 手写体 (Handwritten Chinese)")
         lines.append("")
         lines.append("## 标题")
-        lines.append(f'**{display_date} 今日业绩速递** (Big Bold Red/Black Brush)')
+        lines.append(f'**{display_date} 业绩披露速递** (Big Bold Red/Black Brush)')
         lines.append("")
-        
-        lines.append("## 核心列表 (Sticky Note Style)")
-        lines.append("```")
-        lines.append(f"Header: [股票名称] [涨幅] (行业 | 市值 | 净利润 | 上年同期)")
-        lines.append("-" * 30)
-        
-        for _, row in today_df.head(20).iterrows(): # Top 20
-            name = row['股票简称']
-            pct = row['change_pct_avg']
-            
-            pct_str = f"+{pct:.0f}%" if pct > -9000 else "N/A"
-            if pct > 0: pct_str = f"+{pct:.0f}%"
-            elif pct > -9000 and pct < 0: pct_str = f"{pct:.0f}%"
-            
-            pct_mark = "[红]" if pct > 0 else "[绿]"
-            if pct <= -9000: pct_mark = "[灰]"
 
-            # Net Profit
-            raw_val = row.get('预测数值', 0)
-            profit_str = profit_fmt(raw_val) if profit_fmt else str(raw_val)
+        # Function to format a list section
+        def format_section(title, df):
+            sec_lines = []
+            sec_lines.append(f"### {title}")
+            sec_lines.append("```")
+            sec_lines.append(f"Header: [股票名称] [涨幅] (行业 | 市值 | 净利润 | 上年同期)")
+            sec_lines.append("-" * 30)
             
-            # Last Year
-            raw_last = row.get('上年同期值', 0)
-            last_str = profit_fmt(raw_last) if profit_fmt else str(raw_last)
-            
-            if profit_str == "N/A":
-                continue
-            
-            industry = row.get('industry', '其他')
-            
-            # Market Cap (in 亿)
-            mcap = row.get('market_cap', 0)
-            try:
-                mcap_val = float(mcap)
-                mcap_str = f"{mcap_val:.0f}亿"
-            except:
-                mcap_str = "N/A"
+            count = 0
+            for _, row in df.head(15).iterrows(): # Top 15 per section
+                count += 1
+                name = row['股票简称']
+                pct = row['change_pct_avg']
+                
+                pct_str = f"+{pct:.0f}%" if pct > -9000 else "N/A"
+                if pct > 0: pct_str = f"+{pct:.0f}%"
+                elif pct > -9000 and pct < 0: pct_str = f"{pct:.0f}%"
+                
+                # Net Profit
+                raw_val = row.get('预测数值', 0)
+                profit_str = profit_fmt(raw_val) if profit_fmt else str(raw_val)
+                # Last Year
+                raw_last = row.get('上年同期值', 0)
+                last_str = profit_fmt(raw_last) if profit_fmt else str(raw_last)
+                
+                if profit_str == "N/A": continue
+                
+                industry = row.get('industry', '其他')
+                # Market Cap
+                mcap = row.get('market_cap', 0)
+                try:
+                    mcap_val = float(mcap)
+                    mcap_str = f"{mcap_val:.0f}亿"
+                except: mcap_str = "N/A"
 
-            lines.append(f"{name} {pct_str}")
-            lines.append(f"  └─ {industry} | {mcap_str} | {profit_str} | {last_str}")
-            lines.append("")
+                sec_lines.append(f"{name} {pct_str}")
+                sec_lines.append(f"  └─ {industry} | {mcap_str} | {profit_str} | {last_str}")
+                sec_lines.append("")
             
-        lines.append("```")
-        lines.append("")
+            if count == 0:
+                sec_lines.append("(无重点披露)")
+                
+            sec_lines.append("```")
+            sec_lines.append("")
+            return sec_lines
+
+        # Section 1: Today
+        lines.extend(format_section(f"📅 今日披露 ({len(today_df)}家)", today_df))
+        
+        # Section 2: Tomorrow
+        lines.extend(format_section(f"🔮 明日预告 ({len(tomorrow_df)}家)", tomorrow_df))
+
         lines.append("## 底部标语")
         lines.append("**总结不易，每天收盘后推送，点赞关注不迷路！**")
         lines.append("（居中显示，小字，温馨提示风格）")
         
         prompt_dir = os.path.join(output_dir, "AI提示词")
         os.makedirs(prompt_dir, exist_ok=True)
-        # Ensure we don't end up with empty list if all are N/A?
-        # But user said "don't write if not disclosed", so empty is better than N/A.
-        output_path = os.path.join(prompt_dir, "今日业绩_Prompt.txt")
+        output_path = os.path.join(prompt_dir, "今日&明日业绩_Prompt.txt")
         
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
-        print(f"Today Prompt Generated: {output_path}")
+        print(f"Merged Prompt Generated: {output_path}")
 
     except Exception as e:
-        print(f"Error generating today prompt: {e}")
+        print(f"Error generating merged prompt: {e}")
 
-def generate_prompt_file(growth, turnaround, to_loss, loss, date_str, output_dir, profit_fmt=None):
+def generate_prompt_file(growth, turnaround, to_loss, loss, date_str, output_dir, profit_fmt=None, is_weekly=False):
     display_date = f"{date_str[4:6]}月{date_str[6:8]}日"
     
     lines = []
@@ -396,9 +422,14 @@ def generate_prompt_file(growth, turnaround, to_loss, loss, date_str, output_dir
     lines.append("**Typography**: Rough marker pen style, bold headers.")
     lines.append("**Visuals**: Cute doodle icons (Rocket, Gold bag, Cloud/Rain, Bomb).")
     
-    prompt_dir = os.path.join(output_dir, "AI提示词")
-    os.makedirs(prompt_dir, exist_ok=True)
-    output_path = os.path.join(prompt_dir, "业绩掘金_Prompt.txt")
+    # Path selection (Weekly vs Daily)
+    if is_weekly:
+        save_dir = os.path.join(output_dir, "AI提示词", "周刊")
+    else:
+        save_dir = os.path.join(output_dir, "AI提示词")
+        
+    os.makedirs(save_dir, exist_ok=True)
+    output_path = os.path.join(save_dir, "业绩掘金_Prompt.txt")
     
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))

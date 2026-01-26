@@ -26,7 +26,8 @@ fi
 
 if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
     source "$CONDA_BASE/etc/profile.d/conda.sh"
-    conda activate py311
+    # Try stock311 first, then py311
+    conda activate stock311 2>/dev/null || conda activate py311
     
     if [ $? -eq 0 ]; then
         PYTHON_PATH=$(which python)
