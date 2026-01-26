@@ -349,9 +349,10 @@ DEFAULT_TARGETS = {
     "上证指数": "sh000001" 
 }
 
-def run(date_dir=None):
+def run(date_dir=None, save_excel=True):
     """
     Main entry point for Fish Basin Index Analysis.
+    Returns the DataFrame.
     """
     print("\n=== 鱼盆趋势模型v2.0 (Fish Basin Model) ===")
     print(f"Date: {datetime.now().strftime('%Y.%m.%d')}")
@@ -360,95 +361,79 @@ def run(date_dir=None):
     
     if not df.empty:
         curr_date = datetime.now().strftime('%Y%m%d')
-        # Allow overriding output dir
-        if date_dir:
-             output_path = os.path.join(date_dir, "趋势模型_指数.xlsx")
-        else:
-             output_path = f"results/{curr_date}/趋势模型_指数.xlsx"
+        output_path = None
         
-        # 计算排名变化 - 读取前一天的数据
+        # Calculate Rank Change (Logic preserved)
         df['排名变化'] = "-"
         try:
-            # 查找前一天的文件
             from datetime import timedelta
             today = datetime.now()
-            for days_back in range(1, 8):  # 最多往前找7天
+            for days_back in range(1, 8):
                 prev_date = (today - timedelta(days=days_back)).strftime('%Y%m%d')
-                prev_path = f"results/{prev_date}/趋势模型_指数.xlsx"
-                if os.path.exists(prev_path):
-                    prev_df = pd.read_excel(prev_path)
+                
+                # Check Merged first, then Individual
+                merged_prev = f"results/{prev_date}/趋势模型_合并.xlsx"
+                old_prev = f"results/{prev_date}/趋势模型_指数.xlsx"
+                prev_df = None
+                
+                if os.path.exists(merged_prev):
+                    try: prev_df = pd.read_excel(merged_prev, sheet_name='指数')
+                    except: pass
+                
+                if prev_df is None and os.path.exists(old_prev):
+                    prev_df = pd.read_excel(old_prev)
+                
+                if prev_df is not None:
                     if '名称' in prev_df.columns:
-                        # 创建前一天的排名映射 (名称 -> 排名)
                         prev_rank = {name: idx+1 for idx, name in enumerate(prev_df['名称'].tolist())}
-                        # 计算今天的排名变化
                         rank_changes = []
                         for idx, row in df.iterrows():
                             name = row['名称']
                             today_rank = idx + 1
                             if name in prev_rank:
-                                change = prev_rank[name] - today_rank  # 上升为正，下降为负
-                                if change > 0:
-                                    rank_changes.append(f"+{change}")
-                                elif change < 0:
-                                    rank_changes.append(str(change))
-                                else:
-                                    rank_changes.append("-")
-                            else:
-                                rank_changes.append("新")
+                                change = prev_rank[name] - today_rank
+                                if change > 0: rank_changes.append(f"+{change}")
+                                elif change < 0: rank_changes.append(str(change))
+                                else: rank_changes.append("-")
+                            else: rank_changes.append("新")
                         df['排名变化'] = rank_changes
-                        print(f"📊 已加载前一交易日({prev_date})数据计算排名变化")
                     break
         except Exception as e:
             print(f"排名变化计算失败: {e}")
               
-        # Save Excel
-        save_to_excel(df, output_path)
+        # Save Excel only if requested
+        if save_excel:
+            if date_dir:
+                 output_path = os.path.join(date_dir, "趋势模型_指数.xlsx")
+            else:
+                 output_path = f"results/{curr_date}/趋势模型_指数.xlsx"
+            save_to_excel(df, output_path)
 
-        # Define ANSI colors
+        # Console Output (Preserved)
         RED = '\033[91m'
         GREEN = '\033[92m'
         RESET = '\033[0m'
         BOLD = '\033[1m'
-        
-        # Columns to display - Updated with new columns
         headers = ["代码", "名称", "状态", "涨幅%", "现价", "黄线", "白线", "黄线偏离率", "白线偏离率", "金叉天数", "死叉天数", "排名变化"]
-        
-        # Print Header
         header_str = "  ".join([f"{h:<10}" for h in headers])
         print(f"{BOLD}{header_str}{RESET}")
         
         for _, row in df.iterrows():
-            # Extract raw values for color logic (strip % and convert)
             try:
-                # Status Color
                 status = row['状态']
                 status_color = RED if status == 'YES' else GREEN
-                
-                # Change % Color
                 chg_str = row['涨幅%']
                 chg_val = float(chg_str.strip('%'))
                 chg_color = RED if chg_val > 0 else GREEN
-                
-                # Yellow Deviation Color
                 dev_str = row['黄线偏离率']
                 dev_val = float(dev_str.strip('%'))
                 dev_color = RED if dev_val > 0 else GREEN
-                
-                # White Deviation Color
                 white_dev_str = row['白线偏离率']
                 white_dev_val = float(white_dev_str.strip('%'))
                 white_dev_color = RED if white_dev_val > 0 else GREEN
-                
-                # Rank Change Color
                 rank_change = str(row.get('排名变化', '-'))
-                if rank_change.startswith('+'):
-                    rank_color = RED
-                elif rank_change.startswith('-') and rank_change != '-':
-                    rank_color = GREEN
-                else:
-                    rank_color = RESET
+                rank_color = RED if rank_change.startswith('+') else (GREEN if rank_change.startswith('-') and rank_change != '-' else RESET)
                 
-                # Format the line
                 line = [
                     f"{row['代码']:<10}",
                     f"{row['名称']:<10}",
@@ -464,14 +449,12 @@ def run(date_dir=None):
                     f"{rank_color}{rank_change:<6}{RESET}"
                 ]
                 print("  ".join(line))
-                
-            except Exception as e:
-                # Fallback if parsing fails
-                print(row.to_string())
-        return True
+            except: pass
+            
+        return df
     else:
         print("No data generated.")
-        return False
+        return pd.DataFrame()
 
 if __name__ == "__main__":
     run()

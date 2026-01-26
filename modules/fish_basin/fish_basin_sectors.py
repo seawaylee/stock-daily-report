@@ -300,9 +300,10 @@ def load_sector_config(config_path="config/fish_basin_sectors.json"):
         return []
 
 
-def run(date_dir=None):
+def run(date_dir=None, save_excel=True):
     """
     Main entry point for Fish Basin Sector Analysis.
+    Returns the DataFrame.
     """
     print("=== Fish Basin Sector Analysis (Configured List) ===")
     
@@ -311,7 +312,7 @@ def run(date_dir=None):
     items = load_sector_config()
     if not items:
         print("No items found in config.")
-        return
+        return pd.DataFrame()
 
     # 2. Deduplicate (just in case)
     unique_map = {}
@@ -321,11 +322,9 @@ def run(date_dir=None):
     final_list = list(unique_map.values())
     print(f"Total items to process from config: {len(final_list)}")
 
-    # 3. Fetch Data (Sequential) - Fixes MiniRacer/Threading crash
+    # 3. Fetch Data (Sequential)
     processed_results = []
-    # Using ThreadPoolExecutor with 1 worker is effectively sequential but keeps structure
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        # Use fetch_data_router for all, as snapshot items map to THS type
         futures = [executor.submit(fetch_data_router, item) for item in final_list]
         for future in concurrent.futures.as_completed(futures):
             name, code, df, turnover = future.result()
@@ -344,17 +343,15 @@ def run(date_dir=None):
         code = item['code']
         df = item['df']
         
-        # Fish Basin Logic - 使用大哥黄线和趋势白线
+        # Fish Basin Logic
         close = df['close']
         
-        # 大哥黄线: (MA14 + MA28 + MA57 + MA114) / 4
         df['MA14'] = close.rolling(window=14).mean()
         df['MA28'] = close.rolling(window=28).mean()
         df['MA57'] = close.rolling(window=57).mean()
         df['MA114'] = close.rolling(window=114).mean()
         df['大哥黄线'] = (df['MA14'] + df['MA28'] + df['MA57'] + df['MA114']) / 4
         
-        # 趋势白线: EMA(EMA(C,10),10)
         ema10 = close.ewm(span=10, adjust=False).mean()
         df['趋势白线'] = ema10.ewm(span=10, adjust=False).mean()
         
@@ -401,37 +398,25 @@ def run(date_dir=None):
         
         if signal_idx != -1:
             try:
-                # TS Conversion
                 ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
                 change_date_str = datetime.utcfromtimestamp(ts).strftime("%y.%m.%d")
                 base_price = price_arr[signal_idx]
                 interval_change = (current_price - base_price) / base_price
             except: pass
 
-        # 计算金叉/死叉持续天数 (白线vs黄线)
-        golden_cross_days = 0  # 白线在黄线之上的持续天数
-        death_cross_days = 0   # 白线在黄线之下的持续天数
-        
-        # 当前状态：白线 > 黄线 = 金叉状态
+        golden_cross_days = 0 
+        death_cross_days = 0
         current_is_golden = white_arr[idx] > yellow_arr[idx]
-        
         for i in range(idx, min_idx, -1):
             if i < 0: break
             if pd.isna(white_arr[i]) or pd.isna(yellow_arr[i]): break
             is_golden = white_arr[i] > yellow_arr[i]
             if is_golden == current_is_golden:
-                if current_is_golden:
-                    golden_cross_days += 1
-                else:
-                    death_cross_days += 1
-            else:
-                break
-        
-        # 如果不是对应状态，设为0
-        if current_is_golden:
-            death_cross_days = 0
-        else:
-            golden_cross_days = 0
+                if current_is_golden: golden_cross_days += 1
+                else: death_cross_days += 1
+            else: break
+        if current_is_golden: death_cross_days = 0
+        else: golden_cross_days = 0
 
         daily_change = 0.0
         if len(df_valid) >= 2:
@@ -455,92 +440,72 @@ def run(date_dir=None):
             "死叉天数": death_cross_days if death_cross_days > 0 else "-",
             "状态变量时间": change_date_str,
             "区间涨幅%": f"{interval_change*100:.2f}%",
-            "_deviation_raw": deviation # Hidden field for sorting
+            "_deviation_raw": deviation
         })
 
-    # Sort by Deviation Descending
     results.sort(key=lambda x: x['_deviation_raw'], reverse=True)
 
     df_res = pd.DataFrame(results)
     if not df_res.empty:
-        # 计算排名变化 - 读取前一天的数据
         df_res['排名变化'] = "-"
         try:
-            # 查找前一天的文件
             from datetime import timedelta
             today = datetime.now()
-            for days_back in range(1, 8):  # 最多往前找7天
+            for days_back in range(1, 8):
                 prev_date = (today - timedelta(days=days_back)).strftime('%Y%m%d')
-                prev_path = f"results/{prev_date}/趋势模型_题材.xlsx"
-                if os.path.exists(prev_path):
-                    prev_df = pd.read_excel(prev_path)
+                
+                # Check Merged first, then Individual
+                merged_prev = f"results/{prev_date}/趋势模型_合并.xlsx"
+                old_prev = f"results/{prev_date}/趋势模型_题材.xlsx"
+                prev_df = None
+                
+                if os.path.exists(merged_prev):
+                    try: prev_df = pd.read_excel(merged_prev, sheet_name='题材')
+                    except: pass
+                
+                if prev_df is None and os.path.exists(old_prev):
+                    prev_df = pd.read_excel(old_prev)
+                
+                if prev_df is not None:
                     if '名称' in prev_df.columns:
-                        # 创建前一天的排名映射 (名称 -> 排名)
                         prev_rank = {name: idx+1 for idx, name in enumerate(prev_df['名称'].tolist())}
-                        # 计算今天的排名变化
                         rank_changes = []
                         for idx, row in df_res.iterrows():
                             name = row['名称']
                             today_rank = idx + 1
                             if name in prev_rank:
-                                change = prev_rank[name] - today_rank  # 上升为正，下降为负
-                                if change > 0:
-                                    rank_changes.append(f"+{change}")
-                                elif change < 0:
-                                    rank_changes.append(str(change))
-                                else:
-                                    rank_changes.append("-")
-                            else:
-                                rank_changes.append("新")
+                                change = prev_rank[name] - today_rank
+                                if change > 0: rank_changes.append(f"+{change}")
+                                elif change < 0: rank_changes.append(str(change))
+                                else: rank_changes.append("-")
+                            else: rank_changes.append("新")
                         df_res['排名变化'] = rank_changes
-                        print(f"📊 已加载前一交易日({prev_date})数据计算排名变化")
                     break
         except Exception as e:
             print(f"排名变化计算失败: {e}")
         
-        # Reorder columns - drop _deviation_raw, 排名变化放最后
         cols = ["代码", "名称", "状态", "涨幅%", "现价", "黄线", "白线", "黄线偏离率", "白线偏离率", "金叉天数", "死叉天数", "量比", "状态变量时间", "区间涨幅%", "排名变化"]
         df_res = df_res[[c for c in cols if c in df_res.columns]]
         print("\n=== Result Head (Sorted by Deviation) ===")
         print(df_res.head(10).to_string())
         
         curr_date = datetime.now().strftime('%Y%m%d')
-        if date_dir:
-             output_path = os.path.join(date_dir, "趋势模型_题材.xlsx")
-        else:
-             output_path = f"results/{curr_date}/趋势模型_题材.xlsx"
-             
-        print(f"Saving to {output_path}...")
-        save_to_excel_colored(df_res, output_path)
-        
-        # 自动合并指数和题材Excel
-        try:
-            from modules.fish_basin.fish_basin_helper import merge_excel_sheets
+        if save_excel:
             if date_dir:
-                index_path = os.path.join(date_dir, "趋势模型_指数.xlsx")
-                merged_path = os.path.join(date_dir, "趋势模型_合并.xlsx")
+                 output_path = os.path.join(date_dir, "趋势模型_题材.xlsx")
             else:
-                index_path = f"results/{curr_date}/趋势模型_指数.xlsx"
-                merged_path = f"results/{curr_date}/趋势模型_合并.xlsx"
-                
-            print("正在合并指数和题材Excel...")
-            merge_excel_sheets(index_path, output_path, merged_path)
-        except Exception as e:
-            print(f"合并Excel失败: {e}")
-            
-        # Generate image prompts
-        try:
-            from modules.fish_basin.generate_combined_prompt import generate_combined_prompt
-            print("正在生成合并版生图Prompt...")
-            generate_combined_prompt(curr_date)
-        except Exception as e:
-            print(f"生成Prompt失败: {e}")
-            import traceback
-            traceback.print_exc()
+                 output_path = f"results/{curr_date}/趋势模型_题材.xlsx"
+                 
+            print(f"Saving to {output_path}...")
+            save_to_excel_colored(df_res, output_path)
+        
+        return df_res
     else:
         print("No results generated.")
-        
-    return True
+        return pd.DataFrame()
+
+if __name__ == "__main__":
+    run()
 
 if __name__ == "__main__":
     run()

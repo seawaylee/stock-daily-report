@@ -45,6 +45,14 @@ def run(date_str, output_dir):
         print(f"Date Error: {e}")
         return False
 
+    # Check for Weekend (Fri-Sun) for Weekly Preview
+    # If standard run, we only want this on weekends.
+    dt = datetime.strptime(s_date_str, '%Y%m%d') # This is Monday
+    # Wait, target_date is what we check
+    if target_date.weekday() < 4: # Mon=0...Thu=3
+         print("📅 Weekday: Skipping Earnings Weekly Preview (Weekly Report Only).")
+         return True
+    
     # 2. Fetch Data
     
     # List A: Formal Schedule (Stocks officially releasing Annual Report)
@@ -99,12 +107,12 @@ def run(date_str, output_dir):
     final_df = analysis.analyze_df(combined_df)
     
     # 5. Export
-    output_filename = f"earnings_weekly_preview_{s_date_str}.xlsx"
+    output_filename = f"earnings_weekly_summary_{s_date_str}.xlsx"
     output_path = os.path.join(output_dir, output_filename)
     
     print(f"💾 Exporting to {output_path}...")
     if excel_export.export_earnings_excel(final_df, output_path):
-        print("✅ Earnings Analysis Completed Successfully.")
+        print("✅ Earnings Weekly Summary Completed Successfully.")
         return True
     else:
         print("❌ Export Failed.")

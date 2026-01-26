@@ -28,19 +28,34 @@ def get_date_dir(date_str=None):
 def run_fish_basin(args):
     print("\n=== [Module 1] Fish Basin Trend Analysis ===")
     from modules.fish_basin import fish_basin, fish_basin_sectors
+    from modules.fish_basin import generate_combined_prompt
+    import pandas as pd
     
-    # 1. Indices
+    # 1. Indices (In-Memory)
     print("--- Part A: Indices ---")
-    fish_basin.run(args.date_dir)
+    df_index = fish_basin.run(args.date_dir, save_excel=False)
     
-    # 2. Sectors
+    # 2. Sectors (In-Memory)
     print("\n--- Part B: Sectors ---")
-    fish_basin_sectors.run(args.date_dir)
+    df_sector = fish_basin_sectors.run(args.date_dir, save_excel=False)
     
-    # 3. Generate Prompts
-    print("\n--- Part C: Generate Prompts ---")
-    from modules.fish_basin import generate_trend_prompts
-    generate_trend_prompts.generate_all_prompts(args.date_str)
+    # 3. Save Merged Excel (The only Excel output)
+    if not df_index.empty or not df_sector.empty:
+        merged_path = os.path.join(args.date_dir, "趋势模型_合并.xlsx")
+        print(f"\nSaving Merged Excel: {merged_path}")
+        try:
+            with pd.ExcelWriter(merged_path) as writer:
+                if not df_index.empty:
+                    df_index.to_excel(writer, sheet_name='指数', index=False)
+                if not df_sector.empty:
+                    df_sector.to_excel(writer, sheet_name='题材', index=False)
+            print("Merged Excel Saved.")
+        except Exception as e:
+            print(f"Failed to save Merged Excel: {e}")
+
+        # 4. Generate Combined Prompt
+        print("\n--- Part C: Generate Combined Prompt ---")
+        generate_combined_prompt.generate_combined_prompt(args.date_str, df_index, df_sector)
     
     return True
 

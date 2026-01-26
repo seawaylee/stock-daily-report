@@ -239,17 +239,20 @@ def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forec
             return df
 
         today_df = get_disclosure_df(target_today_hyphen)
-        tomorrow_df = get_disclosure_df(target_tomorrow_hyphen)
         
-        print(f"Disclosures: Today={len(today_df)}, Tomorrow={len(tomorrow_df)}")
+        print(f"Disclosures: Today={len(today_df)}")
         
-        if today_df.empty and tomorrow_df.empty:
-             print("No disclosures found for today or tomorrow.")
+        if today_df.empty:
+             print("No disclosures found for today.")
+             lines = [f"# {date_str} 今日业绩 - 无重要披露"]
+             path = os.path.join(output_dir, "AI提示词", "今日业绩_Prompt.txt")
+             with open(path, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(lines))
              return
 
         # Generate Prompt
         lines = []
-        lines.append(f"# {date_str} 业绩披露速递 (今日&明日) - AI绘图Prompt")
+        lines.append(f"# {date_str} 今日业绩披露 - AI绘图Prompt")
         lines.append("")
         lines.append("## 图片规格")
         lines.append("- 比例: 9:16 竖版")
@@ -261,7 +264,7 @@ def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forec
         lines.append(f'**{display_date} 业绩披露速递** (Big Bold Red/Black Brush)')
         lines.append("")
 
-        # Function to format a list section
+        # Function to format a list section (kept for reuse)
         def format_section(title, df):
             sec_lines = []
             sec_lines.append(f"### {title}")
@@ -270,7 +273,7 @@ def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forec
             sec_lines.append("-" * 30)
             
             count = 0
-            for _, row in df.head(15).iterrows(): # Top 15 per section
+            for _, row in df.head(20).iterrows(): # Top 20
                 count += 1
                 name = row['股票简称']
                 pct = row['change_pct_avg']
@@ -307,26 +310,24 @@ def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forec
             sec_lines.append("")
             return sec_lines
 
-        # Section 1: Today
+        # Section 1: Today Only
         lines.extend(format_section(f"📅 今日披露 ({len(today_df)}家)", today_df))
         
-        # Section 2: Tomorrow
-        lines.extend(format_section(f"🔮 明日预告 ({len(tomorrow_df)}家)", tomorrow_df))
-
         lines.append("## 底部标语")
         lines.append("**总结不易，每天收盘后推送，点赞关注不迷路！**")
         lines.append("（居中显示，小字，温馨提示风格）")
         
         prompt_dir = os.path.join(output_dir, "AI提示词")
         os.makedirs(prompt_dir, exist_ok=True)
-        output_path = os.path.join(prompt_dir, "今日&明日业绩_Prompt.txt")
+        # Revert filename to Today only
+        output_path = os.path.join(prompt_dir, "今日业绩_Prompt.txt")
         
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
-        print(f"Merged Prompt Generated: {output_path}")
+        print(f"Daily Prompt Generated: {output_path}")
 
     except Exception as e:
-        print(f"Error generating merged prompt: {e}")
+        print(f"Error generating daily prompt: {e}")
 
 def generate_prompt_file(growth, turnaround, to_loss, loss, date_str, output_dir, profit_fmt=None, is_weekly=False):
     display_date = f"{date_str[4:6]}月{date_str[6:8]}日"

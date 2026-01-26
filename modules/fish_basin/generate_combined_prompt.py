@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime
 import os
 
-def generate_combined_prompt(date_str=None):
+def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
     if date_str is None:
         date_str = datetime.now().strftime('%Y%m%d')
     
@@ -18,9 +18,17 @@ def generate_combined_prompt(date_str=None):
     output_path = os.path.join(prompt_dir, output_filename)
     
     try:
-        # Load Data
-        df_index = pd.read_excel(f"{date_dir}/趋势模型_指数.xlsx")
-        df_sector = pd.read_excel(f"{date_dir}/趋势模型_题材.xlsx")
+        # Load Data if not provided
+        if df_index is None:
+             try: df_index = pd.read_excel(f"{date_dir}/趋势模型_指数.xlsx")
+             except: pass
+        if df_sector is None:
+             try: df_sector = pd.read_excel(f"{date_dir}/趋势模型_题材.xlsx")
+             except: pass
+             
+        if df_index is None or df_sector is None:
+            print("❌ Missing Index or Sector data for combined prompt.")
+            return None
         
         # Helper to format rows
         def process_df(df):
