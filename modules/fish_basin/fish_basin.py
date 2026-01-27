@@ -316,9 +316,29 @@ def get_fish_basin_analysis(symbols_map):
             })
             
         except Exception as e:
-            print(f"Error processing {name}: {e}")
-            import traceback
-            traceback.print_exc()
+            print(f"❌ Error processing {name}: {e}")
+            # Track failures? This function returns a list.
+            # We can log it to a global or print at the end if we restructure.
+            # For now, let's just ensure we see it.
+            
+    # --- Summary Section ---
+    success_count = len(results)
+    total_count = len(symbols_map)
+    fail_count = total_count - success_count
+    
+    print("\n" + "="*40)
+    print(f"📊 趋势模型执行汇总")
+    print(f"✅ 成功: {success_count}/{total_count}")
+    print(f"❌ 失败: {fail_count}/{total_count}")
+    
+    if fail_count > 0:
+        # Re-identify missing
+        found_names = {r['名称'] for r in results}
+        all_names = set(symbols_map.keys())
+        missing = all_names - found_names
+        print(f"⚠️ 失败列表: {', '.join(missing)}")
+    print("="*40 + "\n")
+
 
     # Sort results by deviation descending
     results.sort(key=lambda x: x.get('_deviation_raw', -999), reverse=True)

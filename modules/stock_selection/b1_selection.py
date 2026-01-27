@@ -12,6 +12,7 @@ import json
 import requests
 import base64
 import time
+import random
 import numpy as np
 from tqdm import tqdm
 
@@ -38,7 +39,7 @@ def process_single_stock(args):
     """处理单只股票"""
     code, name, market_cap, industry = args
     # Add random delay to prevent request bursts (Anti-Scraping / Flow Control)
-    time.sleep(random.uniform(0.1, 1.0))
+    time.sleep(random.uniform(0.1, 0.2))
     try:
         df = get_stock_data(code, 300)
         if df is None or len(df) < 120:

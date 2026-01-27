@@ -336,6 +336,23 @@ def run(date_dir=None, save_excel=True):
     final_results_list = processed_results
             
     print(f"Successfully fetched: {len(final_results_list)}")
+    
+    # --- Summary Section ---
+    success_count = len(final_results_list)
+    total_count = len(final_list)
+    fail_count = total_count - success_count
+    
+    print("\n" + "="*40)
+    print(f"📊 趋势模型(题材)执行汇总")
+    print(f"✅ 成功: {success_count}/{total_count}")
+    print(f"❌ 失败: {fail_count}/{total_count}")
+    
+    if fail_count > 0:
+        found_names = {r['name'] for r in final_results_list}
+        all_names = {r['name'] for r in final_list}
+        missing = all_names - found_names
+        print(f"⚠️ 失败列表: {', '.join(missing)}")
+    print("="*40 + "\n")
 
     results = []
     for item in final_results_list:

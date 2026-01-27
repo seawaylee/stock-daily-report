@@ -159,6 +159,7 @@ def run(date_str, output_dir, run_weekly=False):
     generate_merged_tomorrow_prompt(date_str, output_dir)
     
     # 2. Next Week (if Friday)
-    generate_next_week_prompt(date_str, output_dir, force_run=run_weekly)
+    # generate_next_week_prompt(date_str, output_dir, force_run=run_weekly)
+    pass
 
 

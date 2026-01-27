@@ -288,65 +288,72 @@ def fetch_specific_industries(df: pd.DataFrame) -> pd.DataFrame:
 
 
 
+
+
+def _add_market_prefix(code: str) -> str:
+    """Add sh/sz prefix for Sina API"""
+    if code.startswith('6'):
+        return f"sh{code}"
+    elif code.startswith('0') or code.startswith('3'):
+        return f"sz{code}"
+    elif code.startswith('8') or code.startswith('4'):
+        return f"bj{code}"
+    return code
+
 def get_stock_data(code: str, days: int = 300) -> Optional[pd.DataFrame]:
     """
-    获取单只股票的日线数据
-    
-    Args:
-        code: 股票代码（如 000001, 600000）
-        days: 获取多少天的数据
-    
-    Returns:
-        DataFrame 包含: date, open, high, low, close, volume
+    获取单只股票的日线数据 (Prioritize Sina -> Fallback to EastMoney)
     """
+    # 1. Try Sina (Primary now due to EM blocking)
     try:
-        # 使用东方财富数据源 (增加重试机制)
+        sina_code = _add_market_prefix(code)
+        df = ak.stock_zh_a_daily(symbol=sina_code, adjust="qfq")
+        
+        if df is not None and not df.empty:
+            # Standardize columns
+            if 'date' not in df.columns:
+                df = df.reset_index()
+            
+            required_cols = ['date', 'open', 'high', 'low', 'close', 'volume']
+            if all(col in df.columns for col in required_cols):
+                df = df[required_cols].copy()
+                df['date'] = pd.to_datetime(df['date'])
+                df = df.sort_values('date').reset_index(drop=True)
+                if len(df) > days:
+                    df = df.tail(days).reset_index(drop=True)
+                return df
+    except Exception as e:
+        pass 
+
+    # 2. Fallback to EastMoney
+    try:
         df = None
-        import time
-        for i in range(3):
+        for i in range(1): # Try only once
             try:
                 df = ak.stock_zh_a_hist(
                     symbol=code,
                     period="daily",
                     start_date=(datetime.now() - timedelta(days=days*2)).strftime('%Y%m%d'),
                     end_date=datetime.now().strftime('%Y%m%d'),
-                    adjust="qfq"  # 前复权
+                    adjust="qfq"
                 )
                 if df is not None and not df.empty:
                     break
             except:
-                time.sleep(1 + (i * 0.5))  # Backoff: 1s, 1.5s, 2s
-
+                time.sleep(0.5)
         
-        if df is None or len(df) == 0:
-            return None
+        if df is not None and not df.empty:
+             df = df.rename(columns={'日期': 'date', '开盘': 'open', '最高': 'high', '最低': 'low', '收盘': 'close', '成交量': 'volume'})
+             df = df[['date', 'open', 'high', 'low', 'close', 'volume']].copy()
+             df['date'] = pd.to_datetime(df['date'])
+             df = df.sort_values('date').reset_index(drop=True)
+             if len(df) > days:
+                 df = df.tail(days).reset_index(drop=True)
+             return df
+    except Exception:
+        pass
         
-        # 重命名列
-        df = df.rename(columns={
-            '日期': 'date',
-            '开盘': 'open',
-            '最高': 'high',
-            '最低': 'low',
-            '收盘': 'close',
-            '成交量': 'volume'
-        })
-        
-        # 只保留需要的列
-        df = df[['date', 'open', 'high', 'low', 'close', 'volume']].copy()
-        
-        # 转换日期格式
-        df['date'] = pd.to_datetime(df['date'])
-        df = df.sort_values('date').reset_index(drop=True)
-        
-        # 取最近 days 条数据
-        if len(df) > days:
-            df = df.tail(days).reset_index(drop=True)
-        
-        return df
-    
-    except Exception as e:
-        # print(f"获取 {code} 数据失败: {e}")
-        return None
+    return None
 
 
 def batch_fetch_data(codes: List[str], days: int = 300, delay: float = 0.1) -> dict:
