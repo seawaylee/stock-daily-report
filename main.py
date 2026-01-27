@@ -175,6 +175,45 @@ def run_all(args):
                 print(f"⚠️ Task failed with error: {e}")
 
     print("\n✅ All parallel tasks completed.")
+    
+    # Auto-cleanup old results (Keep last 7 days)
+    cleanup_old_results()
+
+def cleanup_old_results(keep_days=7):
+    """
+    Remove results directories older than keep_days.
+    Always excludes 'cache' or other non-date directories.
+    """
+    import shutil
+    results_base = "results"
+    if not os.path.exists(results_base):
+        return
+
+    # Find date directories
+    date_dirs = []
+    try:
+        for d in os.listdir(results_base):
+            path = os.path.join(results_base, d)
+            # Strict date format check: YYYYMMDD
+            if os.path.isdir(path) and d.isdigit() and len(d) == 8:
+                date_dirs.append(d)
+    except Exception:
+        return
+    
+    # Sort: Newest first
+    date_dirs.sort(reverse=True)
+    
+    if len(date_dirs) > keep_days:
+        to_remove = date_dirs[keep_days:]
+        print(f"\n🧹 Cleaning up old results (Keeping last {keep_days} days)...")
+        for d in to_remove:
+            path = os.path.join(results_base, d)
+            print(f"   Deleting: {path}")
+            try:
+                shutil.rmtree(path)
+            except Exception as e:
+                print(f"   Failed to delete {path}: {e}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Stock Daily Report System")

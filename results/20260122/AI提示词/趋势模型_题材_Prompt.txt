@@ -1,0 +1,95 @@
+(masterpiece, best quality), (hand drawn), (illustration), (vintage style), (ink sketch), (vertical 10:16), (warm paper texture)
+
+**SUBJECT**: A hand-drawn financial ranking chart titled "**AI量化趋势模型 · 题材榜**"
+
+**HEADER**:
+- Title: "**AI量化趋势模型**" in bold Chinese calligraphy brush style
+- Subtitle: "**题材榜** | 2026.01.22"
+- Style: Red-gold ink brush strokes on aged paper background
+
+---
+
+**TABLE DESIGN**:
+
+**Style**: Hand-drawn vintage ranking list
+- Background: Warm aged paper texture (sepia, cream)
+- Lines: Ink brush strokes, slightly uneven for organic feel
+- Text: Black ink calligraphy for Chinese, neat handwritten numbers
+- Accents: Red circles for bullish (●), hollow circles for bearish (○)
+
+**Column Headers** (Draw as a header row):
+| 排名 | 名称 | 涨幅 | 偏离 | 信号 | 期间 |
+
+---
+
+**SECTION 1: 趋势向上** (Bullish - Above SMA20)
+
+Draw each row as a handwritten entry with:
+- A RED filled circle (●) on the left
+- Sector/Index name in **BOLD BLACK** brush calligraphy
+- 涨幅 (Daily %) in RED ink
+- 偏离 (Deviation) in RED ink
+- 信号 (Date) in black ink
+- 期间 (Interval %) in RED ink
+
+1. ● 贵金属 | 涨幅: +9.24% | 偏离: 29.37% | 信号: 25.12.10 | 期间: 49.08%
+2. ● 半导体 | 涨幅: +2.76% | 偏离: 11.55% | 信号: 25.12.22 | 期间: 22.25%
+3. ● 电网设备 | 涨幅: -1.59% | 偏离: 9.17% | 信号: 25.12.11 | 期间: 19.08%
+4. ● 有色金属 | 涨幅: +2.04% | 偏离: 7.87% | 信号: 25.12.17 | 期间: 21.60%
+5. ● 稀土 | 涨幅: +1.81% | 偏离: 6.33% | 信号: 25.12.19 | 期间: 13.81%
+6. ● 医疗服务 | 涨幅: +0.89% | 偏离: 6.29% | 信号: 26.01.05 | 期间: 11.14%
+7. ● 石油加工贸易 | 涨幅: +0.51% | 偏离: 5.49% | 信号: 25.12.24 | 期间: 10.07%
+8. ● 汽车零部件 | 涨幅: +1.57% | 偏离: 5.13% | 信号: 25.12.17 | 期间: 14.33%
+9. ● 白色家电 | 涨幅: +0.86% | 偏离: 4.90% | 信号: 25.12.24 | 期间: 7.98%
+10. ● 机器人 | 涨幅: +1.06% | 偏离: 4.63% | 信号: 25.12.19 | 期间: 13.11%
+11. ● 风电设备 | 涨幅: +0.62% | 偏离: 4.38% | 信号: 25.12.03 | 期间: 14.37%
+12. ● 人工智能 | 涨幅: +0.49% | 偏离: 4.15% | 信号: 25.12.24 | 期间: 11.81%
+13. ● 软件开发 | 涨幅: +0.13% | 偏离: 4.07% | 信号: 25.12.25 | 期间: 11.70%
+14. ● 电力 | 涨幅: -0.69% | 偏离: 4.04% | 信号: 26.01.06 | 期间: 5.56%
+15. ● 医疗器械 | 涨幅: +1.10% | 偏离: 3.72% | 信号: 26.01.05 | 期间: 4.40%
+16. ● 消费电子 | 涨幅: +1.54% | 偏离: 3.64% | 信号: 25.12.22 | 期间: 10.53%
+17. ● 旅游 | 涨幅: -1.01% | 偏离: 3.49% | 信号: 26.01.06 | 期间: 5.79%
+18. ● 商业航天 | 涨幅: +0.38% | 偏离: 3.43% | 信号: 25.11.28 | 期间: 30.71%
+19. ● 光伏设备 | 涨幅: -0.06% | 偏离: 3.43% | 信号: 25.12.24 | 期间: 9.82%
+20. ● 房地产 | 涨幅: +0.58% | 偏离: 3.34% | 信号: 25.12.31 | 期间: 5.61%
+
+---
+
+**SECTION 2: 趋势向下** (Bearish - Below SMA20)
+
+Draw each row with:
+- A HOLLOW circle (○) on the left
+- Sector/Index name in **BOLD BLACK** brush calligraphy
+- 偏离率 in GREEN ink (Sorted by distance from SMA20)
+- 期间涨幅 in GREEN ink
+
+1. ○ 白酒 | 涨幅: -2.13% | 偏离: -3.62% | 信号: 26.01.13 | 期间: -4.41%
+2. ○ 银行 | 涨幅: -1.18% | 偏离: -2.72% | 信号: 26.01.07 | 期间: -3.45%
+3. ○ 中证消费 | 涨幅: -1.31% | 偏离: -2.71% | 信号: 26.01.13 | 期间: -2.88%
+4. ○ 证券公司 | 涨幅: -0.66% | 偏离: -2.23% | 信号: 26.01.15 | 期间: -1.41%
+5. ○ 保险 | 涨幅: -1.14% | 偏离: -1.10% | 信号: 26.01.21 | 期间: 0.00%
+
+---
+
+**VISUAL ELEMENTS**:
+1. **Divider Lines**: Horizontal ink brush strokes between sections
+2. **Ranking Numbers**: Hand-drawn numerals with slight ink bleed effect
+3. **Corner Decorations**: Simple ink brush accents (waves, clouds, or geometric)
+4. **Status Legend**: Small legend at top: "● 趋势向上  ○ 趋势向下"
+
+**FOOTER**:
+- Hand-drawn banner at bottom
+- Text: "**点赞关注  每日发布趋势模型**"
+- Style: Elegant brush calligraphy, centered, with decorative underline
+
+**TYPOGRAPHY**:
+- All Chinese text: Traditional brush calligraphy style
+- Numbers: Neat handwritten, slightly slanted
+- Colors: Black ink primary, Red for positive, Green for negative, Gold accents
+
+**ATMOSPHERE**:
+- Warm, inviting, hand-crafted feel
+- Like a traditional Chinese newspaper financial section
+- Professional yet artistic
+
+(Optimized for AI: Hand-drawn aesthetic with legible Chinese text. Vertical 10:16 format. Focus on clean table structure with brush stroke elements.)

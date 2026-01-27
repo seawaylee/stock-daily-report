@@ -1,0 +1,126 @@
+# 20260127 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字红色）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**01月27日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+光伏设备(7) | 有色金属(6) | 半导体(6) | 专用设备(4) | 贵金属(3) | 互联网服(3) | 通信设备(3) | 航天航空(3)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上) / 题材(下)，[一字]=一字涨停(红色喜庆)，[X]=炸板或断板
+
+### 6板 (1只)
+```
+    白银有色    
+    有色金属    
+
+```
+
+### 3板 (15只) - 2炸板+8断板
+```
+    拓日新能        中农联合        中国黄金        豫光金铅    
+    光伏设备        农药兽药        珠宝首饰        有色金属    
+
+    四川黄金      [X]盛达资源     [X]协鑫集成     [X]明阳智能   
+    贵金属         有色金属        光伏设备        风电设备    
+
+  [X]浙文互联     [X]威领股份      [X]瑞华泰     [X]锌业股份   
+    文化传媒        能源金属        塑料制品        有色金属    
+
+  [X]铜陵有色      [X]亚玛顿     [X]德龙汇能   
+    有色金属        光伏设备         燃气     
+
+```
+
+### 2板 (8只)
+```
+  [一字]湖南黄金      天奇股份        天地在线        达安基因    
+    贵金属         专用设备        文化传媒        医疗器械    
+
+    光正眼科        招金黄金        凯普生物        金徽股份    
+    医疗服务        贵金属         医疗器械        有色金属    
+
+```
+
+### 首板 (39只)
+```
+    电科芯片        棒杰股份        华培动力        三维通信        遥望科技    
+    半导体         纺织服装        汽车零部        互联网服        互联网服    
+
+    平潭发展        中瓷电子        东芯股份        澄天伟业        可川科技    
+    农牧饲渔        通信设备        半导体         通信设备        电子元件    
+
+    黄河旋风        凯迪股份        亚翔集成        康强电子        圣晖集成    
+    非金属材        专用设备        装修装饰        半导体         工程建设    
+
+    金海通         肯特催化        汇绿生态        斯迪克         宇晶股份    
+    半导体         化学制品        工程建设        塑料制品        通用设备    
+
+    赛伍技术        展鹏科技        盛路通信        多利科技        航发科技    
+    光伏设备        专用设备        通信设备        汽车零部        航天航空    
+
+    苏博特         正泰电源        华光环能        航发动力        三祥新材    
+    化学制品        光伏设备        电源设备        航天航空        化学原料    
+
+    永臻股份        华天科技       盛科通信-U       宏景科技        金辰股份    
+    光伏设备        半导体         半导体         互联网服        光伏设备    
+
+    云赛智联        航发控制        世嘉科技        珠海中富    
+    软件开发        航天航空        专用设备        包装材料    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 01月27日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "01月27日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL RED ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 6板: 白银有色 - highest streak
+- 光伏设备 dominates with 7 stocks
+- Total 63 stocks (39 first-time + 24 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

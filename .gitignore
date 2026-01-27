@@ -8,6 +8,4 @@ node_modules/
 remotion-video/public/ladder_data.json
 remotion-video/public/performance_data.json
 
-# Generated Results
-results/
-.DS_Store
+

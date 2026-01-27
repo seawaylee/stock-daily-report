@@ -1,0 +1,42 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (illustration), (vintage style), (surrealism)
+
+**SUBJECT**: A surreal conceptual illustration.
+
+**HEADER TEXT**:
+- At the top of the image, elegantly integrate the text "**国产之光**" using **Artistic Chinese Calligraphy**.
+- **BACKGROUND for Text**: Place the text on a **Red Ink Grunge / Paint Brush Stroke** background to make it pop.
+- **Text Color**: Use **Gold or White** text to contrast strongly against the red background.
+- The text should be **clearly visible** and distinct from the rest of the illustration.
+
+1. **THE GIANTS (Top Inflow Sectors)**:
+   Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center, representing the top winning industries. (NON-HUMANOID OBJECTS)
+   - **CENTER (Largest)**: A giant symbolic object representing **"半导体"**. It should be a physical object or structure, NOT A PERSON. 
+     **Text label on it**: "半导体" (Black Bold) and "+110.3亿" (Small RED text next to it).
+   - **LEFT**: A massive symbolic object representing **"元件"**. (Physical object, non-human).
+     **Text label on it**: "元件" (Black Bold) and "+66.2亿" (Small RED text).
+   - **RIGHT**: A massive symbolic object representing **"小金属"**. (Physical object, non-human).
+     **Text label on it**: "小金属" (Black Bold) and "+49.0亿" (Small RED text).
+
+2. **THE WORSHIPPERS (Top Outflow Sectors)**:
+   In the **FOREGROUND**, a group of **LARGE**, kneeling figures (pilgrims) with their backs facing the viewer. 
+   - They should be **CLOSE TO THE CAMERA** so their backs take up significant space.
+   - **CRITICAL**: The text labels on their backs must be **LARGE and CLEARLY LEGIBLE**.
+   - **Labels on backs**: 银行 (-104.2亿), 电网设备 (-77.1亿), 证券 (-57.5亿), 白酒 (-51.9亿), 电力 (-45.7亿), 软件开发 (-34.4亿), 零售 (-29.5亿), 文化传媒 (-28.2亿), 光伏设备 (-26.9亿), 通信服务 (-26.7亿)
+   - **TEXT STYLING (Split Style)**:
+     - **Sector Name**: Use **White or Light Grey** text. Uniform font.
+     - **Money Number**: Use **Bright Neon Green** text (e.g., -157.4亿) to represent outflow. 
+     - **NO BACKGROUND PATCH**. Just the text floating on the dark clothing.
+     - Ensure the text has a slight **Glow** for high visibility.
+   - **COLOR**: These figures must be **DARK GREEN, GREY, or COLD COLORS** to represent outflow/loss. **ABSOLUTELY NO RED CLOTHING** for these figures. They should look gloomy.
+
+
+**ART STYLE**: 
+- **Vintage Hand-drawn Illustration**: Warm paper texture background, ink lines, watercolor washes.
+- **Atmosphere**: Epic, religious scale, slightly dystopian but artistic.
+- **Colors**: Sepia, warm brown, faded red (giants), dull green/grey (worshippers).
+
+**TEXT RENDERING**:
+- Please ensure the Chinese text labels for sectors are visible.
+- Font style: Hand-written Chinese calligraphy or block print.
+
+(Optimized for Nano Banana Pro: Focus on the contrast between the giant objects and the tiny kneeling crowd.)
