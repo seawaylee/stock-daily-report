@@ -181,170 +181,179 @@ def fetch_data(name, code):
 
 def get_fish_basin_analysis(symbols_map):
     results = []
-    print(f"Starting Fish Basin Analysis for {len(symbols_map)} symbols...")
+    failed_items = list(symbols_map.items()) # Start with all
+    max_retries = 2
+    
+    import time
     
     print(f"Starting Fish Basin Analysis for {len(symbols_map)} symbols...")
     
-    for name, code in symbols_map.items():
-        try:
-            print(f"Processing {name} ({code})...")
+    for attempt in range(max_retries + 1):
+        if not failed_items:
+            break
             
-            # 1. Fetch
-            df = fetch_data(name, code)
+        current_batch = failed_items
+        failed_items = []
+        
+        if attempt > 0:
+            print(f"\n🔄 Retry Cycle {attempt}/{max_retries} for {len(current_batch)} items...")
+            time.sleep(2)
             
-            if df is None or df.empty:
-                print(f"No data for {name}")
-                continue
-            close = df['close']
-            
-            # 2. Indicators
-            # 大哥黄线: (MA14 + MA28 + MA57 + MA114) / 4
-            df['MA14'] = close.rolling(window=14).mean()
-            df['MA28'] = close.rolling(window=28).mean()
-            df['MA57'] = close.rolling(window=57).mean()
-            df['MA114'] = close.rolling(window=114).mean()
-            df['大哥黄线'] = (df['MA14'] + df['MA28'] + df['MA57'] + df['MA114']) / 4
-            
-            # 趋势白线: EMA(EMA(C,10),10)
-            ema10 = close.ewm(span=10, adjust=False).mean()
-            df['趋势白线'] = ema10.ewm(span=10, adjust=False).mean()
-            
-            # Volume Ratio (Vol / MA5_Vol)
-            if 'volume' in df.columns:
-                vol_ma5 = df['volume'].rolling(window=5).mean()
-                df['vol_ratio'] = df['volume'] / vol_ma5
-            else:
-                df['vol_ratio'] = np.nan
-
-            df_valid = df.dropna(subset=['大哥黄线']).copy()
-            if df_valid.empty: continue
-            
-            last_row = df_valid.iloc[-1]
-            current_date = last_row['date']
-            
-            # If data is too old (e.g. > 5 days), warn?
-            # day_diff = (datetime.now() - current_date).days
-            # if day_diff > 5: print(f"Warning: Data for {name} is old ({current_date.date()})")
-
-            current_price = last_row['close']
-            dage_yellow_current = last_row['大哥黄线']
-            white_line_current = last_row['趋势白线']
-            vol_ratio = last_row.get('vol_ratio', 0)
-            
-            # Status
-            status_str = "YES" if current_price >= dage_yellow_current else "NO"
-            
-            # Deviation
-            deviation = (current_price - dage_yellow_current) / dage_yellow_current
-            
-            # Signal Date (Backtrack for price crossing yellow line)
-            price_arr = df['close'].values
-            indicator_arr = df['大哥黄线'].values
-            white_arr = df['趋势白线'].values
-            dates_arr = df['date'].values
-            
-            idx = len(df) - 1
-            curr_state = (price_arr[idx] >= indicator_arr[idx])
-            
-            signal_idx = -1
-            for i in range(idx - 1, 114, -1):  # 大哥黄线需要114天数据
-                if pd.isna(indicator_arr[i]): break
-                state_i = (price_arr[i] >= indicator_arr[i])
-                if state_i != curr_state:
-                    signal_idx = i + 1
-                    break
-            
-            interval_change = 0.0
-            change_date_str = "-"
-            if signal_idx != -1:
-                # Safe date conversion
-                ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
-                change_date_str = datetime.utcfromtimestamp(ts).strftime("%y.%m.%d")
-                base_price = price_arr[signal_idx]
-                interval_change = (current_price - base_price) / base_price
-
-            # 计算金叉/死叉持续天数 (白线vs黄线)
-            golden_cross_days = 0  # 白线在黄线之上的持续天数
-            death_cross_days = 0   # 白线在黄线之下的持续天数
-            
-            # 当前状态：白线 > 黄线 = 金叉状态
-            current_is_golden = white_arr[idx] > indicator_arr[idx]
-            
-            for i in range(idx, 114, -1):
-                if pd.isna(white_arr[i]) or pd.isna(indicator_arr[i]): break
-                is_golden = white_arr[i] > indicator_arr[i]
-                if is_golden == current_is_golden:
-                    if current_is_golden:
-                        golden_cross_days += 1
-                    else:
-                        death_cross_days += 1
+        for name, code in current_batch:
+            try:
+                # print(f"Processing {name} ({code})...") 
+                # (Silence normal logs on retries to reduce noise, or keep it?)
+                
+                # 1. Fetch
+                df = fetch_data(name, code)
+                
+                if df is None or df.empty:
+                    # Logic: If fetch failed, mark as failed
+                    failed_items.append((name, code))
+                    continue
+                    
+                close = df['close']
+                
+                # 2. Indicators
+                # 大哥黄线: (MA14 + MA28 + MA57 + MA114) / 4
+                df['MA14'] = close.rolling(window=14).mean()
+                df['MA28'] = close.rolling(window=28).mean()
+                df['MA57'] = close.rolling(window=57).mean()
+                df['MA114'] = close.rolling(window=114).mean()
+                df['大哥黄线'] = (df['MA14'] + df['MA28'] + df['MA57'] + df['MA114']) / 4
+                
+                # 趋势白线: EMA(EMA(C,10),10)
+                ema10 = close.ewm(span=10, adjust=False).mean()
+                df['趋势白线'] = ema10.ewm(span=10, adjust=False).mean()
+                
+                # Volume Ratio (Vol / MA5_Vol)
+                if 'volume' in df.columns:
+                    vol_ma5 = df['volume'].rolling(window=5).mean()
+                    df['vol_ratio'] = df['volume'] / vol_ma5
                 else:
-                    break
-            
-            # 如果不是对应状态，设为0
-            if current_is_golden:
-                death_cross_days = 0
-            else:
-                golden_cross_days = 0
+                    df['vol_ratio'] = np.nan
 
-            # Daily Change
-            prev_close = df.iloc[-2]['close']
-            daily_change = (current_price - prev_close) / prev_close
-            
-            # 白线偏离率
-            white_deviation = (current_price - white_line_current) / white_line_current
-            
-            # Vol Ratio Format
-            vr_str = f"{vol_ratio:.2f}" if pd.notna(vol_ratio) else "-"
-            
-            results.append({
-                "代码": code,
-                "名称": name,
-                "状态": status_str,
-                "涨幅%": f"{daily_change*100:+.2f}%",
-                "现价": int(current_price) if current_price > 5 else f"{current_price:.2f}",
-                "黄线": int(dage_yellow_current),
-                "白线": int(white_line_current) if white_line_current > 5 else f"{white_line_current:.2f}",
-                "黄线偏离率": f"{deviation*100:.2f}%",
-                "白线偏离率": f"{white_deviation*100:.2f}%",
-                "量比": vr_str,
-                "金叉天数": golden_cross_days if golden_cross_days > 0 else "-",
-                "死叉天数": death_cross_days if death_cross_days > 0 else "-",
-                "状态变量时间": change_date_str,
-                "区间涨幅%": f"{interval_change*100:.2f}%",
-                "_deviation_raw": deviation
-            })
-            
-        except Exception as e:
-            print(f"❌ Error processing {name}: {e}")
-            # Track failures? This function returns a list.
-            # We can log it to a global or print at the end if we restructure.
-            # For now, let's just ensure we see it.
+                df_valid = df.dropna(subset=['大哥黄线']).copy()
+                if df_valid.empty: 
+                    # Data too short?
+                    print(f"⚠️ Data too short for {name}")
+                    continue # Not a fetch fail, just data issue. Don't retry.
+                
+                last_row = df_valid.iloc[-1]
+                current_date = last_row['date']
+                current_price = last_row['close']
+                dage_yellow_current = last_row['大哥黄线']
+                white_line_current = last_row['趋势白线']
+                vol_ratio = last_row.get('vol_ratio', 0)
+                
+                # Status
+                status_str = "YES" if current_price >= dage_yellow_current else "NO"
+                
+                # Deviation
+                deviation = (current_price - dage_yellow_current) / dage_yellow_current
+                
+                # Signal Date (Backtrack for price crossing yellow line)
+                price_arr = df['close'].values
+                indicator_arr = df['大哥黄线'].values
+                white_arr = df['趋势白线'].values
+                dates_arr = df['date'].values
+                
+                idx = len(df) - 1
+                curr_state = (price_arr[idx] >= indicator_arr[idx])
+                
+                signal_idx = -1
+                for i in range(idx - 1, 114, -1):  # 大哥黄线需要114天数据
+                    if pd.isna(indicator_arr[i]): break
+                    state_i = (price_arr[i] >= indicator_arr[i])
+                    if state_i != curr_state:
+                        signal_idx = i + 1
+                        break
+                
+                interval_change = 0.0
+                change_date_str = "-"
+                if signal_idx != -1:
+                    # Safe date conversion
+                    try:
+                        ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+                        change_date_str = datetime.utcfromtimestamp(ts).strftime("%y.%m.%d")
+                    except: pass
+                    base_price = price_arr[signal_idx]
+                    interval_change = (current_price - base_price) / base_price
+
+                # 计算金叉/死叉持续天数 (白线vs黄线)
+                golden_cross_days = 0 
+                death_cross_days = 0
+                
+                current_is_golden = white_arr[idx] > indicator_arr[idx]
+                
+                for i in range(idx, 114, -1):
+                    if pd.isna(white_arr[i]) or pd.isna(indicator_arr[i]): break
+                    is_golden = white_arr[i] > indicator_arr[i]
+                    if is_golden == current_is_golden:
+                        if current_is_golden:
+                            golden_cross_days += 1
+                        else:
+                            death_cross_days += 1
+                    else:
+                        break
+                
+                if current_is_golden:
+                    death_cross_days = 0
+                else:
+                    golden_cross_days = 0
+
+                # Daily Change
+                prev_close = df.iloc[-2]['close'] if len(df) >= 2 else current_price
+                daily_change = (current_price - prev_close) / prev_close
+                
+                # 白线偏离率
+                white_deviation = (current_price - white_line_current) / white_line_current
+                
+                # Vol Ratio Format
+                vr_str = f"{vol_ratio:.2f}" if pd.notna(vol_ratio) else "-"
+                
+                results.append({
+                    "代码": code,
+                    "名称": name,
+                    "状态": status_str,
+                    "涨幅%": f"{daily_change*100:+.2f}%",
+                    "现价": int(current_price) if current_price > 5 else f"{current_price:.2f}",
+                    "黄线": int(dage_yellow_current),
+                    "白线": int(white_line_current) if white_line_current > 5 else f"{white_line_current:.2f}",
+                    "黄线偏离率": f"{deviation*100:.2f}%",
+                    "白线偏离率": f"{white_deviation*100:.2f}%",
+                    "量比": vr_str,
+                    "金叉天数": golden_cross_days if golden_cross_days > 0 else "-",
+                    "死叉天数": death_cross_days if death_cross_days > 0 else "-",
+                    "状态变量时间": change_date_str,
+                    "区间涨幅%": f"{interval_change*100:.2f}%",
+                    "_deviation_raw": deviation
+                })
+                
+                print(f"✅ {name} Done.")
+                
+            except Exception as e:
+                print(f"❌ Error processing {name}: {e}")
+                failed_items.append((name, code))
             
     # --- Summary Section ---
     success_count = len(results)
     total_count = len(symbols_map)
-    fail_count = total_count - success_count
+    fail_count = len(failed_items)
     
     print("\n" + "="*40)
-    print(f"📊 趋势模型执行汇总")
+    print(f"📊 趋势模型(指数) 执行汇总")
     print(f"✅ 成功: {success_count}/{total_count}")
     print(f"❌ 失败: {fail_count}/{total_count}")
     
     if fail_count > 0:
-        # Re-identify missing
-        found_names = {r['名称'] for r in results}
-        all_names = set(symbols_map.keys())
-        missing = all_names - found_names
-        print(f"⚠️ 失败列表: {', '.join(missing)}")
+        missing_names = [n for n, c in failed_items]
+        print(f"⚠️ 最终失败列表: {', '.join(missing_names)}")
     print("="*40 + "\n")
-
 
     # Sort results by deviation descending
     results.sort(key=lambda x: x.get('_deviation_raw', -999), reverse=True)
     
-    # Remove raw helper key if desired, or just let it drop during DataFrame column selection if we selected columns. 
-    # But fish_basin.py might just convert all. Let's select columns explicitly or drop.
     return pd.DataFrame(results).drop(columns=['_deviation_raw'], errors='ignore')
 
 # Export Default Targets for external use

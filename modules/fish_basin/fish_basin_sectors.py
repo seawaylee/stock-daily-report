@@ -322,16 +322,56 @@ def run(date_dir=None, save_excel=True):
     final_list = list(unique_map.values())
     print(f"Total items to process from config: {len(final_list)}")
 
-    # 3. Fetch Data (Sequential)
+    # 3. Fetch Data (Initial Parallel)
+    print(f"🚀 Launching parallel fetch for {len(final_list)} sectors...")
     processed_results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        futures = [executor.submit(fetch_data_router, item) for item in final_list]
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor: # Conservative worker count
+        futures = {executor.submit(fetch_data_router, item): item for item in final_list}
+        
         for future in concurrent.futures.as_completed(futures):
-            name, code, df, turnover = future.result()
-            if df is not None and not df.empty:
-                processed_results.append({
-                    'name': name, 'code': code, 'df': df, 'turnover': turnover
-                })
+            item = futures[future]
+            try:
+                name, code, df, turnover = future.result()
+                if df is not None and not df.empty:
+                    processed_results.append({
+                        'name': name, 'code': code, 'df': df, 'turnover': turnover
+                    })
+                # else: logic handles as missing implicitly
+            except Exception as e:
+                print(f"❌ Initial fetch failed for {item['name']}: {e}")
+
+    # 4. Retry Logic for Missing Items
+    fetched_names = {r['name'] for r in processed_results}
+    missing_items = [item for item in final_list if item['name'] not in fetched_names]
+    
+    if missing_items:
+        print(f"\n🔄 Retrying {len(missing_items)} failed items sequentially...")
+        import time
+        max_retries = 2
+        
+        for attempt in range(max_retries):
+            if not missing_items: break
+            
+            still_missing = []
+            for item in missing_items:
+                try:
+                    # Sequential Retry
+                    time.sleep(1.0) # Delay
+                    name, code, df, turnover = fetch_data_router(item)
+                    if df is not None and not df.empty:
+                        print(f"✅ Retry success: {name}")
+                        processed_results.append({
+                            'name': name, 'code': code, 'df': df, 'turnover': turnover
+                        })
+                    else:
+                        still_missing.append(item)
+                except:
+                    still_missing.append(item)
+            
+            missing_items = still_missing
+            if missing_items:
+                print(f"   Cycle {attempt+1} done. {len(missing_items)} still missing.")
 
     final_results_list = processed_results
             
@@ -351,7 +391,7 @@ def run(date_dir=None, save_excel=True):
         found_names = {r['name'] for r in final_results_list}
         all_names = {r['name'] for r in final_list}
         missing = all_names - found_names
-        print(f"⚠️ 失败列表: {', '.join(missing)}")
+        print(f"⚠️ 最终失败列表: {', '.join(missing)}")
     print("="*40 + "\n")
 
     results = []

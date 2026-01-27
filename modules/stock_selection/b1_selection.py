@@ -133,6 +133,9 @@ def run_full_selection(force=False):
     raw_file = os.path.join(date_dir, f"all_stocks_{today_timestamp}.jsonl")
     print(f"📁 实时数据将写入: {raw_file}")
 
+    # Initial Parallel Fetch
+    processed_codes = set()
+    
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(process_single_stock, args): args[0] for args in args_list}
         
@@ -146,8 +149,50 @@ def run_full_selection(force=False):
                     f_out.flush() # Ensure it flows to disk
                     
                     all_results.append(result)
+                    processed_codes.add(result['code'])
                     if result['signal']:
                         selected.append(result)
+
+    # Retry Logic
+    missing_args = [arg for arg in args_list if arg[0] not in processed_codes]
+    if missing_args:
+        print(f"\n🔄 B1 Retry: {len(missing_args)} stocks failed. Retrying sequentially...")
+        import time
+        
+        with open(raw_file, 'a', encoding='utf-8') as f_out:
+            for i, args in enumerate(missing_args):
+                code = args[0]
+                try:
+                    # Sequential Retry with delay
+                    time.sleep(0.5) 
+                    result = process_single_stock(args)
+                    
+                    if result is not None:
+                        f_out.write(json.dumps(result, cls=NumpyEncoder, ensure_ascii=False) + '\n')
+                        f_out.flush()
+                        all_results.append(result)
+                        processed_codes.add(code)
+                        if result['signal']:
+                            selected.append(result)
+                        print(f"   ✅ Retry success: {code}")
+                    else:
+                        pass # still failed
+                except:
+                    pass
+                
+                if (i+1) % 10 == 0:
+                    print(f"   Retry progress: {i+1}/{len(missing_args)}")
+
+    # Summary
+    success_count = len(processed_codes)
+    total_count = len(args_list)
+    fail_count = total_count - success_count
+    
+    print("\n" + "="*40)
+    print(f"📊 B1选股 执行汇总")
+    print(f"✅ 成功: {success_count}/{total_count}")
+    print(f"❌ 失败: {fail_count}/{total_count}")
+    print("="*40)
     
     # raw_file is already written incrementally
     
