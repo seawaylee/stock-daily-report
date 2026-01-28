@@ -26,8 +26,8 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
              try: df_sector = pd.read_excel(f"{date_dir}/趋势模型_题材.xlsx")
              except: pass
              
-        if df_index is None or df_sector is None:
-            print("❌ Missing Index or Sector data for combined prompt.")
+        if df_index is None and df_sector is None:
+            print("❌ Missing Index AND Sector data. Cannot generate prompt.")
             return None
         
         # Helper to format rows
@@ -36,8 +36,8 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
             df['dev_val'] = df['黄线偏离率'].astype(str).str.rstrip('%').astype(float)
             return df.sort_values('dev_val', ascending=False)
             
-        df_index = process_df(df_index)
-        df_sector = process_df(df_sector)
+        df_index = process_df(df_index) if df_index is not None else pd.DataFrame()
+        df_sector = process_df(df_sector) if df_sector is not None else pd.DataFrame()
         
         def format_row(row, rank):
             name = row['名称']
@@ -83,8 +83,15 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
             return f"{rank}. {status} {name} | 涨跌:{chg_color}{daily_chg} | 偏离:{dev_color}{dev} | 区间:{interval_color}{interval_chg} | {cross_days} | 排名:{rank_icon}"
 
         # Generate Rows
-        index_rows = [format_row(r, i+1) for i, (_, r) in enumerate(df_index.head(15).iterrows())]
-        sector_rows = [format_row(r, i+1) for i, (_, r) in enumerate(df_sector.head(20).iterrows())] # Top 20 sectors
+        if not df_index.empty:
+            index_rows = [format_row(r, i+1) for i, (_, r) in enumerate(df_index.head(15).iterrows())]
+        else:
+            index_rows = ["(No Index Data Available)"]
+
+        if not df_sector.empty:
+            sector_rows = [format_row(r, i+1) for i, (_, r) in enumerate(df_sector.head(20).iterrows())] # Top 20 sectors
+        else:
+            sector_rows = []
         
         # Build Prompt
         prompt = f"""(masterpiece, best quality), (hand drawn), (illustration), (vintage style), (ink sketch), (vertical 10:16), (warm paper texture)
@@ -118,8 +125,10 @@ Layout: A list of key market indices ranked by trend strength.
 
 ---
 
+---
+
 **SECTION 2: 热门题材趋势** (Top Sectors Trend)
-*Header*: "════ 热门题材 ════" in bold calligraphy
+{f'''*Header*: "════ 热门题材 ════" in bold calligraphy
 
 Layout: Top 20 ranking sectors sorted by trend strength.
 Style: Same color rules apply.
@@ -128,7 +137,13 @@ Style: Same color rules apply.
 [排名 名称 | 今日涨跌 | 长线偏离 | 区间涨幅 | 金叉/死叉 | 排名变化]
 
 **Data**:
-{chr(10).join(sector_rows)}
+{chr(10).join(sector_rows)}''' if sector_rows else '(No Sector Data Available)'}
+
+---
+
+**FOOTER**:
+- Text: "**总结不易，每天收盘后推送，点赞关注不迷路！**"
+- Style: Centered, smaller font, warm greetings style
 
 ---
 

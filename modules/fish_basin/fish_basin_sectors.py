@@ -322,11 +322,19 @@ def run(date_dir=None, save_excel=True):
     final_list = list(unique_map.values())
     print(f"Total items to process from config: {len(final_list)}")
 
-    # 3. Fetch Data (Initial Parallel)
-    print(f"🚀 Launching parallel fetch for {len(final_list)} sectors...")
+    # 3. Fetch Data (logic moved below to support better tracking)
+
+
+    # 4. Retry Logic for Missing Items
+    # Fix: Use successful_config_names to track by ORIGINAL config name, not the output name (which might be aliased)
+    successful_config_names = set()
+
+        
+    # Re-doing the collection logic to be safer
     processed_results = []
+    successful_config_names = set()
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor: # Conservative worker count
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor: # Reduced to 1 to avoid libmini_racer crash
         futures = {executor.submit(fetch_data_router, item): item for item in final_list}
         
         for future in concurrent.futures.as_completed(futures):
@@ -337,13 +345,12 @@ def run(date_dir=None, save_excel=True):
                     processed_results.append({
                         'name': name, 'code': code, 'df': df, 'turnover': turnover
                     })
+                    successful_config_names.add(item['name']) # Track by CONFIG name
                 # else: logic handles as missing implicitly
             except Exception as e:
                 print(f"❌ Initial fetch failed for {item['name']}: {e}")
 
-    # 4. Retry Logic for Missing Items
-    fetched_names = {r['name'] for r in processed_results}
-    missing_items = [item for item in final_list if item['name'] not in fetched_names]
+    missing_items = [item for item in final_list if item['name'] not in successful_config_names]
     
     if missing_items:
         print(f"\n🔄 Retrying {len(missing_items)} failed items sequentially...")

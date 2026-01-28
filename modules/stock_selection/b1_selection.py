@@ -333,7 +333,7 @@ def call_gemini_analysis(selected_stocks, date_dir):
             if c not in seen:
                 unique_codes.append(c)
                 seen.add(c)
-        unique_codes = unique_codes[:10]
+        unique_codes = unique_codes[:20] # Top 20
         
         stock_map = {s['code']: s for s in selected_stocks}
         top_stocks = []
@@ -341,7 +341,7 @@ def call_gemini_analysis(selected_stocks, date_dir):
             if c in stock_map:
                 top_stocks.append(stock_map[c])
         
-        top10_file = os.path.join(date_dir, "selected_top10.json")
+        top10_file = os.path.join(date_dir, "selected_top10.json") # Keep filenamesame for compat or change? Let's keep it.
         with open(top10_file, 'w', encoding='utf-8') as f:
             json.dump(top_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
         print(f"📁 已生成中间文件: {top10_file} ({len(top_stocks)}只)")
@@ -359,11 +359,10 @@ def call_gemini_analysis(selected_stocks, date_dir):
 def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     """使用Agent生成信息图提示词"""
     # 准备股票数据摘要(包含技术指标 + 脱敏信息)
-    # 准备股票数据摘要(包含技术指标 + 脱敏信息)
-    if len(selected_stocks) > 10:
-        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，预期为10。")
-        # 尝试使用前10个
-        selected_stocks = selected_stocks[:10]
+    if len(selected_stocks) > 20:
+        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，预期为20。")
+        # 尝试使用前20个
+        selected_stocks = selected_stocks[:20]
 
     # 准备股票数据摘要(包含技术指标 + 脱敏信息)
     stock_summary = []

@@ -1,0 +1,148 @@
+# 20260128 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字红色）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**01月28日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+有色金属(20) | 贵金属(9) | 珠宝首饰(6) | 化学制品(6) | 采掘行业(4) | 专用设备(3) | 小金属(3) | 玻璃玻纤(3)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上) / 题材(下)，[一字]=一字涨停(红色喜庆)，[X]=炸板或断板
+
+### 7板 (1只)
+```
+    白银有色    
+    有色金属    
+
+```
+
+### 4板 (5只) - 1炸板
+```
+  [一字]中国黄金      中农联合        四川黄金        豫光金铅    
+    珠宝首饰        农药兽药        贵金属         有色金属    
+
+  [X]拓日新能   
+    光伏设备    
+
+```
+
+### 3板 (9只) - 1炸板+4断板
+```
+  [一字]湖南黄金      招金黄金        晓程科技        金徽股份    
+    贵金属         贵金属         贵金属         有色金属    
+
+  [X]天地在线     [X]达安基因     [X]天奇股份     [X]光正眼科   
+    文化传媒        医疗器械        专用设备        医疗服务    
+
+  [X]凯普生物   
+    医疗器械    
+
+```
+
+### 2板 (2只)
+```
+    可川科技        康强电子    
+    电子元件        半导体     
+
+```
+
+### 首板 (69只)
+```
+  [一字]盈新发展    [一字]百通能源      智光电气        气派科技        豫园股份    
+    房地产开        公用事业        电网设备        半导体         珠宝首饰    
+
+    怡球资源        青岛双星        亚邦股份        美利云         莱绅通灵    
+    有色金属        橡胶制品        化学制品        通信服务        珠宝首饰    
+
+    闰土股份        百川股份        浙江龙盛        沧州大化        锦鸡股份    
+    化学制品        化学制品        化学制品        化学制品        化学制品    
+
+    西部黄金        石化油服        哈森股份        锌业股份        金一文化    
+    贵金属         采掘行业        纺织服装        有色金属        珠宝首饰    
+
+    常铝股份        和邦生物        上海建工        中电电机        海洋王     
+    有色金属        化学原料        工程建设         电机         电子元件    
+
+    飞南资源        南矿集团        东方钽业        铜陵有色        航民股份    
+    环保行业        专用设备        小金属         有色金属        纺织服装    
+
+    闽发铝业        罗平锌电        中国铝业        粤宏远Ａ        宏和科技    
+    有色金属        有色金属        有色金属        房地产开        玻璃玻纤    
+
+    远东股份        菜百股份        华峰铝业        中铝国际        准油股份    
+    电网设备        珠宝首饰        有色金属        工程建设        采掘行业    
+
+    农发种业        恒邦股份        今创集团        中色股份        云铝股份    
+    农牧饲渔        贵金属         交运设备        有色金属        有色金属    
+
+    北方铜业        湖南白银        山西焦化        中金黄金        再升科技    
+    有色金属        贵金属         煤炭行业        贵金属         玻璃玻纤    
+
+    通源石油        迪阿股份        陕西黑猫        巨力索具        北方股份    
+    采掘行业        珠宝首饰        煤炭行业        通用设备        专用设备    
+
+    天山铝业        赤峰黄金        中材科技        星宇股份        威领股份    
+    有色金属        贵金属         玻璃玻纤        汽车零部        能源金属    
+
+    株冶集团        中曼石油        盛达资源        云南铜业        翔鹭钨业    
+    有色金属        采掘行业        有色金属        有色金属        小金属     
+
+    洲际油气        鹏欣资源        南山铝业        贵研铂业    
+    石油行业        有色金属        有色金属        小金属     
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 01月28日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "01月28日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL RED ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 7板: 白银有色 - highest streak
+- 有色金属 dominates with 20 stocks
+- Total 86 stocks (69 first-time + 17 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

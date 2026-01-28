@@ -21,17 +21,17 @@ def get_analysis_prompt(stocks_info):
 选出的股票数据：
 {json.dumps(stocks_info, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
 
-请从中选出Today Top10值得关注的股票，评估标准：
+请从中选出Today Top20值得关注的股票，评估标准：
 1. 信号强度（多信号叠加更佳）
 2. 技术指标位置（KDJ/RSI超卖程度）
 3. **【选股偏好】尽量不选688开头的科创板股票**，除非其他标的质量明显不足。
-4. **【题材分布】题材尽量分散，不要扎堆**！每类细分题材/行业入选股票不超过2只。
+4. **【题材分布】题材尽量分散，不要扎堆**！每类细分题材/行业入选股票不超过3只。
 5. **【重要】所属行业/题材**（由于数据源缺失，请你根据股票代码和名称，利用你的知识库补充其所属的行业和核心题材）
 
 请输出：
-1. Top10股票排名
+1. Top20股票排名
    - 格式：`[股票名称] ([代码]) | [行业/题材]`
-   - 推荐理由：另起一行，3-5句话，结合技术面与基本面题材。
+   - 推荐理由：另起一行，2-3句话，结合技术面与基本面题材。
 2. 整体市场分析（2-3句话）
 3. 风险提示
 4. **【重要】图片生成专用摘要**
@@ -78,11 +78,10 @@ Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH sty
 - Background: Hand-drawn red-gold gradient with visible pencil strokes
 
 
-Left: Robot mascot wearing red scarf, holding gear + rocket, thumbs-up, hand-sketched
-Right: Speech bubble: "先进制造+军工+新能源三大主线齐发力！KDJ超卖区间 短期修复窗口已开启💰"
 Center: "AI大模型量化策略" + "{current_date}"
+**Visual Highlight**: Add a realistic "Red Ink Stamp" (Seal) near the title with text: "次日择机买入"
 
-10 stock cards (5 per column) in a 2-Column Grid:
+20 stock cards (10 per column) in a 2-Column Grid:
 Left column: Pale blue background with paper texture
 Right column: Pale yellow background with paper texture
 
@@ -101,11 +100,12 @@ Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
 
 
 **FOOTER CONTENT (Bottom Area):**
-Please render the following content at the bottom. Use these EXACT 3 lines (translate/summarize fit if needed):
+**FOOTER CONTENT (Bottom Area):**
+Please render the following text content clearly in the bottom area. Keep the structure:
 
-1. **Top Line (Summary)**: Extract key market summary from here: "{footer_content}". Keep it under 20 words.
-2. **Middle Line (Strategy)**: Extract key focus stocks/strategy from here: "{footer_content}". Keep it under 15 words.
-3. **Bottom Line (CALL TO ACTION)**: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路"
+{footer_content}
+
+**Bottom Line (Call to Action)**: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路"
 
 **IMPORTANT**: 
 - All footer text MUST be in CHINESE.

@@ -1,0 +1,80 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic), (pencil sketch:1.3)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
+
+**VISUAL STYLE**:
+- **Medium**: Graphite pencil, charcoal, and ink pen on textured parchment paper.
+- **Texture**: Visible paper grain, rough edges, smudge marks.
+- **Lines**: Loose, sketchy, wobbly hand-drawn lines. NO straight digital lines.
+- **Color**: Monochromatic sketch with accents of Red (Bullish) and Green (Bearish). Background is a warm, aged paper color (#F5E6C8).
+
+**LAYOUT**:
+- **Title Area**: Hand-written title "AI大模型量化策略" at the top in calligraphy style. Date "2026-01-28" below it.
+- **Visual Highlight**: **RED INK STAMP** (Seal style) near the title: "次日择机买入" (Buy Opportunistically Tomorrow).
+- **Main Content**: Two columns of "Stock Cards" (sketchy rectangles). 10 cards per column (Total 20).
+
+**STOCK CARDS (Hand-Lettered Text)**:
+
+*Column 1 (Left)*:
+1. **锐科JG** (3007**) | 🏭 激光设备
+   🚀 超卖缩量,原始买点 | J=2.9 RSI=28
+2. **大唐DX** (6001**) | 🔌 半导体
+   🚀 超卖缩量,回踩黄线 | J=-7.5 RSI=28
+3. **东方MZ** (6006**) | 📦 传媒
+   🚀 超卖缩量,超卖缩量 | J=-10.0 RSI=25
+4. **德赛XW** (0029**) | 🚗 智能驾驶
+   🚀 回踩黄线标准买点 | J=7.5 RSI=23
+5. **航天KJ** (0009**) | ✈️ 航天军工
+   🚀 超卖缩量,超卖缩量 | J=11.3 RSI=35
+6. **晶科KJ** (6017**) | ⚡ 光伏绿电
+   🚀 回踩白线,技术支撑 | J=31.3 RSI=36
+7. **伯特L** (6035**) | 🚗 汽车零部件
+   🚀 超卖缩量,基本面优 | J=5.5 RSI=27
+8. **创新YL** (0021**) | 🧠 脑机接口
+   🚀 超卖缩量,J值低位 | J=13.3 RSI=34
+9. **三博NK** (3012**) | 🏥 脑科医院
+   🚀 超卖缩量,筹码沉淀 | J=6.1 RSI=25
+10. **能科KJ** (6038**) | 💻 工业软件
+    🚀 超卖缩量,原始买点 | J=-0.3 RSI=22
+
+*Column 2 (Right)*:
+11. **航天ZZ** (3004**) | ✈️ 商业航天
+    🚀 超卖缩量,回踩黄线 | J=12.3 RSI=28
+12. **东方TX** (6007**) | 🔌 5G通信
+    🚀 超卖缩量,超卖缩量 | J=9.2 RSI=33
+13. **卫宁JK** (3002**) | 🤖 AI医疗
+    🚀 原始标准买点 | J=-10.5 RSI=22
+14. **泰胜FN** (3001**) | 🏭 风电
+    🚀 原始标准买点 | J=-1.8 RSI=28
+15. **拉卡L** (3007**) | 💰 数字金融
+    🚀 超卖缩量,原始买点 | J=4.7 RSI=27
+16. **华阳JT** (0029**) | 🚗 华为汽车
+    🚀 超卖缩量,相对低位 | J=13.3 RSI=30
+17. **杭州KL** (6886**) | 🔌 智能电网
+    🚀 多重信号,极度超卖 | J=5.5 RSI=31
+18. **昭衍XY** (6031**) | 💊 CXO医药
+    🚀 超卖缩量,RSI极低 | J=1.8 RSI=17
+19. **托普YN** (3015**) | 🌾 智慧农业
+    🚀 超卖缩量,拐头买点 | J=20.7 RSI=63
+20. **荣昌SW** (6883**) | 💉 创新药
+    🚀 超卖缩量,估值修复 | J=10.4 RSI=60
+
+**FOOTER CONTENT (Bottom Area)**:
+Please render the following text content clearly in the bottom area. Keep the structure:
+
+📍 **整体复盘**
+📉 情绪冰点: 市场缩量调整，空头衰竭
+❄️ 超卖显现: 多数个股进入技术超卖区
+🛡️ 支撑有效: 核心资产回踩趋势线企稳
+
+💡 **次日策略**
+🎯 聚焦超跌: 关注缩量企稳的科技成长
+💰 趋势低吸: 布局回踩黄线的绩优龙头
+🛑 控制仓位: 无论盈亏，严格执行纪律
+
+**Bottom Line (Call to Action)**: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路"
+
+(Ensure all text is in Chinese hand-written font style. Keep the layout clean vertical list.)
+
+
+(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)
