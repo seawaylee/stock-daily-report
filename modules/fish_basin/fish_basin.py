@@ -37,6 +37,30 @@ SYMBOLS = {
     "美元离岸人民币": "FX_USDCNH", # Added (Using CNY proxy if CNH unavailable)
 }
 
+# Cache for Spot Data
+SPOT_DATA_CACHE = None
+
+def get_a_share_spot(code):
+    """Retrieve spot data for an A-share index from cache"""
+    global SPOT_DATA_CACHE
+    if SPOT_DATA_CACHE is None:
+        try:
+            # Code format in Sina Spot: sh000001
+            SPOT_DATA_CACHE = ak.stock_zh_index_spot_sina()
+        except Exception as e:
+            print(f"Failed to fetch A-share spot data: {e}")
+            SPOT_DATA_CACHE = pd.DataFrame() # prevent retry loop failure
+
+    if SPOT_DATA_CACHE.empty:
+        return None
+
+    # Search
+    # Sina Spot codes are like 'sh000001'
+    row = SPOT_DATA_CACHE[SPOT_DATA_CACHE['代码'] == code]
+    if not row.empty:
+        return row.iloc[0]
+    return None
+
 def fetch_data(name, code):
     """
     Fetch data for a given symbol.
@@ -48,19 +72,11 @@ def fetch_data(name, code):
         # 0. FX (USD/CNH)
         if code == "FX_USDCNH":
             try:
-                # Attempt to get USD/CNY from BOC as a proxy for USD/CNH
-                # Akshare free APIs for CNH history are limited. 
-                # currency_boc_sina returns '中行折算价' (Conversion Rate) which is a good daily reference.
                 df = ak.currency_boc_sina(symbol="美元", start_date="20240101", end_date="20261231")
                 if df is not None:
-                     # Rename columns
-                     # '日期', '中行汇买价', '中行钞买价', '中行钞卖价/汇卖价', '央行中间价', '中行折算价'
                      df = df.rename(columns={'日期': 'date', '中行折算价': 'close'})
-                     # Data is per 100 units (e.g. 720.0), scale to 7.20
                      df['close'] = pd.to_numeric(df['close'], errors='coerce') / 100.0
-                     df['volume'] = 0 # No volume for FX rate
-                     
-                     # Fill Open/High/Low with Close as we only need Close for trend
+                     df['volume'] = 0
                      df['open'] = df['close']
                      df['high'] = df['close']
                      df['low'] = df['close']
@@ -72,29 +88,25 @@ def fetch_data(name, code):
             df = ak.futures_foreign_hist(symbol=code) 
             if df is not None:
                 df = df.rename(columns={'date': 'date', 'close': 'close', 'open': 'open', 'high': 'high', 'low': 'low'})
-                # Filter recent
                 df['date'] = pd.to_datetime(df['date'])
                 df = df[df['date'] >= '2024-01-01']
                 return df
 
         # 2. HK Indices
         if code.startswith("hk"):
-             # Use hk_index_daily_sina (History)
              try:
-                 symbol_clean = code[2:] # Remove 'hk' prefix
+                 symbol_clean = code[2:]
                  df = ak.stock_hk_index_daily_sina(symbol=symbol_clean)
                  
-                 # Check if we need to append today's spot data
+                 # Append Spot
                  if df is not None and not df.empty:
                      df['date'] = pd.to_datetime(df['date'])
                      last_date = df['date'].iloc[-1].date()
                      today_date = datetime.now().date()
                      
                      if last_date < today_date:
-                         # Fetch Spot Data
                          try:
                              spot_df = ak.stock_hk_index_spot_em()
-                             # Filter by code (e.g. HSI or HSTECH)
                              target_row = spot_df[spot_df['代码'] == symbol_clean]
                              if not target_row.empty:
                                  row = target_row.iloc[0]
@@ -106,10 +118,7 @@ def fetch_data(name, code):
                                      'close': row['最新价'],
                                      'volume': row['成交量']
                                  }
-                                 # Convert new_data to DataFrame and concat
-                                 # Ensure types are correct
-                                 new_df = pd.DataFrame([new_data])
-                                 df = pd.concat([df, new_df], ignore_index=True)
+                                 df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
                          except Exception as e_spot:
                              print(f"Failed to fetch HK spot data for {code}: {e_spot}")
              except Exception as e: 
@@ -134,13 +143,11 @@ def fetch_data(name, code):
                      })
              except: pass
 
-        # 5. Specialized A-Share Index (CSI A500) - Use EM source first
+        # 5. Specialized A-Share (CSI A500)
         elif code == "sh000510":
              try:
-                 # Use EM source (Plan A)
                  df = ak.stock_zh_index_daily_em(symbol="sh000510")
              except:
-                 # Fallback to Sina (Plan B)
                  try:
                      df = ak.stock_zh_index_daily(symbol="sh000510")
                  except: pass
@@ -150,11 +157,46 @@ def fetch_data(name, code):
              # Try EM Daily first
              try:
                 df = ak.stock_zh_index_daily_em(symbol=code)
-             except:
+             except Exception as e1:
                 # Fallback to Sina Daily
                 try:
                     df = ak.stock_zh_index_daily(symbol=code)
-                except: pass
+                except Exception as e2: 
+                    pass
+        
+        # --- Common Logic: Append A-Share Spot if needed ---
+        # Only applicable if code starts with sh/sz/bj or is numeric (generic A-share)
+        is_ashare = code.startswith(('sh', 'sz', 'bj')) or code == 'sh000510'
+        
+        if df is not None and not df.empty and is_ashare:
+             if 'date' in df.columns:
+                df['date'] = pd.to_datetime(df['date'])
+                df = df.sort_values(by='date')
+                
+                # Check freshness
+                last_date = df['date'].iloc[-1].date()
+                today_date = datetime.now().date()
+                
+                if last_date < today_date:
+                    # Try to find spot data
+                    spot_row = get_a_share_spot(code)
+                    if spot_row is not None:
+                        try:
+                            # Sina Spot columns: 代码,名称,最新价,涨跌额,涨跌幅,昨收,今开,最高,最低,成交量,成交额
+                            new_data = {
+                                'date': pd.to_datetime(today_date),
+                                'open': float(spot_row['今开']),
+                                'high': float(spot_row['最高']),
+                                'low': float(spot_row['最低']),
+                                'close': float(spot_row['最新价']),
+                                'volume': float(spot_row['成交量'])
+                            }
+                            # Check strictly if price is valid (not 0)
+                            if new_data['close'] > 0:
+                                df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
+                                # print(f"  Append Spot: {code} {new_data['close']}")
+                        except Exception as e_append:
+                            print(f"Error appending spot for {code}: {e_append}")
 
         if df is not None and not df.empty:
             if 'date' in df.columns:

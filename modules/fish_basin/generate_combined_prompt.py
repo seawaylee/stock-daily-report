@@ -26,18 +26,98 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
              try: df_sector = pd.read_excel(f"{date_dir}/趋势模型_题材.xlsx")
              except: pass
              
+        # Support for Merged Excel (Single Sheet Parsing)
+        if df_index is None and df_sector is None:
+            merged_path = f"{date_dir}/趋势模型_合并.xlsx"
+            if os.path.exists(merged_path):
+                print(f"Reading from Merged Excel: {merged_path}")
+                try:
+                    df_all = pd.read_excel(merged_path)
+                    # Find split points
+                    # Separator usually contains '题材趋势' in the first column
+                    # But the file has Title rows too.
+                    # Column 0 is usually '代码' or '名称' depending on saving?
+                    # Let's inspect column 0 values
+                    
+                    # Identify rows
+                    # Indices are at valid rows until '题材趋势' separator
+                    # We look for the row where any column has '题材趋势'
+                    split_idx = -1
+                    for idx, row in df_all.iterrows():
+                        if '题材趋势' in str(row.iloc[0]):
+                             split_idx = idx
+                             break
+                    
+                    if split_idx != -1:
+                        # Indices are before split (excluding title row 0 if it exists)
+                        # Actually 'save_merged_excel' adds title at row 0: '指数趋势'
+                        # So Index Data = Row 1 to split_idx-1 (exclusive of separator)
+                        # Sector Data = Row split_idx+1 to End
+                        
+                        # Note: dataframe loaded with header=0 (first row as columns).
+                        # But save_merged_excel puts '指数趋势' in the DATA body row 0?
+                        # No, `to_excel(index=False)` writes headers.
+                        # `save_merged_excel` creates `df_index_title` (Row 0 of data).
+                        # So:
+                        # Header (Code, Name...)
+                        # Row 0: "=== Index Trend ==="
+                        # Row 1...N: Index Data
+                        # Row N+1: "=== Sector Trend ==="
+                        # Row N+2...: Sector Data
+                        
+                        df_index = df_all.iloc[1:split_idx]
+                        df_sector = df_all.iloc[split_idx+1:]
+                        
+                        # Filter out empty/title rows if any remain
+                        df_index = df_index[df_index.iloc[:,0].astype(str).str.len() < 20] 
+                        df_sector = df_sector[df_sector.iloc[:,0].astype(str).str.len() < 20]
+                        print(f"Extracted {len(df_index)} Indices and {len(df_sector)} Sectors from Merged Excel.")
+                except Exception as e:
+                    print(f"Failed to parse Merged Excel: {e}")
+
+             
         if df_index is None and df_sector is None:
             print("❌ Missing Index AND Sector data. Cannot generate prompt.")
             return None
         
         # Helper to format rows
-        def process_df(df):
+        def process_df(df, is_sector=False):
+            # Safe conversion helper
+            def safe_convert_pct(series):
+                return pd.to_numeric(series.astype(str).str.replace('+', '').str.rstrip('%'), errors='coerce')
+
             # Ensure proper types
-            df['dev_val'] = df['黄线偏离率'].astype(str).str.rstrip('%').astype(float)
+            df['dev_val'] = safe_convert_pct(df['黄线偏离率'])
+            
+            # For Sectors: Mix of Top Deviation AND Top Gainers
+            if is_sector:
+                try:
+                    df['chg_val'] = safe_convert_pct(df['涨幅%'])
+                    
+                    # 1. Top Deviation (Trend Kings)
+                    top_dev = df.sort_values('dev_val', ascending=False).head(20)
+                    
+                    # 2. Top Gainers (Today's Stars) - Force include Top 5 even if trend is weak
+                    # Filter out those with NaN change
+                    valid_gainers = df.dropna(subset=['chg_val'])
+                    top_gainers = valid_gainers.sort_values('chg_val', ascending=False).head(5)
+                    
+                    # print(f"Top 5 Gainers Debug: {top_gainers[['名称', 'chg_val']].to_string()}")
+
+                    # 3. Combine and Dedup
+                    combined = pd.concat([top_dev, top_gainers]).drop_duplicates(subset=['名称'])
+                    
+                    # 4. Sort by Deviation for consistency (Trend Model)
+                    # Or maybe put Gainers on top? No, "Trend Model" implies Trend Rank.
+                    return combined.sort_values('dev_val', ascending=False).head(25) # Allow up to 25
+                except Exception as e:
+                    print(f"⚠️ Error processing sector mix: {e}")
+                    return df.sort_values('dev_val', ascending=False)
+            
             return df.sort_values('dev_val', ascending=False)
             
         df_index = process_df(df_index) if df_index is not None else pd.DataFrame()
-        df_sector = process_df(df_sector) if df_sector is not None else pd.DataFrame()
+        df_sector = process_df(df_sector, is_sector=True) if df_sector is not None else pd.DataFrame()
         
         def format_row(row, rank):
             name = row['名称']
@@ -89,7 +169,7 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
             index_rows = ["(No Index Data Available)"]
 
         if not df_sector.empty:
-            sector_rows = [format_row(r, i+1) for i, (_, r) in enumerate(df_sector.head(20).iterrows())] # Top 20 sectors
+            sector_rows = [format_row(r, i+1) for i, (_, r) in enumerate(df_sector.head(25).iterrows())] # Top 25 sectors
         else:
             sector_rows = []
         
@@ -130,7 +210,7 @@ Layout: A list of key market indices ranked by trend strength.
 **SECTION 2: 热门题材趋势** (Top Sectors Trend)
 {f'''*Header*: "════ 热门题材 ════" in bold calligraphy
 
-Layout: Top 20 ranking sectors sorted by trend strength.
+Layout: Top 25 ranking sectors sorted by trend strength (including Top Gainers).
 Style: Same color rules apply.
 
 **Content Columns**:

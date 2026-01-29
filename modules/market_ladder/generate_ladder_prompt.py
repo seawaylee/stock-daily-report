@@ -74,7 +74,7 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append("")
     prompt_lines.append("> **⚠️ 注意：每只股票包含2个元素！**")
     prompt_lines.append("> 1. **股票名**（粗体黑色）- 如 锋龙股份")
-    prompt_lines.append("> 2. **题材**（下方小字红色）- 如 电网设备")
+    prompt_lines.append("> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备")
     prompt_lines.append(">")
     prompt_lines.append("> **特殊标记**：")
     prompt_lines.append("> - **[一字]** = 红色喜庆标签，表示一字涨停")
@@ -86,13 +86,14 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     
     # 热门题材
     prompt_lines.append("## 热门题材 (TOP8)")
+    prompt_lines.append("> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)")
     ind_strs = [f"{ind}({cnt})" for ind, cnt in top_inds]
     prompt_lines.append(" | ".join(ind_strs))
     prompt_lines.append("")
     prompt_lines.append("---")
     prompt_lines.append("")
     prompt_lines.append("## 涨停阶梯完整数据")
-    prompt_lines.append("格式: 股票名(上) / 题材(下)，[一字]=一字涨停(红色喜庆)，[X]=炸板或断板")
+    prompt_lines.append("格式: 股票名(上, 黑色) / 题材(下, **红色**)")
     prompt_lines.append("")
     
     # 各板数据
@@ -182,7 +183,7 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append("**Stock display format (CRITICAL COLORS)**:")
     prompt_lines.append("```")
     prompt_lines.append(" [Stock Name]  (In BOLD BLACK ink)")
-    prompt_lines.append("  [Industry]   (In SMALL RED ink underneath)")
+    prompt_lines.append("  [Industry]   (In SMALL **RED** ink underneath)")
     prompt_lines.append("```")
     prompt_lines.append("Example: **锋龙股份** (Black) / 电网设备 (Red)")
     prompt_lines.append("")

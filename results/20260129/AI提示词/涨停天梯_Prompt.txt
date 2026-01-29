@@ -1,0 +1,153 @@
+# 20260129 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**01月29日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+酿酒行业(20) | 有色金属(8) | 文化传媒(7) | 采掘行业(5) | 化学制品(5) | 房地产开(5) | 贵金属(4) | 纺织服装(3)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 8板 (1只)
+```
+    白银有色    
+    有色金属    
+
+```
+
+### 5板 (3只) - 1炸板
+```
+  [一字]中国黄金      豫光金铅      [X]中农联合   
+    珠宝首饰        有色金属        农药兽药    
+
+```
+
+### 4板 (4只) - 1炸板+1断板
+```
+  [一字]湖南黄金      招金黄金      [X]四川黄金     [X]金徽股份   
+    贵金属         贵金属         贵金属         有色金属    
+
+```
+
+### 3板 (2只) - 1炸板+1断板
+```
+  [X]可川科技     [X]康强电子   
+    电子元件        半导体     
+
+```
+
+### 2板 (14只)
+```
+    怡球资源        百通能源        西部黄金        北方铜业    
+    有色金属        公用事业        贵金属         有色金属    
+
+    准油股份        石化油服        通源石油        铜陵有色    
+    采掘行业        采掘行业        采掘行业        有色金属    
+
+    洲际油气        云南铜业        百川股份        中曼石油    
+    石油行业        有色金属        化学制品        采掘行业    
+
+    闰土股份        哈森股份    
+    化学制品        纺织服装    
+
+```
+
+### 首板 (63只)
+```
+    德展健康        天地在线        鼎胜新材        润贝航科        华媒控股    
+    化学制药        文化传媒        有色金属        贸易行业        文化传媒    
+
+    科达制造        江苏有线        中信尼雅        大悦城         派斯林     
+    专用设备        文化传媒        酿酒行业        房地产开        通用设备    
+
+    深深房Ａ        奥康国际        横店影视        三湘印象        万丰股份    
+    房地产开        纺织服装        文化传媒        房地产开        化学原料    
+
+   粤 传 媒        浙江自然        商络电子        珠江股份        青岛银行    
+    文化传媒        纺织服装        贸易行业        房地产服         银行     
+
+    共创草坪        珠江钢琴        盛和资源        苏博特         我爱我家    
+    家用轻工        家用轻工        小金属         化学制品        房地产服    
+
+    新城控股        升达林业        马可波罗        嘉化能源        新华百货    
+    房地产开         燃气         家用轻工        化学制品        商业百货    
+
+    海通发展        皇台酒业        中油工程        酒鬼酒         德恩精工    
+    航运港口        酿酒行业        采掘行业        酿酒行业        通用设备    
+
+    金徽酒         航天科技        水井坊         泸州老窖        金种子酒    
+    酿酒行业        汽车零部        酿酒行业        酿酒行业        酿酒行业    
+
+    因赛集团        海南橡胶        四川金顶        会稽山         舍得酒业    
+    文化传媒        橡胶制品        水泥建材        酿酒行业        酿酒行业    
+
+    浙文互联        广信股份        古井贡酒        山西汾酒        锐明技术    
+    文化传媒        农药兽药        酿酒行业        酿酒行业        计算机设    
+
+   五 粮 液        今世缘         泰山石油        老白干酒        迎驾贡酒    
+    酿酒行业        酿酒行业        石油行业        酿酒行业        酿酒行业    
+
+    口子窖         金牛化工        天佑德酒        伊力特         古越龙山    
+    酿酒行业        化学原料        酿酒行业        酿酒行业        酿酒行业    
+
+    洋河股份        城投控股        吉华集团    
+    酿酒行业        房地产开        化学制品    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 01月29日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "01月29日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 8板: 白银有色 - highest streak
+- 酿酒行业 dominates with 20 stocks
+- Total 87 stocks (63 first-time + 24 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

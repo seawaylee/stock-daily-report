@@ -299,6 +299,91 @@ def load_sector_config(config_path="config/fish_basin_sectors.json"):
         print(f"Error loading config {config_path}: {e}")
         return []
 
+def get_spot_data_map():
+    """
+    Fetch Real-time Spot Data (Sectors) from THS Summary.
+    Returns dict: {'SectorName': {'pct': float, 'avg_price': float, 'turnover': float}}
+    """
+    spot_map = {}
+    try:
+        # Use THS Summary
+        df = ak.stock_board_industry_summary_ths()
+        if df is not None and not df.empty:
+            # Expected cols: 板块, 涨跌幅, 均价, ...
+            for _, row in df.iterrows():
+                name = row['板块']
+                try:
+                    pct = float(row['涨跌幅']) # e.g. 10.32 or 0.55
+                except: pct = 0.0
+                
+                try:
+                    # '均价' might be price, but for Index Trend, we mostly care about % Change
+                    # We will calculate NewPrice = OldPrice * (1 + pct/100)
+                    pass
+                except: pass
+                
+                spot_map[name] = {'pct': pct}
+        return spot_map
+    except Exception as e:
+        print(f"⚠️ Spot Data Fetch Failed: {e}")
+        return {}
+
+def patch_today_spot(df, name, spot_map):
+    """
+    Patch the DataFrame with today's spot data if missing.
+    """
+    if df is None or df.empty: return df
+    if name not in spot_map: return df
+    
+    try:
+        spot_info = spot_map[name]
+        spot_pct = spot_info['pct'] # Percentage (e.g. 5.0 for 5%)
+        
+        # Check last date
+        last_date = pd.to_datetime(df.iloc[-1]['date']).date()
+        today_date = datetime.now().date()
+        
+        if last_date < today_date:
+            # Need Patch
+            last_row = df.iloc[-1]
+            last_close = float(last_row['close'])
+            
+            # Calculate New Close
+            new_close = last_close * (1 + spot_pct / 100.0)
+            
+            # Construct New Row
+            new_row = last_row.copy()
+            new_row['date'] = pd.Timestamp(today_date)
+            new_row['close'] = new_close
+            new_row['high'] = new_close # Approx
+            new_row['low'] = new_close  # Approx
+            new_row['open'] = new_close # Approx
+            
+            # Append
+            # df = df.append(new_row, ignore_index=True) # Deprecated
+            new_df = pd.DataFrame([new_row])
+            df = pd.concat([df, new_df], ignore_index=True)
+            
+            # print(f"🔧 Patched {name}: {last_date} -> {today_date} (Pct: {spot_pct}%)")
+            
+        elif last_date == today_date:
+            # Already has today? Check if it looks stale (e.g. if spot is huge but data is small)
+            # But usually THS historical is just yesterday.
+            # If it HAS today, trusting it is usually safer unless we are sure it's wrong.
+            # However, for White Liquor, user said 0.55 vs 10.
+            # If the DF has today's date but the change is mismatching spot, we might want to OVERWRITE.
+            # But let's assume the issue is MISSING date generally.
+            pass
+            
+            # Advanced: Overwrite if deviation is huge?
+            # Let's start with missing date patch.
+            
+    except Exception as e:
+        print(f"Patch failed for {name}: {e}")
+        
+    return df
+
+
 
 def run(date_dir=None, save_excel=True):
     """
@@ -401,11 +486,19 @@ def run(date_dir=None, save_excel=True):
         print(f"⚠️ 最终失败列表: {', '.join(missing)}")
     print("="*40 + "\n")
 
+    # Spot Data Pre-fetch
+    print("Fetching Spot Data for Patching...")
+    spot_map = get_spot_data_map()
+    print(f"Spot Data Loaded: {len(spot_map)} sectors")
+
     results = []
     for item in final_results_list:
         name = item['name']
         code = item['code']
         df = item['df']
+        
+        # --- Apply Spot Patch ---
+        df = patch_today_spot(df, name, spot_map)
         
         # Fish Basin Logic
         close = df['close']

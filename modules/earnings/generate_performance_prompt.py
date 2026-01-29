@@ -269,11 +269,12 @@ def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forec
             sec_lines = []
             sec_lines.append(f"### {title}")
             sec_lines.append("```")
-            sec_lines.append(f"Header: [股票名称] [涨幅] (行业 | 市值 | 净利润 | 上年同期)")
+            sec_lines.append(f"Header: [股票名称] [同比涨幅] (市值 | 净利润)")
             sec_lines.append("-" * 30)
             
             count = 0
-            for _, row in df.head(20).iterrows(): # Top 20
+            # Ensure we show as many as possible (Top 80 to avoid context limit, but usually <50/day)
+            for _, row in df.head(80).iterrows(): 
                 count += 1
                 name = row['股票简称']
                 pct = row['change_pct_avg']
@@ -285,23 +286,19 @@ def generate_merged_daily_prompt(date_str, output_dir, valid_stock_df, all_forec
                 # Net Profit
                 raw_val = row.get('预测数值', 0)
                 profit_str = profit_fmt(raw_val) if profit_fmt else str(raw_val)
-                # Last Year
-                raw_last = row.get('上年同期值', 0)
-                last_str = profit_fmt(raw_last) if profit_fmt else str(raw_last)
                 
                 if profit_str == "N/A": continue
                 
-                industry = row.get('industry', '其他')
                 # Market Cap
                 mcap = row.get('market_cap', 0)
                 try:
                     mcap_val = float(mcap)
                     mcap_str = f"{mcap_val:.0f}亿"
-                except: mcap_str = "N/A"
+                except: mcap_str = "-"
 
-                sec_lines.append(f"{name} {pct_str}")
-                sec_lines.append(f"  └─ {industry} | {mcap_str} | {profit_str} | {last_str}")
-                sec_lines.append("")
+                # Compact Single Line
+                # 锋龙股份 +50% (20亿 | 1.5亿)
+                sec_lines.append(f"{name:<6} {pct_str:<6} (市值:{mcap_str} | 净利:{profit_str})")
             
             if count == 0:
                 sec_lines.append("(无重点披露)")

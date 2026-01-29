@@ -1,0 +1,33 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic), stock market analysis poster, vertical portrait 10:16.
+
+**Visual Composition:**
+A high-quality hand-drawn sketch poster in vertical 10:16 format. Background is a textured paper with a subtle red-gold gradient.
+
+**Top Section:**
+- **Left:** A cute hand-sketched Robot mascot wearing a red scarf, holding a gear and a small rocket, giving a thumbs up.
+- **Right:** A speech bubble with Chinese text: "先进制造+军工+新能源三大主线齐发力！"
+- **Center Title:** Hand-lettered text "AI大模型量化策略" and "2026-01-23".
+
+**Middle Section (Stock Grid):**
+Two columns of 5 cards each. Hand-drawn rounded rectangles.
+- **Left Column (Pale Blue tint):**
+  1. **睿创WN** (6880**) 🔌 军工电子 | 🚀 超卖缩量拐头 | J=65 RSI=94 to buy
+  2. **同花S** (3000**) 🤖 金融科技 | 🚀 超卖缩量拐头 | J=-7 RSI=52
+  3. **东方TX** (6007**) 🔌 5G通信 | 📈 回踩白线 | J=-5 RSI=57
+  4. **三博NK** (3012**) 🏥 民营医院 | 🚀 超卖缩量 | J=-2 RSI=56
+  5. **国科TC** (3015**) 🔌 军工 | 🚀 超卖缩量 | J=11 RSI=64
+- **Right Column (Pale Yellow tint):**
+  6. **恒生DZ** (6005**) 🤖 金融IT | 🚀 超卖缩量 | J=0 RSI=55
+  7. **联影YL** (6882**) 🏥 高端医疗 | 🚀 超卖缩量 | J=-9 RSI=47
+  8. **京东FＡ** (0007**) 🔌 面板 | 🚀 超卖缩量 | J=1 RSI=50
+  9. **新国D** (3001**) 💰 支付 | 🚀 超卖缩量 | J=3 RSI=63
+  10. **彩讯GF** (3006**) 💻 信创 | 🚀 原始买点 | J=-4 RSI=51
+
+**Bottom Footer:**
+3 lines of hand-written text:
+1. 📍 市场分化震荡，军工通信领涨，低位超卖修复。
+2. 💡 聚焦军工电子与金融科技，早盘低吸博弈反弹。
+3. 每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路
+
+**Style:**
+Pencil sketch lines, crosshatching shading, ink details, visible paper grain. Not photorealistic. Architect sketch style.

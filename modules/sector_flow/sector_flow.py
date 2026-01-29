@@ -411,16 +411,22 @@ def run(date_dir=None):
                 os.makedirs(prompt_dir, exist_ok=True)
             prompt_path = os.path.join(prompt_dir, "资金流向_Prompt.txt")
 
-        # 4. 生成提示词 (Prioritize Concept data for "Hot Themes" visualization)
-        if res_concept:
-             # Use Concept data for the visual prompt (more narrative)
-             generate_prompt(inflow_c, outflow_c, output_path=prompt_path)
-             print("✅ 板块资金流分析已完成 (使用概念数据生成提示词)")
-        elif res_industry:
+        # 4. 生成提示词 (Prioritize Industry data for "Real Sector" visualization)
+        if res_industry:
+             inflow, outflow, name_col, flow_col = res_industry
              generate_prompt(inflow, outflow, output_path=prompt_path)
              print("✅ 板块资金流分析已完成 (使用行业数据生成提示词)")
+             # Also print fallback Concept if available? No, focus strictly on industry as primary.
+             return True
+
+        elif res_concept:
+             # Use Concept data as fallback
+             inflow_c, outflow_c, name_col_c, flow_col_c = res_concept
+             generate_prompt(inflow_c, outflow_c, output_path=prompt_path)
+             print("✅ 板块资金流分析已完成 (使用概念数据生成提示词)")
+             return True
         
-        return True
+        return False
     else:
         print("⚠️ 数据(行业/概念)均获取失败，跳过板块分析")
         return False

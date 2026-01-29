@@ -1,0 +1,175 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
+
+**CRITICAL: VERTICAL PORTRAIT FORMAT (10:16)**
+- The image MUST be significantly taller than it is wide (Phone wallpaper style).
+- Aspect Ratio: 10:16.
+- Canvas Size: 1600x2560.
+
+**CRITICAL: HAND-DRAWN AESTHETIC**
+- Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
+- Visible paper grain texture throughout
+- Line wobbles and imperfections (authentic hand-drawn feel)
+- NO digital smoothness, NO vector graphics
+- Shading: crosshatching, stippling, charcoal smudges only
+- Background: Hand-drawn red-gold gradient with visible pencil strokes
+
+
+Left: Robot mascot wearing red scarf, holding gear + rocket, thumbs-up, hand-sketched
+Right: Speech bubble: "先进制造+军工+新能源三大主线齐发力！KDJ超卖区间 短期修复窗口已开启💰"
+Center: "AI大模型量化策略" + "2026-01-23"
+
+10 stock cards (5 per column) in a 2-Column Grid:
+Left column: Pale blue background with paper texture
+Right column: Pale yellow background with paper texture
+
+**DESENSITIZATION RULES:**
+All cards must use masked names and codes.
+
+**CONTENT TO RENDER:**
+[
+  {
+    "name": "睿创微纳",
+    "name_masked": "睿创WN",
+    "code": "688002",
+    "code_masked": "6880**",
+    "industry": "军工电子/红外芯片",
+    "signals": "超卖缩量拐头标准买点",
+    "J": 65.33,
+    "RSI": 94.21
+  },
+  {
+    "name": "同花顺",
+    "name_masked": "同花S",
+    "code": "300033",
+    "code_masked": "3000**",
+    "industry": "金融科技/AI应用",
+    "signals": "超卖缩量拐头标准买点",
+    "J": -7.01,
+    "RSI": 52.57
+  },
+  {
+    "name": "东方通信",
+    "name_masked": "东方TX",
+    "code": "600776",
+    "code_masked": "6007**",
+    "industry": "5G通信/国企改革",
+    "signals": "回踩白线标准买点",
+    "J": -4.98,
+    "RSI": 57.67
+  },
+  {
+    "name": "三博脑科",
+    "name_masked": "三博NK",
+    "code": "301293",
+    "code_masked": "3012**",
+    "industry": "民营医院/脑科",
+    "signals": "超卖缩量拐头标准买点,超卖缩量标准买点",
+    "J": -2.67,
+    "RSI": 56.64
+  },
+  {
+    "name": "国科天成",
+    "name_masked": "国科TC",
+    "code": "301571",
+    "code_masked": "3015**",
+    "industry": "军工/红外镜头",
+    "signals": "超卖缩量拐头标准买点",
+    "J": 11.8,
+    "RSI": 64.43
+  },
+  {
+    "name": "恒生电子",
+    "name_masked": "恒生DZ",
+    "code": "600570",
+    "code_masked": "6005**",
+    "industry": "金融IT/资产管理",
+    "signals": "超卖缩量拐头标准买点,超卖缩量标准买点",
+    "J": 0.15,
+    "RSI": 55.36
+  },
+  {
+    "name": "联影医疗",
+    "name_masked": "联影YL",
+    "code": "688271",
+    "code_masked": "6882**",
+    "industry": "高端医疗设备",
+    "signals": "超卖缩量标准买点",
+    "J": -9.3,
+    "RSI": 47.34
+  },
+  {
+    "name": "京东方Ａ",
+    "name_masked": "京东FＡ",
+    "code": "000725",
+    "code_masked": "0007**",
+    "industry": "面板/半导体显示",
+    "signals": "超卖缩量拐头标准买点",
+    "J": 1.19,
+    "RSI": 50.73
+  },
+  {
+    "name": "新国都",
+    "name_masked": "新国D",
+    "code": "300130",
+    "code_masked": "3001**",
+    "industry": "支付/数字货币",
+    "signals": "超卖缩量拐头标准买点",
+    "J": 3.01,
+    "RSI": 63.39
+  },
+  {
+    "name": "彩讯股份",
+    "name_masked": "彩讯GF",
+    "code": "300634",
+    "code_masked": "3006**",
+    "industry": "信创/鸿蒙概念",
+    "signals": "超卖缩量标准买点,原始标准买点",
+    "J": -4.84,
+    "RSI": 51.18
+  }
+]
+
+For each stock, create card with:
+Line 1: #[index] [name_masked] | [code_masked] | [industry_icon] [industry] (smaller font size for industry)
+Line 2: [signal_icon] [signals] | J=[J] RSI=[RSI]
+
+Industry icons: 🔋 batteries, ✈️ aerospace, 🔌 electronics, 🤖 robotics, 🚗 automotive, 🏭 machinery, 📦 logistics
+Signal icons: Use ONE of 🚀 OR 🔥 OR 📈
+
+
+**FOOTER CONTENT (Bottom Area):**
+Please render the following content at the bottom. Use these EXACT 3 lines (translate/summarize fit if needed):
+
+1. **Top Line (Summary)**: Extract key market summary from here: "📍 整体复盘
+：市场分化震荡，权重疲软但科技成长回暖。军工、通信领涨，量能萎缩暗示变盘在即，资金聚焦低位超卖修复逻辑。
+
+💡 次日策略
+：轻指数重个股，聚焦军工电子与金融科技。操作上建议早盘低吸，严格止损，博弈结构性反弹机会。". Keep it under 20 words.
+2. **Middle Line (Strategy)**: Extract key focus stocks/strategy from here: "📍 整体复盘
+：市场分化震荡，权重疲软但科技成长回暖。军工、通信领涨，量能萎缩暗示变盘在即，资金聚焦低位超卖修复逻辑。
+
+💡 次日策略
+：轻指数重个股，聚焦军工电子与金融科技。操作上建议早盘低吸，严格止损，博弈结构性反弹机会。". Keep it under 15 words.
+3. **Bottom Line (CALL TO ACTION)**: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路"
+
+**IMPORTANT**: 
+- All footer text MUST be in CHINESE.
+- Ensure the CTA line is exactly as specified above.
+- Remove Markdown symbols like `**`.
+
+
+**ENHANCED HAND-DRAWN STYLE:**
+1. Paper texture visible throughout (sketch paper grain)
+2. All lines with wobbles, varying thickness
+3. Shading only via crosshatching/stippling - NO smooth gradients  
+4. Hand-lettered text with irregularities
+5. Background: Red-gold gradient with visible pencil strokes
+6. Card borders: Hand-drawn rounded rectangles
+7. Overall: Professional architect sketch, NOT polished digital
+
+TECHNICAL:
+- Aspect ratio: 10:16 (Vertical Phone Wallpaper)
+- Resolution: 1600x2560 (2K Vertical)
+- Chinese text must be clear and readable
