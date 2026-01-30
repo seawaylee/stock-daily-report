@@ -10,7 +10,7 @@ Supports 4 independent modules:
 import sys
 import os
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Enable Simple Network Logging (No Proxies/Retries)
 try:
@@ -22,7 +22,13 @@ except ImportError:
 # Convert string "YYYYMMDD" to path "results/YYYYMMDD" 
 def get_date_dir(date_str=None):
     if not date_str:
-        date_str = datetime.now().strftime('%Y%m%d')
+        now = datetime.now()
+        # If before 09:00 AM, assume we are reviewing the Previous Trading Day (late night session)
+        if now.hour < 9:
+            date_str = (now - timedelta(days=1)).strftime('%Y%m%d')
+            print(f"🕒 Current time {now.strftime('%H:%M')} < 09:00. Auto-selecting Yesterday: {date_str}")
+        else:
+            date_str = now.strftime('%Y%m%d')
     return os.path.join("results", date_str), date_str
 
 def run_fish_basin(args):
@@ -159,6 +165,7 @@ def run_all(args):
         (run_abnormal_alert, args),
         (run_core_news, args),
         (run_weekly_preview, args),
+        (run_earnings_analysis, args),
         (run_earnings_prompt, args)
     ]
     

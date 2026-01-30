@@ -173,49 +173,42 @@ def generate_merged_tomorrow_prompt(date_str, output_dir):
                     resump_text += f"**{row['名称']}** ({row['代码']})\n"
 
     # --- Part 3: Generate Merged Content ---
-    content = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
+    content = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (markers marker sketch), (hand drawn), (vivid colors)
 
-A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style tomorrow events preview infographic poster.
+A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN MARKER SKETCH style poster for tomorrow's market events.
 
-**LAYOUT & COMPOSITION:**
-- **Canvas**: 1600x2560 vertical.
-- **Background**: Hand-drawn warm paper texture (#F5E6C8).
-- **Header**: 
-  - Title: "明日A股日历" (Tomorrow's A-Share Calendar)
-  - Date: "{tomorrow_disp}"
-  - Icon: A hand-sketched calendar or sunrise icon.
+**DESIGN STYLE:**
+- **Visuals**: Authentic Marker / Felt-tip pen sketch. Not digital vector.
+- **Color Palette**: VIVID and COLORFUL. Use Bright Hyacinth Blue, Golden Yellow, and Energetic Orange markers on paper.
+- **Background**: Textured Sketchbook Paper (#FAF3E3).
+- **Layout**: Clean, spacious, and organized blocks. Hand-written font style.
 
-**MAIN CONTENT - EVENT SECTIONS:**
+**HEADER:**
+- Title: "明日A股日历"
+- Date: "{tomorrow_disp}" (Large Typography)
+- Visual: A dynamic rising sun or clock icon.
 
-### 1. 📢 宏观/消息面 (Macro & News)
+**CONTENT BLOCKS (Keep Text Concise):**
+
+### 1. 📢 宏观/消息 (Macro & News)
 {macro_text}
 
-### 2. 📊 行业/板块焦点 (Sector Focus)
+### 2. 📊 核心板块 (Focus Sectors)
 {sector_text}
 
-### 3. 💰 新股/交易 (IPO & Market)
-   - **IPO Subscription (申购)**: 
-{ipo_text}
-   - **IPO Listing (上市)**: 
-{listing_text}
-   - **Suspension (停牌)**: 
-{susp_text}
-   - **Resumption (复牌)**: 
-{resump_text}
+### 3. 💰 新股与停复牌 (IPO & Market)
+- **新股申购**: {ipo_text.replace(chr(10), ', ')}
+- **新股上市**: {listing_text.replace(chr(10), ', ')}
+- **停/复牌**: {susp_text.replace(chr(10), ', ') if "无" in susp_text else "详见列表"}
 
-### 4. 📢 个股/业绩 (Stock Events)
-   - 关注晚间公告与业绩披露 (详见业绩模块)
+### 4. 📢 重点关注 (Key Watch)
+- 晚间公告与业绩披露
 
-**FOOTER SECTION:**
-- **Strategy**: "策略建议: 关注宏观政策落地与热门板块轮动"
-- **CTA**: "每日盘前更新，点赞关注不迷路"
+**FOOTER:**
+- **Slogan**: "关注宏观落地与板块轮动"
+- **Note**: "每日盘前更新"
 
-**ART STYLE DETAILS:**
-- **Lines**: Charcoal and graphite pencil strokes.
-- **Color Palette**: Vintage hues - faded blue, deep gold, warm yellow.
-- **Icons**: Hand-drawn icons for each section.
-
-(Optimized for high-quality vector-style sketch render)
+(Render text clearly. Use engaging icons for each section. Make it POP!)
 """
     
     path = os.path.join(output_dir, "AI提示词", "明日A股日历_Prompt.txt")

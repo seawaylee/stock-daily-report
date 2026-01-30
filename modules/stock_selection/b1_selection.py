@@ -357,31 +357,16 @@ def call_gemini_analysis(selected_stocks, date_dir):
 
 
 def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
-    """使用Agent生成信息图提示词"""
+    """直接生成信息图提示词 (无需Agent二次处理)"""
     # 准备股票数据摘要(包含技术指标 + 脱敏信息)
     if len(selected_stocks) > 20:
-        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，预期为20。")
-        # 尝试使用前20个
+        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 20。")
         selected_stocks = selected_stocks[:20]
 
-    # 准备股票数据摘要(包含技术指标 + 脱敏信息)
-    stock_summary = []
-    for s in selected_stocks:
-        stock_summary.append({
-            'name': s['name'],
-            'name_masked': s.get('name_masked', desensitize_stock_name(s['name'])),  # 优先使用已有脱敏名
-            'code': s['code'],
-            'code_masked': s.get('code_masked', desensitize_stock_code(s['code'])),  # 优先使用已有脱敏代码
-            'industry': s.get('industry', '未知'),
-            'signals': ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点'),
-            'J': round(s.get('J', 0), 2),
-            'RSI': round(s.get('RSI', 0), 2),
-        })
-    
     # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
     
-    # --- 提取复盘与策略 (优先使用 Step 4 专用摘要) ---
+    # --- 提取复盘与策略 ---
     market_review = "无复盘内容"
     tomorrow_strategy = ""
     
@@ -428,7 +413,6 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
 
     # --- 对复盘和策略文案进行脱敏替换 ---
     # 遍历所有股票，将文案中的"全名"替换为"脱敏名"
-    # 按名称长度降序排列，避免短名误伤长名 (e.g. "中航" vs "中航光电")
     sorted_stocks = sorted(selected_stocks, key=lambda x: len(x['name']), reverse=True)
     
     for s in sorted_stocks:
@@ -443,7 +427,7 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         if name in tomorrow_strategy:
             tomorrow_strategy = tomorrow_strategy.replace(name, name_masked)
         
-        # 替换代码 (如果有的话)
+        # 替换代码
         if code in market_review:
             market_review = market_review.replace(code, code_masked)
         if code in tomorrow_strategy:
@@ -452,37 +436,77 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     
     # 构建动态 Footer 内容
     footer_content = ""
-    if market_review and market_review != "无复盘内容":
-        footer_content += f"📍 整体复盘\n{market_review}\n\n"
+    # if market_review and market_review != "无复盘内容":
+    #    footer_content += f"📍 整体复盘\n{market_review}\n\n"
     
-    if tomorrow_strategy:
-        footer_content += f"💡 次日策略\n{tomorrow_strategy}"
+    # if tomorrow_strategy:
+    #    footer_content += f"💡 次日策略\n{tomorrow_strategy}"
+    # 
+    # USER REQUEST: Specific Footer
+    footer_content = """
+**FOOTER:**
+"Daily AI Algo Strategy | High Value Ratio Stocks | Follow for Updates"
+(Render in Chinese: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路")
+"""
 
-    prompt = get_image_prompt(stock_summary, footer_content, datetime.now().strftime('%Y-%m-%d'))
+    # --- Generate Card Text (Python Logic) ---
+    cards_text = ""
+    for idx, s in enumerate(selected_stocks, 1):
+        name_masked = s.get('name_masked', desensitize_stock_name(s['name']))
+        code_masked = s.get('code_masked', desensitize_stock_code(s['code']))
+        industry = s.get('industry', '未知')
+        if not industry: industry = "未知"
+        
+        signals = ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点')
+        signals = signals.split(',')[0] # First signal
+        signals = signals.replace('标准买点', 'Buy').replace('回踩', 'Retrace')
+        
+        J_val = round(s.get('J', 0), 2)
+        RSI_val = round(s.get('RSI', 0), 2)
+        
+        line1 = f"#{idx} {name_masked} | {code_masked} | 🏭 {industry}"
+        # Enhanced Colors
+        line2 = f"🚀 **{signals}** (Red Ink) | **J={J_val}** (Blue) **RSI={RSI_val}** (Purple)"
+        
+        cards_text += f"{line1}\n{line2}\n\n"
 
-    # 保存任务到文件供Agent处理
-    agent_task_dir = os.path.join(date_dir, "agent_tasks")
-    os.makedirs(agent_task_dir, exist_ok=True)
-    
-    task_file = os.path.join(agent_task_dir, "task_image_prompt.txt")
-    with open(task_file, 'w', encoding='utf-8') as f:
-        f.write(prompt)
-    
-    print(f"📝 图片生成任务已保存: {task_file}")
-    
-    # 读取Agent生成的结果
-    agent_output_dir = os.path.join(date_dir, "agent_outputs")
-    output_file = os.path.join(agent_output_dir, "result_image_prompt.txt")
-    
-    if os.path.exists(output_file):
-        with open(output_file, 'r', encoding='utf-8') as f:
-            final_prompt = f.read()
-        final_prompt += "\n\n(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)"
-        print("✅ 图片提示词生成完成")
-        return final_prompt, prompt
-    else:
-        print(f"⚠️  等待Agent生成结果: {output_file}")
-        return None, prompt
+    # --- Final Prompt Construction ---
+    final_prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
+
+**CRITICAL: VERTICAL PORTRAIT FORMAT (10:16)**
+- The image MUST be significantly taller than it is wide (Phone wallpaper style).
+- Aspect Ratio: 10:16.
+- Canvas Size: 1600x2560.
+
+**CRITICAL: HAND-DRAWN AESTHETIC**
+- Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
+- Visible paper grain texture throughout
+- Line wobbles and imperfections (authentic hand-drawn feel)
+- NO digital smoothness, NO vector graphics
+- Shading: crosshatching, stippling, charcoal smudges only
+- Background: Hand-drawn red-gold gradient with visible pencil strokes
+
+
+Center: "AI大模型量化策略" + "{datetime.now().strftime('%Y-%m-%d')}"
+**Visual Highlight**: Add a realistic "Red Ink Stamp" (Seal) near the title with text: "次日择机买入"
+
+20 stock cards (10 per column) in a 2-Column Grid:
+Left column: Pale blue background with paper texture
+Right column: Pale yellow background with paper texture
+
+**VISUAL CONTENT:**
+Refined Hand-Drawn Table/Cards:
+
+{cards_text}
+
+{footer_content}
+
+(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)
+"""
+
+    return final_prompt, final_prompt
 
 
 def save_reports(gemini_analysis, today):

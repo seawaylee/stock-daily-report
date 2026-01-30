@@ -36,16 +36,17 @@ cd /Users/seawaylee/Documents/github/stock-daily-report
 - **Monday - Thursday**: Runs Daily modules only.
 - **Friday - Sunday**: Runs Daily modules AND Weekly Summary modules (Weekly News, Next Week Calendar).
 
-### 3. Module-Specific Execution
-If a specific module fails or needs regeneration, run them individually:
-
-- **Fish Basin Only**: `./scripts/run.sh fish_basin`
-- **Ladder Only**: `./scripts/run.sh ladder`
-- **B1 Selection Only**: `./scripts/run.sh b1`
-- **Calendar Only**: `./scripts/run.sh calendar`
-- **Abnormal Alert**: `./scripts/run.sh abnormal`
+### 3. Run Individual Modules (Optional)
+If a specific module fails or needs regeneration:
+- **B1 Selection**: `python main.py b1`
+- **Market Ladder**: `python main.py ladder`
+- **Calendar**: `python main.py calendar`
+- **Earnings Analysis**: `python main.py earnings` followed by `python main.py earnings_prompt`
+- **Sector Flow**: `python main.py sector_flow`
+- **Abnormal Alert**: `python main.py abnormal`
 - **Core News Only**: `./scripts/run.sh core_news`
 - **Weekly Preview Only**: `./scripts/run.sh weekly_preview`
+- **Fish Basin Only**: `./scripts/run.sh fish_basin`
 
 ## Verification Checklist
 Verify outputs in `results/<TODAY_DATE>/` (e.g., `results/20260124/`):
