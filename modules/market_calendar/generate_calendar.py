@@ -70,6 +70,10 @@ def get_event_content():
         sector_events = []
         
         for news_str in top_news:
+             # Check if it talks about future/upcoming events
+             if not any(k in news_str for k in future_keywords):
+                 continue
+
              # news_str format: "[HH:MM]【Direction·Target】 Title"
              # We want to extract Title + Target
              
@@ -87,9 +91,8 @@ def get_event_content():
             for e in macro_events[:3]: # Top 3
                 macro_text += f"- {e}\n"
         else:
-            # Fallback to general top news if no macro specific found
-            for e in top_news[:3]:
-                 macro_text += f"- {e}\n"
+            # Fallback: Do NOT just dump top news.
+            macro_text = "暂无具体宏观事件，关注盘前消息\n"
                  
         # 2. Sector Content
         sector_text = ""
@@ -108,7 +111,7 @@ def get_event_content():
                 except:
                     continue
         else:
-             sector_text = "关注资金流向靠前的热门板块 (请参考涨停天梯)"
+             sector_text = "暂无重点板块前瞻，关注资金流向\n"
              
         return macro_text, sector_text
         
