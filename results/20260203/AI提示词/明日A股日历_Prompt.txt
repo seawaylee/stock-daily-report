@@ -1,0 +1,39 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (markers marker sketch), (hand drawn), (vivid colors)
+
+A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN MARKER SKETCH style poster for tomorrow's market events.
+
+**DESIGN STYLE:**
+- **Visuals**: Authentic Marker / Felt-tip pen sketch. Not digital vector.
+- **Color Palette**: VIVID and COLORFUL. Use Bright Hyacinth Blue, Golden Yellow, and Energetic Orange markers on paper.
+- **Background**: Textured Sketchbook Paper (#FAF3E3).
+- **Layout**: Clean, spacious, and organized blocks. Hand-written font style.
+
+**HEADER:**
+- Title: "明日A股日历"
+- Date: "02月04日 Wednesday" (Large Typography)
+- Visual: A dynamic rising sun or clock icon.
+
+**CONTENT BLOCKS (Keep Text Concise):**
+
+### 1. 📢 宏观/消息 (Macro & News)
+- [16:07]【利多·汽车】 工业和信息化部等八部门发布关于印发《汽车数据出境安全指引（2026版）》的通知。其中指出，汽车数据处理者应当通过境内法人主体申报数据出境安全评估。境内无法人主体的，应由境内分支机构申报。
+
+
+### 2. 📊 核心板块 (Focus Sectors)
+- **金融**:  促进信贷总量合理增长、均衡投放近日，人民银行上海总部组织召开上海市金融形势分析会。人民银行上海总部党委副书记、主任金鹏辉出席会议并讲话。上海市有关金融机构主要负责同志，人民银行上海总部有关部门负责同志参加会议。
+- **医药**:  日前，中共中央、国务院关于《现代化首都都市圈空间协同规划（2023—2035年）》（下称《规划》）的批复发布，明确指出编制实施《规划》是新起点上深入推进京津冀协同发展战略的重大举措，对进一步优化提升首都功能、打造区域高质量发展增长极、推进中国式现代化建设具有重要意义。
+
+
+### 3. 💰 新股与停复牌 (IPO & Market)
+- **新股申购**: 无
+- **新股上市**: 无
+- **停/复牌**: 详见列表
+
+### 4. 📢 重点关注 (Key Watch)
+- 晚间公告与业绩披露
+
+**FOOTER:**
+- **Slogan**: "关注宏观落地与板块轮动"
+- **Note**: "每日盘前更新"
+
+(Render text clearly. Use engaging icons for each section. Make it POP!)

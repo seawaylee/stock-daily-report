@@ -1,0 +1,102 @@
+(masterpiece, best quality), (hand drawn), (illustration), (vintage style), (ink sketch), (vertical 10:16), (warm paper texture)
+
+**SUBJECT**: A comprehensive hand-drawn financial ranking chart titled "**AI量化趋势模型日报 · 2026.02.03**"
+
+**HEADER**:
+- Title: "**AI量化趋势模型**" in bold Chinese calligraphy
+- Date: "2026.02.03 | 市场全景扫描"
+- Style: Red-gold ink brush strokes on aged paper
+
+---
+
+**LAYOUT**:
+The chart is divided into two main sections by a decorative horizontal divider.
+
+**SECTION 1: 核心指数趋势** (Indices Trend)
+*Header*: "════ 核心指数 ════" in bold calligraphy
+
+Layout: A list of key market indices ranked by trend strength.
+**Color Rules**:
+- **RED ink** for Positive values (Starts with + or no sign)
+- **GREEN ink** for Negative values (Starts with -)
+- **Highlight**: Any row with "金叉1天" or "死叉1天" should be emphasized with a yellow highlight marker effect.
+
+**Content Columns**:
+[排名 名称 | 今日涨跌 | 长线偏离 | 区间涨幅 | 金叉/死叉 | 排名变化]
+
+**Data**:
+1. ● 白银现货 | 涨跌:[RED]+10.51% | 偏离:[RED]9.91% | 区间:0.00% | 金叉203天 | 排名:-
+2. ● 黄金现货 | 涨跌:[RED]+5.86% | 偏离:[RED]8.36% | 区间:[RED]46.10% | 金叉274天 | 排名:-
+3. ● 中证500 | 涨跌:[RED]+3.11% | 偏离:[RED]5.72% | 区间:[RED]16.10% | 金叉159天 | 排名:-
+4. ● 中证2000 | 涨跌:[RED]+3.08% | 偏离:[RED]4.74% | 区间:[RED]12.82% | 金叉173天 | 排名:▲+1
+5. ● 中证1000 | 涨跌:[RED]+2.93% | 偏离:[RED]3.95% | 区间:[RED]12.00% | 金叉162天 | 排名:▲+1
+6. ● 创业板指 | 涨跌:[RED]+1.86% | 偏离:[RED]2.74% | 区间:[RED]9.20% | 金叉152天 | 排名:▲+5
+7. ● 科创50 | 涨跌:[RED]+1.39% | 偏离:[RED]2.23% | 区间:[RED]10.17% | 金叉26天 | 排名:▼3
+8. ● 中证A500 | 涨跌:[RED]+1.91% | 偏离:[RED]1.99% | 区间:[RED]6.00% | 金叉161天 | 排名:▼1
+9. ● 恒生指数 | 涨跌:[GREEN]-2.23% | 偏离:[RED]1.12% | 区间:[RED]1.66% | 金叉18天 | 排名:▲+1
+10. ● 上证指数 | 涨跌:[RED]+1.29% | 偏离:[RED]0.97% | 区间:0.00% | 金叉180天 | 排名:▼1
+11. ○ 沪深300 | 涨跌:[RED]+1.18% | 偏离:[GREEN]-0.02% | 区间:[RED]1.18% | 金叉175天 | 排名:▲+1
+12. ○ 上证50 | 涨跌:[RED]+1.05% | 偏离:[GREEN]-0.30% | 区间:[RED]1.05% | 金叉183天 | 排名:▲+1
+13. ○ 北证50 | 涨跌:[GREEN]-2.03% | 偏离:[GREEN]-0.72% | 区间:0.00% | 金叉14天 | 排名:▼5
+14. ○ 恒生科技 | 涨跌:[GREEN]-3.36% | 偏离:[GREEN]-3.82% | 区间:[GREEN]-3.36% | 金叉8天 | 排名:-
+
+---
+
+---
+
+**SECTION 2: 热门题材趋势** (Top Sectors Trend)
+*Header*: "════ 热门题材 ════" in bold calligraphy
+
+Layout: Top 25 ranking sectors sorted by trend strength (including Top Gainers).
+Style: Same color rules apply.
+
+**Content Columns**:
+[排名 名称 | 今日涨跌 | 长线偏离 | 区间涨幅 | 金叉/死叉 | 排名变化]
+
+**Data**:
+1. ● 贵金属 | 涨跌:[RED]+0.66% | 偏离:[RED]50.69% | 区间:[RED]100.59% | 金叉252天 | 排名:-
+2. ● 光伏设备 | 涨跌:[RED]+6.71% | 偏离:[RED]16.36% | 区间:[RED]26.16% | 金叉145天 | 排名:▲+1
+3. ● 有色金属 | 涨跌:[GREEN]-6.90% | 偏离:[RED]16.14% | 区间:[RED]35.64% | 金叉179天 | 排名:▼1
+4. ● 半导体 | 涨跌:[RED]+3.00% | 偏离:[RED]14.59% | 区间:[RED]31.63% | 金叉148天 | 排名:-
+5. ● 石油加工贸易 | 涨跌:[RED]+1.70% | 偏离:[RED]11.65% | 区间:[RED]18.20% | 金叉178天 | 排名:▲+5
+6. ● 通信设备 | 涨跌:[RED]+4.12% | 偏离:[RED]11.45% | 区间:[RED]28.21% | 金叉177天 | 排名:▲+2
+7. ● 商业航天 | 涨跌:[GREEN]-0.93% | 偏离:[RED]7.62% | 区间:[RED]33.43% | 金叉181天 | 排名:▼2
+8. ● 电网设备 | 涨跌:[RED]+2.43% | 偏离:[RED]7.25% | 区间:[RED]17.41% | 金叉180天 | 排名:▼2
+9. ● 风电设备 | 涨跌:[RED]+2.88% | 偏离:[RED]7.08% | 区间:[RED]17.32% | 金叉182天 | 排名:▼2
+10. ● 稀土 | 涨跌:[GREEN]-4.31% | 偏离:[RED]6.63% | 区间:[RED]14.07% | 金叉19天 | 排名:▼1
+11. ● 保险 | 涨跌:[GREEN]-0.25% | 偏离:[RED]5.85% | 区间:[RED]13.56% | 金叉69天 | 排名:▲+7
+12. ● 医疗服务 | 涨跌:[RED]+2.98% | 偏离:[RED]5.60% | 区间:[RED]10.96% | 金叉15天 | 排名:-
+13. ● 煤炭 | 涨跌:[RED]+0.80% | 偏离:[RED]5.39% | 区间:[RED]1.41% | 金叉4天 | 排名:▲+17
+14. ● 消费电子 | 涨跌:[RED]+2.85% | 偏离:[RED]5.22% | 区间:[RED]12.55% | 金叉159天 | 排名:▲+3
+15. ● 房地产 | 涨跌:[RED]+1.91% | 偏离:[RED]3.98% | 区间:[RED]6.13% | 金叉14天 | 排名:▲+10
+16. ● 电力 | 涨跌:[RED]+1.28% | 偏离:[RED]3.84% | 区间:[RED]6.53% | 金叉14天 | 排名:▲+3
+17. ● 软件开发 | 涨跌:[RED]+2.37% | 偏离:[RED]3.70% | 区间:[RED]8.91% | 金叉14天 | 排名:▲+2
+18. ● 养殖 | 涨跌:[RED]+1.27% | 偏离:[RED]3.70% | 区间:[RED]5.04% | 金叉14天 | 排名:▲+11
+19. ● 汽车零部件 | 涨跌:[RED]+1.91% | 偏离:[RED]3.48% | 区间:[RED]8.90% | 金叉26天 | 排名:▼5
+20. ● 人工智能 | 涨跌:[GREEN]-0.75% | 偏离:[RED]3.22% | 区间:[RED]10.44% | 金叉19天 | 排名:▼5
+21. ● 电池 | 涨跌:[RED]+3.05% | 偏离:[RED]1.70% | 区间:0.00% | 金叉170天 | 排名:▼5
+
+---
+
+**FOOTER**:
+- Text: "**总结不易，每天收盘后推送，点赞关注不迷路！**"
+- Style: Centered, smaller font, warm greetings style
+
+---
+
+**VISUAL ELEMENTS**:
+1. **Paper Texture**: Authentic aged parchment paper background with slight creases
+2. **Ink Style**: Traditional Chinese ink brush (Maobi) for titles, fine liner for data
+3. **Color Palette**: 
+   - Primary: Black ink
+   - Bullish/Up: **Cinnabar Red**
+   - Bearish/Down: **Jade Green**
+   - Highlights: **Imperial Gold** wash
+4. **Decorations**: Subtle mountain range sketch in the background (faint), cloud patterns at corners
+
+**ATMOSPHERE**:
+- Professional, historical, trustworthy
+- "The wisdom of the trend"
+- A fusion of ancient philosophy and modern data
+
+(Optimized for AI: Hand-drawn chart, legible text structure, vintage aesthetic, accurate financial data representation)

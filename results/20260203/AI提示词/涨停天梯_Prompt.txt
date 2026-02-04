@@ -1,0 +1,133 @@
+# 20260203 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**02月03日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+光伏设备(8) | 电网设备(7) | 通用设备(6) | 汽车零部(4) | 专用设备(4) | 文化传媒(3) | 通信设备(3) | 化学制品(3)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 4板 (3只)
+```
+    横店影视        皇台酒业        万丰股份    
+    文化传媒        酿酒行业        化学原料    
+
+```
+
+### 3板 (7只) - 2炸板+3断板
+```
+    杭电股份        名雕股份      [X]通鼎互联     [X]利通电子   
+    电网设备        装修装饰        通信设备        消费电子    
+
+  [X]白云电器      [X]西上海     [X]茂业商业   
+    电网设备        汽车零部        商业百货    
+
+```
+
+### 2板 (5只)
+```
+  [一字]民爆光电      顺钠股份        新华百货        三变科技    
+    家电行业        电网设备        商业百货        电网设备    
+
+    中超控股    
+    电网设备    
+
+```
+
+### 首板 (59只)
+```
+  [一字]京投发展    [一字]廊坊发展      冀东装备        泰豪科技        双良节能    
+    房地产开        电力行业        专用设备        电网设备        光伏设备    
+
+    天通股份        金隅集团        宇晶股份        菜百股份        越剑智能    
+    非金属材        水泥建材        通用设备        珠宝首饰        专用设备    
+
+    润贝航科       红 宝 丽        东方钽业        城建发展        巨力索具    
+    贸易行业        化学制品        小金属         房地产开        通用设备    
+
+    科瑞技术        九鼎投资        航发控制        百川股份        通宇通讯    
+    专用设备        多元金融        航天航空        化学制品        通信设备    
+
+    南网能源        江顺科技        沃格光电        奥特维         华胜天成    
+    专业服务        通用设备        光学光电        光伏设备        互联网服    
+
+    浙文互联        派克新材        神剑股份        中集集团        鹿山新材    
+    文化传媒        通用设备        塑料制品        通用设备        塑料制品    
+
+    键邦股份        凯恩股份        福斯特         冰轮环境        金时科技    
+    化学制品        造纸印刷        光伏设备        通用设备        电源设备    
+
+    晋拓股份        金晶科技        凯旺科技        世运电路        海优新材    
+    汽车零部        玻璃玻纤        消费电子        电子元件        光伏设备    
+
+    国晟科技        泽润新能        安孚科技        中恒电气        天威视讯    
+    光伏设备        光伏设备         电池         电源设备        文化传媒    
+
+    罗博特科        航天发展        伊戈尔         建设机械        远东股份    
+    专用设备        通信设备        电子元件        工程机械        电网设备    
+
+    东阳光         钧达股份        湖南黄金        万里石         索通发展    
+    综合行业        光伏设备        贵金属         装修建材        非金属材    
+
+    帝科股份        万泽股份        星宇股份        银轮股份    
+    光伏设备        生物制品        汽车零部        汽车零部    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 02月03日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "02月03日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 4板: 横店影视 - highest streak
+- 光伏设备 dominates with 8 stocks
+- Total 74 stocks (59 first-time + 15 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

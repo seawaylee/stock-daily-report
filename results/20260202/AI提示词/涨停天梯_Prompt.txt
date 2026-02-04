@@ -1,0 +1,122 @@
+# 20260202 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**02月02日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+电网设备(12) | 酿酒行业(3) | 文化传媒(2) | 汽车零部(2) | 商业百货(2) | 纺织服装(2) | 贵金属(1) | 化学制品(1)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 6板 (1只) - 1断板
+```
+  [X]湖南黄金   
+    贵金属     
+
+```
+
+### 4板 (1只) - 1炸板
+```
+  [X]百川股份   
+    化学制品    
+
+```
+
+### 3板 (5只) - 2断板
+```
+  [一字]横店影视    [一字]万丰股份      皇台酒业      [X]中信尼雅   
+    文化传媒        化学原料        酿酒行业        酿酒行业    
+
+  [X]天地在线   
+    文化传媒    
+
+```
+
+### 2板 (7只)
+```
+  [一字]杭电股份      白云电器        西上海         名雕股份    
+    电网设备        电网设备        汽车零部        装修装饰    
+
+    利通电子        通鼎互联        茂业商业    
+    消费电子        通信设备        商业百货    
+
+```
+
+### 首板 (26只)
+```
+  [一字]顺钠股份    [一字]民爆光电      三变科技        通达创智        新华百货    
+    电网设备        家电行业        电网设备        塑料制品        商业百货    
+
+    积成电子        珠江钢琴        万林物流        联域股份        金鹰股份    
+    电网设备        家用轻工        物流行业        光学光电        纺织服装    
+
+    保变电气        汉缆股份        森源电气        广电电气        大连电瓷    
+    电网设备        电网设备        电网设备        电网设备        电网设备    
+
+    电科院         群兴玩具        黄河旋风        天普股份        复洁科技    
+    专业服务        房地产服        非金属材        汽车零部        环保行业    
+
+    中超控股        通光线缆        有友食品        三夫户外        遥望科技    
+    电网设备        电网设备        食品饮料        纺织服装        互联网服    
+
+    金徽酒     
+    酿酒行业    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 02月02日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "02月02日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 6板: 湖南黄金 - highest streak
+- 电网设备 dominates with 12 stocks
+- Total 40 stocks (26 first-time + 14 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

@@ -1,0 +1,42 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (markers marker sketch), (hand drawn), (vivid colors)
+
+A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN MARKER SKETCH style poster for tomorrow's market events.
+
+**DESIGN STYLE:**
+- **Visuals**: Authentic Marker / Felt-tip pen sketch. Not digital vector.
+- **Color Palette**: VIVID and COLORFUL. Use Bright Hyacinth Blue, Golden Yellow, and Energetic Orange markers on paper.
+- **Background**: Textured Sketchbook Paper (#FAF3E3).
+- **Layout**: Clean, spacious, and organized blocks. Hand-written font style.
+
+**HEADER:**
+- Title: "明日A股日历"
+- Date: "01月31日 Saturday" (Large Typography)
+- Visual: A dynamic rising sun or clock icon.
+
+**CONTENT BLOCKS (Keep Text Concise):**
+
+### 1. 📢 宏观/消息 (Macro & News)
+- [09:21]【利多】 央行今日开展4775亿7天逆回购操作，操作利率为1.40%，与此前持平。
+- [07:07]【利多·金融】 中国人民银行以固定利率、数量招标方式开展了3540亿7天期逆回购操作。当日，公开市场有2102亿7天逆回购到期，因此实现净投放1438亿。专家表示，央行近期多措并举，释放明确维护流动性意图，将继续综合运用公开市场操作等多种货币政策工具，确保流动性处于充裕水平。
+- [20:09]【利空·金融】 乌克兰央行将基准利率下调50个基点至15%。
+
+
+### 2. 📊 核心板块 (Focus Sectors)
+- **金融**:  2025年证券交易印花税增长57.8%财政部举行新闻发布会，介绍2025年财政收支情况。会上，财政部国库司副司长郑涌介绍，2025年，证券交易印花税达到2035亿，增长57.8%。
+- **地产**:  2025年房地产开发投资下降31.0% 工业技术改造投资增长19.2%深圳统计局发布2025年深圳经济运行情况，2025年，全市固定资产投资同比下降21.7%，其中，房地产开发投资下降31.0%，基础设施投资下降1.9%。重点产业投资保持较快增长，工业技术改造投资增长19.2%，居民服务、修理和其他服务业投资增长88.3%，信息传输、软件和信息技术服务业投资增长67.7%，科学研究和技术服务业投资增长16.1%。
+- **AI**:  消息，OpenAI据悉计划于2026年第四季度启动首次公开募股，与竞争对手Anthropic展开上市竞速。该公司目前已与多家华尔街投行展开非正式磋商，同时聘请了数位关键新高管负责IPO相关筹备工作。
+
+
+### 3. 💰 新股与停复牌 (IPO & Market)
+- **新股申购**: 无
+- **新股上市**: 无
+- **停/复牌**: 详见列表
+
+### 4. 📢 重点关注 (Key Watch)
+- 晚间公告与业绩披露
+
+**FOOTER:**
+- **Slogan**: "关注宏观落地与板块轮动"
+- **Note**: "每日盘前更新"
+
+(Render text clearly. Use engaging icons for each section. Make it POP!)
