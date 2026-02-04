@@ -1,0 +1,29 @@
+=== 市场情绪模型 (Market Sentiment) ===
+Date: 2026-02-04 17:30:30
+
+Greed & Fear Index: 59.1/100
+Sentiment Level: 贪婪
+
+Score Breakdown:
+  market_breadth: +12.95
+  indices_trend: +2.61
+  news_sentiment: +3.51
+  money_flow: -10.00
+
+=== Detailed Logic & Evidence ===
+[Market Breadth] (+15 to -15)
+  - Limit Up: 68
+  - Limit Down: 5
+
+[Indices Trend] (+15 to -15)
+  - 上证50: +1.14%
+  - 沪深300: +0.83%
+  - 中证500: +0.15%
+  - 中证2000: +0.00%
+
+[News Sentiment] (+10 to -10)
+  - Bullish: 77 (e.g. 【极氪9X交付破3万台 均价超53万元】2月4日，极氪9X宣布交付总量已经突破30000台，单车均价超53万元，为车市马年“开门红”打响第一枪。, 【率先触线！存储超级周期愈演愈烈 三星市值首破1000万亿韩元】随着AI热潮下存储产业超级周期愈演愈烈，周三，韩国存储大厂三星电子的市值突破1000万亿韩元（约合6880亿美元）这一重要关口，成为韩国首家达到这一里程碑的公司。...)
+  - Bearish: 37 (e.g. 【机构：今日国际DRAM涨幅仍多集中在DDR3颗粒】据集邦数据，今日国际DRAM颗粒现货价格整体上和昨日相似，下跌仍在DDR4和DDR5部分颗粒，涨幅仍多集中在DDR3颗粒，整体涨跌幅度不大。, 【印度Nifty IT指数跌超7%】印度Nifty IT指数跌幅扩大至7.2%，创4月7日以来最大跌幅。据财联社，人工智能公司Anthropic为其Cowork产品推出新工具，投资者担忧AI的快速发展可能颠覆软件公司传统的商业模式。...)
+
+[Money Flow] (+10 to -10)
+  - Net Inflow: -833.30 亿

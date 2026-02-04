@@ -568,7 +568,11 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         
         J_val = round(s.get('J', 0), 2)
         RSI_val = round(s.get('RSI', 0), 2)
+        
+        # 获取价格：优先从price字段，否则从raw_data_mock中获取
         price = s.get('price', 0)
+        if price == 0 and 'raw_data_mock' in s:
+            price = s['raw_data_mock'].get('close', 0)
         
         # 计算操作策略
         # 买入时机：根据J值和RSI值判断

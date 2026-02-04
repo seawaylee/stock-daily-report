@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Unified Entry Point for Stock Daily Report System.
 Supports 4 independent modules:
@@ -19,14 +20,14 @@ try:
 except ImportError:
     pass
 
-# Convert string "YYYYMMDD" to path "results/YYYYMMDD" 
+# Convert string "YYYYMMDD" to path "results/YYYYMMDD"
 def get_date_dir(date_str=None):
     if not date_str:
         now = datetime.now()
         # If before 09:00 AM, assume we are reviewing the Previous Trading Day (late night session)
         if now.hour < 9:
             date_str = (now - timedelta(days=1)).strftime('%Y%m%d')
-            print(f"🕒 Current time {now.strftime('%H:%M')} < 09:00. Auto-selecting Yesterday: {date_str}")
+            print("Current time {} before 09:00. Auto-selecting Yesterday: {}".format(now.strftime('%H:%M'), date_str))
         else:
             date_str = now.strftime('%Y%m%d')
     return os.path.join("results", date_str), date_str
@@ -127,6 +128,18 @@ def run_earnings_prompt(args):
     from modules.earnings import run_prompt_gen
     return run_prompt_gen(args.date_str, args.date_dir)
 
+def run_market_sentiment(args):
+    print("\n=== [Module 11] Market Sentiment Index ===")
+    from modules.market_sentiment import market_sentiment
+    from modules.market_sentiment import generate_sentiment_prompt
+
+    # Run analysis
+    analyzer = market_sentiment.run_analysis(args.date_str)
+
+    # Generate prompts
+    generate_sentiment_prompt.generate_prompts(analyzer, args.date_dir)
+    return True
+
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
     print(f"Target Directory: {args.date_dir}")
@@ -166,9 +179,10 @@ def run_all(args):
         (run_core_news, args),
         (run_weekly_preview, args),
         (run_earnings_analysis, args),
-        (run_earnings_prompt, args)
+        (run_earnings_prompt, args),
+        (run_market_sentiment, args)
     ]
-    
+
     with ProcessPoolExecutor(max_workers=4) as executor:
         futures = [executor.submit(task, arg) for task, arg in tasks]
         
@@ -243,6 +257,7 @@ def main():
     subparsers.add_parser('weekly_preview', parents=[parent_parser], help='Run Weekly Events Preview')
     subparsers.add_parser('earnings', parents=[parent_parser], help='Run Earnings Analysis')
     subparsers.add_parser('earnings_prompt', parents=[parent_parser], help='Generate Earnings Performance Prompt')
+    subparsers.add_parser('sentiment', parents=[parent_parser], help='Run Market Sentiment Analysis')
 
     args = parser.parse_args()
     
@@ -280,6 +295,8 @@ def main():
         run_earnings_analysis(args)
     elif args.command == 'earnings_prompt':
         run_earnings_prompt(args)
+    elif args.command == 'sentiment':
+        run_market_sentiment(args)
     else:
         parser.print_help()
 

@@ -1,0 +1,46 @@
+# 异动监管预警 - AI绘图Prompt (02月04日)
+# 数据来源：龙虎榜 + 专项板块筛查
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+## 标题
+**⚠️ 异动监管预警** （红）
+**02月04日 | 龙虎榜 & 热门题材**
+
+---
+
+## 🔴 已触发异动 (重点关注)
+**监管解除日期: 02-05**
+
+| 股票 | 题材 | 累计涨幅 | 解除后窗口 | 状态 |
+|------|------|----------|------------|------|
+
+> 💡 T-2日的涨幅将在明日移出窗口
+
+---
+
+## 🚀 热门板块专项筛查：商业航天
+**当前状态：安全 (Safe)**
+
+| 龙头股 | 累计涨幅 | 状态 |
+|--------|----------|------|
+
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn warning style infographic, A-share abnormal fluctuation alert, 02月04日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic.
+
+**Layout**:
+- Title: "⚠️ 异动监管预警"
+- Section 1: Triggered Stocks List (Red).
+- Section 2: Commercial Aerospace Sector Monitor (Green Shield 🛡️).
+- Footer: "Data Source: Dragon Tiger Board".
+
+(Optimized for hand-drawn regulatory alert infographic)
