@@ -533,28 +533,6 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
             else:
                 tomorrow_strategy = full_strategy.split('\n')[0].strip().replace('**', '')
 
-    # --- 对复盘和策略文案进行脱敏替换 ---
-    # 遍历所有股票，将文案中的"全名"替换为"脱敏名"
-    sorted_stocks = sorted(selected_stocks, key=lambda x: len(x['name']), reverse=True)
-    
-    for s in sorted_stocks:
-        name = s['name']
-        name_masked = s.get('name_masked', desensitize_stock_name(name))
-        code = s['code']
-        code_masked = s.get('code_masked', desensitize_stock_code(code))
-        
-        # 替换名称
-        if name in market_review:
-            market_review = market_review.replace(name, name_masked)
-        if name in tomorrow_strategy:
-            tomorrow_strategy = tomorrow_strategy.replace(name, name_masked)
-        
-        # 替换代码
-        if code in market_review:
-            market_review = market_review.replace(code, code_masked)
-        if code in tomorrow_strategy:
-            tomorrow_strategy = tomorrow_strategy.replace(code, code_masked)
-
     
     # 构建动态 Footer 内容
     footer_content = ""
@@ -564,18 +542,23 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     # if tomorrow_strategy:
     #    footer_content += f"💡 次日策略\n{tomorrow_strategy}"
     # 
-    # USER REQUEST: Specific Footer
+    # USER REQUEST: Specific Footer with Disclaimer
     footer_content = """
 **FOOTER:**
 "Daily AI Algo Strategy | High Value Ratio Stocks | Follow for Updates"
 (Render in Chinese: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路")
+
+**免责声明 (Disclaimer):**
+本内容仅供学习交流，不构成任何投资建议。
+股市有风险，投资需谨慎。请独立思考，理性决策。
 """
 
-    # --- Generate Card Text (Python Logic) ---
+    # --- Generate Card Text with Trading Strategy (Python Logic) ---
     cards_text = ""
     for idx, s in enumerate(selected_stocks, 1):
-        name_masked = s.get('name_masked', desensitize_stock_name(s['name']))
-        code_masked = s.get('code_masked', desensitize_stock_code(s['code']))
+        # 不再脱敏，直接使用原始名称和代码
+        name = s['name']
+        code = s['code']
         industry = s.get('industry', '未知')
         if not industry: industry = "未知"
         
@@ -585,12 +568,42 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         
         J_val = round(s.get('J', 0), 2)
         RSI_val = round(s.get('RSI', 0), 2)
+        price = s.get('price', 0)
         
-        line1 = f"#{idx} {name_masked} | {code_masked} | 🏭 {industry}"
-        # Enhanced Colors
+        # 计算操作策略
+        # 买入时机：根据J值和RSI值判断
+        if J_val < 20 and RSI_val < 40:
+            buy_timing = "超卖区，可分批建仓"
+            entry_zone = f"{price * 0.98:.2f}-{price * 1.02:.2f}"
+        elif J_val < 50:
+            buy_timing = "回调企稳后买入"
+            entry_zone = f"{price * 0.97:.2f}-{price:.2f}"
+        else:
+            buy_timing = "突破确认后追涨"
+            entry_zone = f"{price:.2f}-{price * 1.03:.2f}"
+        
+        # 止损位：通常设置在5-8%
+        stop_loss = f"{price * 0.92:.2f}"
+        stop_loss_pct = "8%"
+        
+        # 风险评估：根据RSI和振幅判断
+        near_amp = s.get('near_amplitude', 0)
+        if RSI_val < 30 or near_amp > 15:
+            risk_level = "⚠️ 高风险"
+            risk_note = "波动较大，建议轻仓"
+        elif RSI_val < 50:
+            risk_level = "⚡ 中等风险"
+            risk_note = "适度参与"
+        else:
+            risk_level = "📊 相对稳健"
+            risk_note = "可适当增仓"
+        
+        line1 = f"#{idx} {name} | {code} | 🏭 {industry}"
         line2 = f"🚀 **{signals}** (Red Ink) | **J={J_val}** (Blue) **RSI={RSI_val}** (Purple)"
+        line3 = f"💰 **买入区间**: {entry_zone}元 | **止损**: {stop_loss}元(-{stop_loss_pct})"
+        line4 = f"📍 **操作**: {buy_timing} | **风险**: {risk_level} ({risk_note})"
         
-        cards_text += f"{line1}\n{line2}\n\n"
+        cards_text += f"{line1}\n{line2}\n{line3}\n{line4}\n\n"
 
     # --- Final Prompt Construction ---
     final_prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
