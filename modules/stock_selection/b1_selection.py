@@ -35,6 +35,128 @@ from common.signals import check_stock_signal
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
+# ============ 热门题材过滤功能 ============
+
+def get_hot_sectors_from_fish_basin(date_dir: str, top_n: int = 5):
+    """
+    从趋势模型Prompt文件中提取Top N热门题材
+    
+    Args:
+        date_dir: 日期目录（例如：results/20260204）
+        top_n: 获取前N个题材，默认5
+    
+    Returns:
+        题材列表，例如：['贵金属', '有色金属', '光伏设备', '石油加工贸易', '半导体']
+        如果提取失败返回空列表
+    """
+    import re
+    from datetime import datetime, timedelta
+    
+    # 尝试读取今天的趋势模型Prompt文件
+    prompt_file = os.path.join(date_dir, "AI提示词", "趋势模型_合并_Prompt.txt")
+    
+    # Fallback: 如果今天的文件不存在，尝试昨天的
+    if not os.path.exists(prompt_file):
+        print(f"⚠️ 今日趋势模型文件不存在: {prompt_file}")
+        # 尝试昨天
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+        prompt_file = os.path.join("results", yesterday, "AI提示词", "趋势模型_合并_Prompt.txt")
+        if not os.path.exists(prompt_file):
+            print(f"❌ 昨日趋势模型文件也不存在: {prompt_file}")
+            return []
+        else:
+            print(f"✅ 使用昨日趋势模型文件: {prompt_file}")
+    
+    try:
+        with open(prompt_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 查找 "SECTION 2: 热门题材趋势" 部分
+        section_match = re.search(r'SECTION 2:.*?热门题材.*?\*\*Data\*\*:(.*?)---', content, re.DOTALL)
+        if not section_match:
+            print("❌ 未找到热门题材数据段")
+            return []
+        
+        data_section = section_match.group(1)
+        
+        # 提取题材名称：格式为 "1. ● 贵金属 | 涨跌:..."
+        # 正则匹配：数字. ○/● 题材名称 |
+        pattern = r'\d+\.\s*[●○]\s*([^\s|]+)\s*\|'
+        matches = re.findall(pattern, data_section)
+        
+        if not matches:
+            print("❌ 未能提取题材名称")
+            return []
+        
+        # 取前top_n个
+        hot_sectors = matches[:top_n]
+        print(f"📊 提取到Top{top_n}热门题材: {hot_sectors}")
+        return hot_sectors
+        
+    except Exception as e:
+        print(f"❌ 提取热门题材失败: {e}")
+        return []
+
+
+def match_stock_sector(stock_info: dict, hot_sectors: list) -> bool:
+    """
+    判断股票是否属于热门题材
+    
+    Args:
+        stock_info: 股票信息字典（需包含'industry'或'sector'字段）
+        hot_sectors: 热门题材列表
+    
+    Returns:
+        是否匹配任一热门题材
+    """
+    if not hot_sectors:
+        return False
+    
+    # 获取股票的行业/题材信息
+    industry = stock_info.get('industry', '')
+    sector = stock_info.get('sector', '')
+    combined = f"{industry} {sector}".lower()
+    
+    # 题材映射表：Fish Basin题材名 -> 可能的行业关键词
+    sector_mapping = {
+        '贵金属': ['黄金', '白银', '贵金属'],
+        '有色金属': ['有色', '铝', '铜', '锌', '镍', '钴', '锂'],
+        '光伏设备': ['光伏', '太阳能', '逆变器', '硅片'],
+        '石油加工贸易': ['石油', '石化', '化工', '炼化'],
+        '半导体': ['半导体', '芯片', '集成电路', 'IC', '晶圆'],
+        '商业航天': ['航天', '卫星', '火箭', '航空航天'],
+        '保险': ['保险', '寿险', '财险'],
+        '稀土': ['稀土', '钕铁硼', '永磁'],
+        '通信设备': ['通信', '5G', '光通信', '网络设备'],
+        '细分化工': ['化工', '化学', '精细化工'],
+        '电网设备': ['电网', '电力设备', '特高压', '变压器'],
+        '煤炭': ['煤炭', '煤矿', '焦煤'],
+        '房地产': ['房地产', '地产', '物业'],
+        '风电设备': ['风电', '风能', '风机'],
+        '电力': ['电力', '发电', '火电', '水电'],
+        '养殖': ['养殖', '猪', '鸡', '禽'],
+        '医疗服务': ['医疗', '医院', '诊断'],
+        '新能源': ['新能源', '电池', '储能', '锂电'],
+        '人工智能': ['人工智能', 'AI', '算力', '芯片', '云计算'],
+        '旅游': ['旅游', '酒店', '景区'],
+    }
+    
+    # 匹配逻辑
+    for hot_sector in hot_sectors:
+        # 直接匹配
+        if hot_sector.lower() in combined:
+            return True
+        
+        # 通过映射表匹配
+        if hot_sector in sector_mapping:
+            keywords = sector_mapping[hot_sector]
+            for keyword in keywords:
+                if keyword.lower() in combined:
+                    return True
+    
+    return False
+
+
 def process_single_stock(args):
     """处理单只股票"""
     code, name, market_cap, industry = args
@@ -359,9 +481,9 @@ def call_gemini_analysis(selected_stocks, date_dir):
 def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     """直接生成信息图提示词 (无需Agent二次处理)"""
     # 准备股票数据摘要(包含技术指标 + 脱敏信息)
-    if len(selected_stocks) > 20:
-        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 20。")
-        selected_stocks = selected_stocks[:20]
+    if len(selected_stocks) > 5:
+        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 5。")
+        selected_stocks = selected_stocks[:5]
 
     # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
@@ -623,45 +745,80 @@ def run(date_dir=None, force=False):
     
     gemini_analysis = None
     
-    # 4. 调用AI分析 (仅当有选股时)
+    # 2. **NEW** 获取热门题材并过滤股票
+    print("\n" + "="*70)
+    print("  Step 2: 热门题材过滤")
+    print("="*70)
+    
     if not selected:
         print("❌ 没有选出股票，跳过 B1 AI 分析，继续执行其他模块...")
         return False
+    
+    print(f"📊 B1技术筛选结果: {len(selected)} 只股票")
+    
+    # 获取Top5热门题材
+    hot_sectors = get_hot_sectors_from_fish_basin(date_dir, top_n=5)
+    
+    if not hot_sectors:
+        print("⚠️ 未能获取热门题材，跳过题材过滤，使用全部B1股票")
+        filtered_stocks = selected
     else:
-        try:
-            # 传入所有选中的股票供Agent分析
-            # Agent会从中选出Top10进行深度分析
-            all_stocks = selected
-            
-            # 调用Agent分析（传入全部候选）
-            gemini_analysis, analysis_prompt = call_gemini_analysis(all_stocks, date_dir)
-            
-            # 如果Agent还未生成结果，等待用户运行工作流
-            if gemini_analysis is None:
-                print("\n⏸️  脚本暂停：等待Agent工作流处理任务")
-                print("请运行 Agent 工作流完成分析，然后再次执行此脚本")
-                return True # Not a failure, just a pause
-            
-            print("\n✅ Agent分析完成")
-            
-            # 加载 Top 10 中间文件
-            top10_file = os.path.join(date_dir, "selected_top10.json")
-            top_stocks_list = all_stocks # 默认
-            
-            if os.path.exists(top10_file):
-                 with open(top10_file, 'r', encoding='utf-8') as f:
-                    top_stocks_list = json.load(f)
-                 print(f"⚡ 加载 Top 10 股票池: {len(top_stocks_list)} 只")
-            else:
-                 print("⚠️ 未找到 selected_top10.json，将使用全部股票")
+        # 按题材过滤
+        filtered_stocks = [s for s in selected if match_stock_sector(s, hot_sectors)]
+        print(f"\n✅ 题材过滤完成:")
+        print(f"   - 热门题材Top5: {', '.join(hot_sectors)}")
+        print(f"   - 原始B1股票数: {len(selected)}")
+        print(f"   - 过滤后股票数: {len(filtered_stocks)}")
+        
+        if not filtered_stocks:
+            print("\n❌ 没有符合热门题材的B1股票，放宽条件使用全部B1股票")
+            filtered_stocks = selected
+        else:
+            # 显示过滤出的股票样例
+            sample = min(5, len(filtered_stocks))
+            print(f"\n   过滤后股票示例（前{sample}只）:")
+            for i, stock in enumerate(filtered_stocks[:sample], 1):
+                print(f"      {i}. {stock['name']} ({stock['code']}) - {stock.get('industry', 'N/A')}")
+    
+    # 3. 调用AI分析 (使用filtered_stocks而不是selected)
+    print("\n" + "="*70)
+    print("  Step 3: AI智能分析")
+    print("="*70)
+    
+    try:
+        # 传入过滤后的股票供Agent分析
+        # Agent会从中选出Top进行深度分析
+        all_stocks = filtered_stocks
+        
+        # 调用Agent分析（传入题材过滤后的候选）
+        gemini_analysis, analysis_prompt = call_gemini_analysis(all_stocks, date_dir)
+        
+        # 如果Agent还未生成结果，等待用户运行工作流
+        if gemini_analysis is None:
+            print("\n⏸️  脚本暂停：等待Agent工作流处理任务")
+            print("请运行 Agent 工作流完成分析，然后再次执行此脚本")
+            return True # Not a failure, just a pause
+        
+        print("\n✅ Agent分析完成")
+        
+        # 加载 Top 10 中间文件
+        top10_file = os.path.join(date_dir, "selected_top10.json")
+        top_stocks_list = all_stocks # 默认
+        
+        if os.path.exists(top10_file):
+             with open(top10_file, 'r', encoding='utf-8') as f:
+                top_stocks_list = json.load(f)
+             print(f"⚡ 加载 Top股票池: {len(top_stocks_list)} 只")
+        else:
+             print("⚠️ 未找到 selected_top10.json，将使用全部过滤后的股票")
 
-            # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
-            # 目的：直接从分析结果回填信息
-            enrich_stocks_from_analysis(top_stocks_list, date_dir)
-            # -------------------------------------------------------------------
-        except Exception as e_ai:
-             print(f"⚠️ AI分析模块出错: {e_ai}")
-             return False
+        # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
+        # 目的：直接从分析结果回填信息
+        enrich_stocks_from_analysis(top_stocks_list, date_dir)
+        # -------------------------------------------------------------------
+    except Exception as e_ai:
+         print(f"⚠️ AI分析模块出错: {e_ai}")
+         return False
 
     # (Skip Image Prompt generation if no analysis, logically)
     if gemini_analysis:
