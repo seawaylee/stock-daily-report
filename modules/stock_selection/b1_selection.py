@@ -628,12 +628,13 @@ Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH sty
 - Background: Hand-drawn red-gold gradient with visible pencil strokes
 
 
-Center: "AI大模型量化策略" + "{datetime.now().strftime('%Y-%m-%d')}"
+Center: "AI大模型量化策略 · 热门题材筛选" + "{datetime.now().strftime('%Y-%m-%d')}"
 **Visual Highlight**: Add a realistic "Red Ink Stamp" (Seal) near the title with text: "次日择机买入"
 
-20 stock cards (10 per column) in a 2-Column Grid:
-Left column: Pale blue background with paper texture
-Right column: Pale yellow background with paper texture
+**NEW: 基于趋势模型Top5热门题材筛选**
+
+5 stock cards in a single column layout:
+Background: Pale blue background with paper texture
 
 **VISUAL CONTENT:**
 Refined Hand-Drawn Table/Cards:
