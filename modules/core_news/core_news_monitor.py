@@ -253,7 +253,12 @@ def filter_top_news(data, limit=10, is_weekly=False):
         else:
             sem_tag = f"【{item['direction']}】"
         
-        formatted_list.append(f"[{t_str}]{sem_tag} {item['title']}")
+        # Truncate for brevity (User Request)
+        display_title = item['title']
+        if len(display_title) > 60:
+            display_title = display_title[:58] + "..."
+            
+        formatted_list.append(f"[{t_str}]{sem_tag} {display_title}")
         
         # Accumulate Net Score for Footer
         if target_display:

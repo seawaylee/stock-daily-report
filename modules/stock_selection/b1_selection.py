@@ -560,7 +560,8 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         name = s['name']
         code = s['code']
         industry = s.get('industry', '未知')
-        if not industry: industry = "未知"
+        if not industry or industry == '未知' or str(industry).lower() == 'nan': 
+            industry = guess_sector_by_name(name)
         
         signals = ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点')
         signals = signals.split(',')[0] # First signal
@@ -647,6 +648,43 @@ Refined Hand-Drawn Table/Cards:
 """
 
     return final_prompt, final_prompt
+
+def guess_sector_by_name(name):
+    """根据股票名称猜测行业 (Fallback)"""
+    sector_map = {
+        # Specific overrides
+        '星图': '商业航天',
+        '诚志': '化工/显示',
+        '茅台': '白酒', '五粮液': '白酒', '老窖': '白酒', 
+        '中科': '科技',
+        
+        # General Categories
+        '银行': '银行', '证券': '证券', '保险': '保险',
+        '酒': '酿酒',
+        '药': '医药', '医': '医疗',
+        '油': '石油', '石化': '石油',
+        '煤': '煤炭', '矿': '采掘',
+        '金': '贵金属', '银': '贵金属', '铝': '有色', '铜': '有色',
+        '钢': '钢铁', '铁': '钢铁',
+        '电': '电力/电网', '能': '能源',
+        '机': '机械', '装备': '设备',
+        '车': '汽车', '汽': '汽车',
+        '建': '基建', '工': '工程',
+        '房': '地产', '地': '地产',
+        '科': '科技', '技': '科技', '芯': '芯片',
+        '软': '软件', '网': '互联网',
+        '航': '航空航天',
+        '海': '航运', '运': '物流',
+        '食': '食品', '乳': '食品',
+        '纸': '造纸',
+        '纺': '纺织',
+        '商': '商业',
+        '光': '光伏/光学',
+    }
+    for kw, sec in sector_map.items():
+        if kw in name:
+            return sec + "(猜)"
+    return "热门题材"  # Final fallback
 
 
 def save_reports(gemini_analysis, today):

@@ -1,0 +1,40 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (markers marker sketch), (hand drawn), (vivid colors)
+
+A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN MARKER SKETCH style poster for tomorrow's market events.
+
+**DESIGN STYLE:**
+- **Visuals**: Authentic Marker / Felt-tip pen sketch. Not digital vector.
+- **Color Palette**: VIVID and COLORFUL. Use Bright Hyacinth Blue, Golden Yellow, and Energetic Orange markers on paper.
+- **Background**: Textured Sketchbook Paper (#FAF3E3).
+- **Layout**: Clean, spacious, and organized blocks. Hand-written font style.
+
+**HEADER:**
+- Title: "明日A股日历"
+- Date: "02月06日 Friday" (Large Typography)
+- Visual: A dynamic rising sun or clock icon.
+
+**CONTENT BLOCKS (Keep Text Concise):**
+
+### 1. 📢 宏观/消息 (Macro & News)
+暂无具体宏观事件，关注盘前消息
+
+
+### 2. 📊 核心板块 (Focus Sectors)
+- **AI**:  人工智能公司Anthropic据悉正通过其首次超级碗广告投放，直接对准“友商”OpenAI发起攻势。在超级碗开赛前发布的系列网络广告中，该公司嘲讽了OpenAI在ChatGPT中嵌入广告的做法，并重点展示了广告插入可能如何损害生成式AI的对话体验。
+- **电子**:  市场搞错状况由于Anthropic公司发布了Claude Cowork，其强大的编程及计算机任务处理能力让投资者对经营办公领域软件业务的公司产生了巨大的怀疑，并引发了软件股的持续下跌。然而，芯片公司Arm首席执行官Rene Haas表示，本周引发股市抛售的“人工智能会蚕食软件公司收入”的担忧，是一种小规模恐慌，与企业实际使用这些工具的情况并不一致。
+- **医药**:  国务院新闻办公室今天（5日）举行的新闻发布会上，市场监管总局介绍，2025年，市场监管领域安全形势总体稳定，全国食品安全监督抽检不合格率为2.74%，多批次抽检不合格企业数量同比下降57%；国家药品抽检合格率保持在99%以上。
+
+
+### 3. 💰 新股与停复牌 (IPO & Market)
+- **新股申购**: 无
+- **新股上市**: 无
+- **停/复牌**: 详见列表
+
+### 4. 📢 重点关注 (Key Watch)
+- 晚间公告与业绩披露
+
+**FOOTER:**
+- **Slogan**: "关注宏观落地与板块轮动"
+- **Note**: "每日盘前更新"
+
+(Render text clearly. Use engaging icons for each section. Make it POP!)

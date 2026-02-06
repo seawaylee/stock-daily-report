@@ -1,0 +1,128 @@
+# 20260205 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**02月05日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+光伏设备(4) | 汽车零部(4) | 商业百货(3) | 互联网服(3) | 文化传媒(3) | 电网设备(2) | 通用设备(2) | 非金属材(2)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 5板 (2只) - 2炸板
+```
+  [X]名雕股份     [X]杭电股份   
+    装修装饰        电网设备    
+
+```
+
+### 4板 (2只) - 1断板
+```
+    民爆光电      [X]顺钠股份   
+    家电行业        电网设备    
+
+```
+
+### 3板 (9只) - 7断板
+```
+  [一字]韩建河山      京投发展      [X]巨力索具     [X]双良节能   
+    水泥建材        房地产开        通用设备        光伏设备    
+
+  [X]银轮股份     [X]天通股份     [X]中集集团     [X]国晟科技   
+    汽车零部        非金属材        通用设备        光伏设备    
+
+  [X]泽润新能   
+    光伏设备    
+
+```
+
+### 2板 (7只)
+```
+  [一字]凯龙高科    [一字]陕西黑猫      坤彩科技        兴民智通    
+    汽车零部        煤炭行业        非金属材        汽车零部    
+
+    杭州解百        协鑫集成        丰倍生物    
+    商业百货        光伏设备        化学制品    
+
+```
+
+### 首板 (34只)
+```
+    山东海化        田中精机        遥望科技        浙文影业        平潭发展    
+    化学原料        专用设备        互联网服        纺织服装        农牧饲渔    
+
+    横店影视        华升股份        金富科技        中信尼雅        拉芳家化    
+    文化传媒        纺织服装        塑料制品        酿酒行业        美容护理    
+
+    群兴玩具        富临运业        钱江生化        海欣食品        安记食品    
+    房地产服        铁路公路        环保行业        食品饮料        食品饮料    
+
+   新 华 都        二六三         天地在线        金逸影视        北摩高科    
+    互联网服        通信服务        文化传媒        文化传媒        航天航空    
+
+    朗博科技        皇庭国际        厦门银行        华林证券        三峡旅游    
+    汽车零部        房地产服         银行          证券         旅游酒店    
+
+    泰坦股份        神剑股份        风华高科        海峡创新        嘉美包装    
+    专用设备        塑料制品        电子元件        互联网服        包装材料    
+
+    茂业商业        集友股份        广东明珠        三江购物    
+    商业百货        造纸印刷        钢铁行业        商业百货    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 02月05日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "02月05日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 5板: 名雕股份 - highest streak
+- 光伏设备 dominates with 4 stocks
+- Total 54 stocks (34 first-time + 20 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

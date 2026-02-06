@@ -27,7 +27,7 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
              except: pass
              
         # Support for Merged Excel (Single Sheet Parsing)
-        if df_index is None and df_sector is None:
+        if df_index is None or df_sector is None:
             merged_path = f"{date_dir}/趋势模型_合并.xlsx"
             if os.path.exists(merged_path):
                 print(f"Reading from Merged Excel: {merged_path}")
@@ -87,7 +87,10 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
                 return pd.to_numeric(series.astype(str).str.replace('+', '').str.rstrip('%'), errors='coerce')
 
             # Ensure proper types
-            df['dev_val'] = safe_convert_pct(df['黄线偏离率'])
+            if '黄线偏离率' in df.columns:
+                df['dev_val'] = safe_convert_pct(df['黄线偏离率'])
+            else:
+                df['dev_val'] = 0.0
             
             # For Sectors: Mix of Top Deviation AND Top Gainers
             if is_sector:
@@ -118,6 +121,46 @@ def generate_combined_prompt(date_str=None, df_index=None, df_sector=None):
             
         df_index = process_df(df_index) if df_index is not None else pd.DataFrame()
         df_sector = process_df(df_sector, is_sector=True) if df_sector is not None else pd.DataFrame()
+
+        # === AI Trend Analysis Task Generation ===
+        try:
+            if not df_sector.empty and 'dev_val' in df_sector.columns:
+                # 1. Top 10 High Deviation (Strong Trend)
+                top_dev = df_sector.sort_values('dev_val', ascending=False).head(10)
+                # 2. Bottom 5 Low Deviation (Oversold/Weak)
+                bot_dev = df_sector.sort_values('dev_val', ascending=True).head(5)
+
+                # Format Data for LLM
+                sector_text = "【High Deviation Sectors (Strong Trend)】\n"
+                for _, row in top_dev.iterrows():
+                    sector_text += f"- {row['名称']}: Dev {row['黄线偏离率']}, Chg {row['涨幅%']}, RankChg {row.get('排名变化','-')}\n"
+
+                sector_text += "\n【Low Deviation Sectors (Weak/Oversold)】\n"
+                for _, row in bot_dev.iterrows():
+                    sector_text += f"- {row['名称']}: Dev {row['黄线偏离率']}, Chg {row['涨幅%']}, RankChg {row.get('排名变化','-')}\n"
+
+                # Create Task Prompt
+                task_prompt = f"""Analyze the sector trend data from the 'Fish Basin' model.
+Identify 1 "Best Value" sector (Trend Up + Reasonable Deviation) and 1 "High Risk" sector (Extreme Deviation).
+Output a VERY CONCISE summary (max 50 words) in Chinese.
+
+Format:
+📊 **AI趋势精选**: [Sector] (Reason) | ⚠️ **风险**: [Sector] (Reason)
+
+Data:
+{sector_text}
+"""
+                # Save Task File
+                task_dir = os.path.join(date_dir, "agent_tasks")
+                os.makedirs(task_dir, exist_ok=True)
+                task_path = os.path.join(task_dir, "task_trend_summary.txt")
+                with open(task_path, "w", encoding="utf-8") as f:
+                    f.write(task_prompt)
+                print(f"✅ Agent Task Saved: {task_path}")
+
+        except Exception as e:
+            print(f"⚠️ Failed to generate agent task: {e}")
+        # =========================================
         
         def format_row(row, rank):
             name = row['名称']

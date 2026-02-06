@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 import sys
 import os
+import requests
+import re
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -21,10 +23,10 @@ from modules.core_news.core_news_monitor import fetch_eastmoney_data
 def get_limit_down_count(date_str: str = None) -> int:
     """
     Get the count of limit down stocks for a given date.
-    
+
     Args:
         date_str: Date string in YYYYMMDD format. If None, uses today.
-    
+
     Returns:
         Count of limit down stocks
     """
@@ -37,134 +39,197 @@ def get_limit_down_count(date_str: str = None) -> int:
         return 0
 
 
+def get_volume_from_previous_prompt(date_str: str) -> float:
+    """
+    Try to get volume from previous day's prompt file.
+
+    Args:
+        date_str: Date string in YYYYMMDD format.
+
+    Returns:
+        Volume in Yuan (float) or 0.0 if not found
+    """
+    try:
+        if not date_str:
+            date_str = datetime.now().strftime("%Y%m%d")
+
+        current_date = datetime.strptime(date_str, "%Y%m%d")
+        prev_date = current_date - timedelta(days=1)
+        prev_date_str = prev_date.strftime("%Y%m%d")
+
+        file_path = os.path.join("results", prev_date_str, "AI提示词", "市场情绪_Prompt.txt")
+
+        if not os.path.exists(file_path):
+            # Try checking absolute path if relative path fails or debug info
+            # print(f"   Previous prompt file not found: {file_path}")
+            return 0.0
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Regex search for 今日成交: **(\d+) 亿**
+        match = re.search(r"今日成交: \*\*(\d+) 亿\*\*", content)
+        if match:
+            vol_yi = float(match.group(1))
+            print(f"   Recovered volume from file ({prev_date_str}): {vol_yi}亿")
+            return vol_yi * 1e8
+
+        return 0.0
+    except Exception as e:
+        print(f"   Error reading previous prompt: {e}")
+        return 0.0
+
+
+
+def get_market_volume_sina() -> float:
+    """
+    Fetch real-time market volume (SH + SZ) from Sina Finance.
+    Returns total volume in Yuan (float).
+    Returns 0.0 if failed.
+    """
+    url = "http://hq.sinajs.cn/list=s_sh000001,s_sz399001"
+    headers = {"Referer": "https://finance.sina.com.cn/"}
+    
+    print("📊 Fetching Real-time Volume from Sina Finance...")
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        response.encoding = 'gbk'
+        data = response.text
+        
+        # Parse response
+        # var hq_str_s_sh000001="Name,Price,Chg,Pct,Vol,Turnover(Wan)";
+        total_volume = 0.0
+        parsed_count = 0
+        
+        lines = data.strip().split('\n')
+        for line in lines:
+            if 'hq_str_s_' not in line:
+                continue
+            
+            parts = line.split('=')
+            if len(parts) < 2:
+                continue
+                
+            content = parts[1].strip('";')
+            fields = content.split(',')
+            
+            if len(fields) >= 6:
+                # Index 5 is Turnover in Wan
+                try:
+                    vol_wan = float(fields[5])
+                    vol_yuan = vol_wan * 10000
+                    total_volume += vol_yuan
+                    parsed_count += 1
+                except ValueError:
+                    continue
+        
+        if parsed_count == 2: # Should have both SH and SZ
+            print(f"✅ Sina Volume: {total_volume/1e8:.0f}亿")
+            return total_volume
+        else:
+            print(f"⚠️ Sina data incomplete (parsed {parsed_count} indices)")
+            return 0.0
+            
+    except Exception as e:
+        print(f"❌ Error fetching Sina volume: {e}")
+        return 0.0
+
+
 def get_market_volume(date_str: str = None) -> Dict[str, float]:
     """
     Get market turnover volume for today and yesterday.
-    Multi-source: 东财 → 同花顺 → 新浪
-    Target: Total A-share market volume (沪深两市总成交额，应该在2-3万亿)
-    
+    Primary: Sina (for Today) + AkShare (for Yesterday).
+    Fallback: AkShare (for both).
+
     Returns:
-        Dictionary with today_volume, yesterday_volume, change_pct
+        Dictionary with today_volume, yesterday_volume, change_pct (Volumes in Yuan)
     """
-    # Source 1: 东财 (Eastmoney) - Get total market overview
-    try:
-        print("📊 Trying Source 1: Eastmoney for volume...")
-        # Get market overview which includes total volume
-        df_spot = ak.stock_zh_a_spot_em()
-        if df_spot is not None and '成交额' in df_spot.columns:
-            today_vol = df_spot['成交额'].sum()
-            
-            # Get yesterday's total - need to call historical data
-            yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
-            # Try to get index data for ratio
-            df_sh = ak.stock_zh_index_daily(symbol="sh000001")
-            df_sz = ak.stock_zh_index_daily(symbol="sz399001")
-            
-            if df_sh is not None and len(df_sh) >= 2 and df_sz is not None and len(df_sz) >= 2:
-                # Calculate yesterday's volume based on today's total and index ratio
-                sh_ratio = df_sh.iloc[-1]['成交额'] / df_sh.iloc[-2]['成交额']
-                sz_ratio = df_sz.iloc[-1]['成交额'] / df_sz.iloc[-2]['成交额']
-                avg_ratio = (sh_ratio + sz_ratio) / 2
-                yesterday_vol = today_vol / avg_ratio
-            else:
-                yesterday_vol = today_vol * 0.9  # Assume 10% lower
-            
-            change_pct = ((today_vol - yesterday_vol) / yesterday_vol) * 100
-            print(f"✅ Eastmoney volume: Today {today_vol/1e8:.0f}亿, Yesterday {yesterday_vol/1e8:.0f}亿, Change {change_pct:+.1f}%")
-            
-            # Sanity check: should be in the range of 1-5万亿
-            if today_vol / 1e12 > 0.5 and today_vol / 1e12 < 10:  # 0.5-10万亿
-                return {
-                    "today_volume": today_vol,
-                    "yesterday_volume": yesterday_vol,
-                    "change_pct": change_pct
-                }
-            else:
-                print(f"⚠️ Eastmoney volume suspicious ({today_vol/1e12:.2f}万亿), trying next source")
-                raise Exception("Volume out of expected range")
-    except Exception as e:
-        print(f"❌ Eastmoney failed: {e}")
+    target_date = date_str or datetime.now().strftime("%Y%m%d")
+    is_today = (target_date == datetime.now().strftime("%Y%m%d"))
     
-    # Source 2: 同花顺 (Tonghuashun) - Alternative aggregation
+    # 1. Fetch Historical Data (AkShare) to get Yesterday's volume
+    # We always need this for comparison
+    end_dt = datetime.strptime(target_date, "%Y%m%d")
+    start_dt = end_dt - timedelta(days=15) # 15 days back to be safe
+    start_date_s = start_dt.strftime("%Y%m%d")
+    
+    yesterday_vol = 0.0
+    ak_today_vol = 0.0
+    
+    print(f"📊 Fetching History for comparison ({start_date_s} - {target_date})...")
+    
     try:
-        print("📊 Trying Source 2: Tonghuashun alternative...")
-        # Get Shanghai + Shenzhen index volumes and multiply by market cap ratio
-        df_sh = ak.stock_zh_index_daily(symbol="sh000001")
-        df_sz = ak.stock_zh_index_daily(symbol="sz399001")
+        df_sh = ak.index_zh_a_hist(symbol="000001", period="daily", start_date=start_date_s, end_date=target_date)
+        df_sz = ak.index_zh_a_hist(symbol="399001", period="daily", start_date=start_date_s, end_date=target_date)
         
-        if df_sh is not None and len(df_sh) >= 2 and df_sz is not None and len(df_sz) >= 2:
-            # Shanghai + Shenzhen index volumes, then extrapolate
-            # Typical ratio: index volume represents ~30% of total market
-            sh_vol = df_sh.iloc[-1]['成交额']
-            sz_vol = df_sz.iloc[-1]['成交额']
-            total_index_vol = sh_vol + sz_vol
+        if df_sh is not None and not df_sh.empty and df_sz is not None and not df_sz.empty:
+             # Standardize dates
+            df_sh['date_str'] = pd.to_datetime(df_sh['日期']).dt.strftime("%Y%m%d")
+            df_sz['date_str'] = pd.to_datetime(df_sz['日期']).dt.strftime("%Y%m%d")
+
+            # Merge
+            df = pd.merge(df_sh[['date_str', '成交额']], df_sz[['date_str', '成交额']], on='date_str', suffixes=('_sh', '_sz'))
+            df['total_vol'] = df['成交额_sh'] + df['成交额_sz']
+            df = df.sort_values('date_str')
             
-            # Extrapolate: assume index represents 20-30% of total
-            today_vol = total_index_vol * 3.5  # Multiplier based on typical ratio
+            # Identify Yesterday
+            # If target_date is in df, yesterday is the row before it
+            # If target_date is NOT in df (e.g. today during trading), yesterday is the last row
             
-            sh_vol_y = df_sh.iloc[-2]['成交额']
-            sz_vol_y = df_sz.iloc[-2]['成交额']
-            yesterday_vol = (sh_vol_y + sz_vol_y) * 3.5
+            row_target = df[df['date_str'] == target_date]
             
-            change_pct = ((today_vol - yesterday_vol) / yesterday_vol) * 100
-            print(f"✅ Tonghuashun volume: Today {today_vol/1e8:.0f}亿, Yesterday {yesterday_vol/1e8:.0f}亿, Change {change_pct:+.1f}%")
-            
-            if today_vol / 1e12 > 0.5 and today_vol / 1e12 < 10:
-                return {
-                    "today_volume": today_vol,
-                    "yesterday_volume": yesterday_vol,
-                    "change_pct": change_pct
-                }
+            if not row_target.empty:
+                # Target date exists in history (e.g. backtesting or after close)
+                ak_today_vol = float(row_target.iloc[0]['total_vol'])
+                
+                # Get previous row
+                idx = df.index[df['date_str'] == target_date].tolist()[0]
+                # Since we sorted by date_str, but the index might not be sequential integers if we didn't reset
+                # Let's rely on position
+                pos = df.index.get_loc(idx)
+                if pos > 0:
+                    yesterday_vol = float(df.iloc[pos - 1]['total_vol'])
             else:
-                print(f"⚠️ Tonghuashun volume suspicious ({today_vol/1e12:.2f}万亿)")
-                raise Exception("Volume out of expected range")
+                # Target date not in history (likely today during trading)
+                # Then the last row in df is the most recent trading day (Yesterday)
+                if not df.empty:
+                    yesterday_vol = float(df.iloc[-1]['total_vol'])
+                    print(f"   Using latest history ({df.iloc[-1]['date_str']}) as Yesterday.")
+                    
     except Exception as e:
-        print(f"❌ Tonghuashun failed: {e}")
+        print(f"⚠️ Error fetching history from AkShare: {e}")
+
+    # Fallback if yesterday_vol is still 0
+    if yesterday_vol == 0:
+        print("   Trying to fetch yesterday's volume from previous prompt...")
+        yesterday_vol = get_volume_from_previous_prompt(target_date)
+
+    # 2. Get Today's Volume
+    today_vol = 0.0
     
-    # Source 3: 新浪 (Sina) - Scrape market stats
-    try:
-        print("📊 Trying Source 3: Sina for volume...")
-        import requests
-        # Try to get market summary page
-        url = "http://vip.stock.finance.sina.com.cn/mkt/"
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        resp = requests.get(url, headers=headers, timeout=5)
+    if is_today:
+        # Try Sina First
+        sina_vol = get_market_volume_sina()
+        if sina_vol > 0:
+            today_vol = sina_vol
+        else:
+            print("   Sina failed, falling back to AkShare for today...")
+            today_vol = ak_today_vol
+    else:
+        # Not today (Backtesting), must use AkShare
+        today_vol = ak_today_vol
+
+    # 3. Calculate Change
+    change_pct = 0.0
+    if yesterday_vol > 0:
+        change_pct = ((today_vol - yesterday_vol) / yesterday_vol) * 100
         
-        if resp.status_code == 200:
-            # Parse HTML for total volume
-            import re
-            # Look for pattern like "成交额：25000亿" or similar
-            pattern = r'成交[额量][:：]?\s*([0-9.]+)\s*[万亿]'
-            match = re.search(pattern, resp.text)
-            if match:
-                vol_str = match.group(1)
-                today_vol = float(vol_str) * 1e12 if '万亿' in resp.text else float(vol_str) * 1e8
-                yesterday_vol = today_vol * 0.95
-                change_pct = 5.0
-                print(f"✅ Sina volume (parsed): Today {today_vol/1e8:.0f}亿")
-                return {
-                    "today_volume": today_vol,
-                    "yesterday_volume": yesterday_vol,
-                    "change_pct": change_pct
-                }
-    except Exception as e:
-        print(f"❌ Sina failed: {e}")
+    print(f"✅ Final Volume: Today={today_vol/1e8:.0f}亿, Yesterday={yesterday_vol/1e8:.0f}亿, Change={change_pct:+.2f}%")
     
-    # Fallback: Use reasonable estimates based on recent market patterns
-    # A-share typical volume: 2-3万亿 on active days
-    print("⚠️ All volume sources failed, using fallback estimates...")
-    print("💡 Tip: If you know today's actual volume, you can manually set it here")
-    
-    # Default: assume ~2.5万亿 (25000亿) based on recent market averages
-    today_vol = 2.5 * 1e12  # 2.5万亿
-    yesterday_vol = 2.57 * 1e12  # 2.57万亿 (actual reported value)
-    change_pct = ((today_vol - yesterday_vol) / yesterday_vol) * 100
-    
-    print(f"📊 Using fallback: Today {today_vol/1e8:.0f}亿, Yesterday {yesterday_vol/1e8:.0f}亿, Change {change_pct:+.1f}%")
     return {
         "today_volume": today_vol,
         "yesterday_volume": yesterday_vol,
-        "change_pct": change_pct
+        "change_pct": round(change_pct, 2)
     }
 
 
@@ -320,16 +385,17 @@ def get_sector_flow() -> Dict[str, Any]:
             content = f.read()
         
         # Extract inflow sectors and amounts
-        # Pattern: **"绿色电力"** ... "+79.1亿"
-        sector_pattern = r'["\']([^"\']+)["\'][^+]*?\+([0-9.]+)亿'
+        # Extract inflow sectors and amounts
+        # Improved Regex to capture Clean Names:  **"银行"** or "银行"
+        sector_pattern = r'["\']?([\u4e00-\u9fa5]+)["\']?[^+]*?\+([0-9.]+)亿'
         sector_matches = re.findall(sector_pattern, content)
         
-        # Extract outflow data (e.g., 人工智能 (-360.4亿))
-        outflow_pattern = r'([^,，:\s]+?)\s*\(-([0-9.]+)亿\)'
+        # Extract outflow data
+        outflow_pattern = r'([\u4e00-\u9fa5]+)\s*\(-([0-9.]+)亿\)'
         outflow_matches = re.findall(outflow_pattern, content)
         
-        inflow_sectors = [{'名称': name.strip(), '净额': float(val) * 1e8} for name, val in sector_matches[:3] if name.strip()]
-        outflow_sectors = [{'名称': name.strip(), '净额': -float(val) * 1e8} for name, val in outflow_matches[:3] if name.strip()]
+        inflow_sectors = [{'名称': name.strip(), '净额': float(val) * 1e8} for name, val in sector_matches if name.strip()][:3]
+        outflow_sectors = [{'名称': name.strip(), '净额': -float(val) * 1e8} for name, val in outflow_matches if name.strip()][:3]
         
         # Calculate net inflow
         net_inflow = sum(s['净额'] for s in inflow_sectors) + sum(s['净额'] for s in outflow_sectors)
@@ -489,7 +555,7 @@ def calculate_sentiment_index(market_data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any]) -> str:
+def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any], date_str: str = None) -> str:
     """Generate AI Prompt content"""
     idx = result['index']
     level = result['sentiment_level']
@@ -512,7 +578,15 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any])
     vol_today = market_data['volume']['today_volume'] / 1e8
     vol_yesterday = market_data['volume']['yesterday_volume'] / 1e8
     vol_change = market_data['volume']['change_pct']
-    vol_desc = f"放量{vol_change:.1f}%" if vol_change > 0 else f"缩量{abs(vol_change):.1f}%"
+    
+    if vol_today == 0:
+        vol_desc = "暂无数据 (接口异常)"
+        vol_change_desc = "数据缺失"
+        vol_trend_desc = "无法判断"
+    else:
+        vol_desc = f"放量{vol_change:.1f}%" if vol_change > 0 else f"缩量{abs(vol_change):.1f}%"
+        vol_change_desc = "红色" if vol_change > 5 else "绿色" if vol_change < -5 else "黄色"
+        vol_trend_desc = "成交额显著放大，市场活跃度提升" if vol_change > 10 else "成交额小幅放大" if vol_change > 0 else "缩量震荡，观望情绪浓厚" if vol_change > -10 else "成交额大幅萎缩，市场谨慎"
     
     # Conditional strings (避免f-string嵌套)
     idx_color = "红色粗体" if idx >= 70 else "橙色粗体" if idx >= 55 else "黄色粗体"
@@ -592,12 +666,25 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any])
 ### 5. 成交额 (Market Volume)
 - 今日成交: **{vol_today:.0f} 亿**
 - 昨日成交: **{vol_yesterday:.0f} 亿**
-- 对比昨日: **{vol_desc}** ({"红色" if vol_change > 5 else "绿色" if vol_change < -5 else "黄色"})
-- 说明: {"成交额显著放大，市场活跃度提升" if vol_change > 10 else "成交额小幅放大" if vol_change > 0 else "缩量震荡，观望情绪浓厚" if vol_change > -10 else "成交额大幅萎缩，市场谨慎"}
+- 对比昨日: **{vol_desc}** ({vol_change_desc})
+- 说明: {vol_trend_desc}
 
 ---
 """
     
+    # AI Trend Content
+    ai_trend_content = ""
+    if date_str:
+        try:
+            trend_path = os.path.join("results", date_str, "agent_outputs", "result_trend_summary.txt")
+            if os.path.exists(trend_path):
+                with open(trend_path, 'r', encoding='utf-8') as f:
+                    content = f.read().strip()
+                if content:
+                    ai_trend_content = f"\n> \n> {content}"
+        except Exception:
+            pass
+
     # Interpretation
     if idx >= 70 and net_inflow < -300:
         interpretation = f"虽然涨停家数领先，但资金净流出超{abs(net_inflow):.0f}亿且{vol_desc}，显示机构在高位减仓。短期谨防追高风险！"
@@ -605,14 +692,14 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any])
         interpretation = f"市场情绪偏乐观，{vol_desc}。但需关注资金流向变化。"
     else:
         interpretation = f"市场情绪谨慎，{vol_desc}，建议控制仓位。"
-    
+
     advice = "观望为主 | 严控仓位" if net_inflow < -300 else "逢低布局 | 控制仓位"
     risk = f"资金大幅流出{abs(net_inflow):.0f}亿且{vol_desc}" if net_inflow < -300 else f"指数{idx:.1f}，注意回调风险"
-    
+
     prompt += f"""
 ## 情绪解读 (手写体文字框)
-> **当前处于"{level}"区间{"，但需警惕！" if idx >= 70 and net_inflow < -300 else ""}**  
-> {interpretation}
+> **当前处于"{level}"区间{"，但需警惕！" if idx >= 70 and net_inflow < -300 else ""}**
+> {interpretation}{ai_trend_content}
 
 ---
 
@@ -688,7 +775,7 @@ def run_analysis(date_str: str = None) -> Dict[str, Any]:
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "市场情绪_Prompt.txt")
     
-    prompt_content = generate_prompt_content(result, market_data)
+    prompt_content = generate_prompt_content(result, market_data, date_s)
     
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(prompt_content)

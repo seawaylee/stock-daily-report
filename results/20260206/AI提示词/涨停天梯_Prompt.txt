@@ -1,0 +1,131 @@
+# 20260206 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**02月06日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+化学制品(6) | 专用设备(5) | 汽车零部(3) | 塑料制品(3) | 电网设备(3) | 光伏设备(2) | 中药(2) | 纺织服装(2)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 5板 (1只) - 1断板
+```
+  [X]民爆光电   
+    家电行业    
+
+```
+
+### 4板 (2只) - 1断板
+```
+    韩建河山      [X]京投发展   
+    水泥建材        房地产开    
+
+```
+
+### 3板 (7只) - 4断板
+```
+  [一字]凯龙高科      杭州解百        协鑫集成      [X]陕西黑猫   
+    汽车零部        商业百货        光伏设备        煤炭行业    
+
+  [X]坤彩科技     [X]兴民智通     [X]丰倍生物   
+    非金属材        汽车零部        化学制品    
+
+```
+
+### 2板 (4只)
+```
+  [一字]金富科技      皇庭国际        田中精机        神剑股份    
+    塑料制品        房地产服        专用设备        塑料制品    
+
+```
+
+### 首板 (47只)
+```
+    棒杰股份        南矿集团        联诚精密        积成电子        特一药业    
+    纺织服装        专用设备        汽车零部        电网设备         中药     
+
+    百川股份        三变科技        闰土股份        翔鹭钨业        金牛化工    
+    化学制品        电网设备        化学制品        小金属         化学原料    
+
+    德美化工        杉杉股份        百利科技        沧州大化        金龙汽车    
+    化学制品        电子元件        工程咨询        化学制品        汽车整车    
+
+    百合花         五洲新春        长江通信        天奇股份        百达精工    
+    化学制品        通用设备        通信设备        专用设备        通用设备    
+
+    众兴菌业        福莱新材        潮宏基         名雕股份        京华激光    
+    农牧饲渔        塑料制品        珠宝首饰        装修装饰        造纸印刷    
+
+    晋控电力        天际股份        正泰电源        海量数据        海翔药业    
+    电力行业         电池         光伏设备        软件开发        化学制药    
+
+    皖维高新        汉森制药        科森科技        鼎胜新材        数据港     
+    化纤行业         中药         消费电子        有色金属        互联网服    
+
+    协鑫能科        恩捷股份        科瑞技术        智立方         航民股份    
+    电力行业         电池         专用设备        专用设备        纺织服装    
+
+    三祥新材        银河电子        准油股份        完美世界        凯瑞德     
+    化学原料        通信设备        采掘行业         游戏         贸易行业    
+
+    杭电股份        洲际油气    
+    电网设备        石油行业    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 02月06日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "02月06日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 5板: 民爆光电 - highest streak
+- 化学制品 dominates with 6 stocks
+- Total 61 stocks (47 first-time + 14 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

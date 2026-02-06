@@ -5,10 +5,84 @@ import akshare as ak
 import pandas as pd
 from datetime import datetime, timedelta
 from tqdm import tqdm
-from typing import List, Optional
+from typing import List, Optional, Callable, Any
 import time
 import os
+import pickle
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+CACHE_DIR = "results/cache"
+os.makedirs(CACHE_DIR, exist_ok=True)
+
+def fetch_data_with_cache(
+    func: Callable,
+    cache_key: str,
+    date_str: str = None,
+    cache_type: str = 'pickle',
+    refresh: bool = False,
+    **kwargs
+) -> Any:
+    """
+    General purpose data fetching with caching support.
+
+    Args:
+        func: The data fetching function to execute
+        cache_key: Unique identifier for the cache file
+        date_str: Date string for versioning (default: today)
+        cache_type: 'pickle', 'csv', or 'parquet'
+        refresh: Force refresh data ignoring cache
+        **kwargs: Arguments to pass to func
+
+    Returns:
+        The data returned by func (or loaded from cache)
+    """
+    if date_str is None:
+        date_str = datetime.now().strftime("%Y%m%d")
+
+    # Create specific cache directory based on type/category if needed
+    # For now, put everything in results/cache
+
+    filename = f"{cache_key}_{date_str}.{cache_type}"
+    file_path = os.path.join(CACHE_DIR, filename)
+
+    if not refresh and os.path.exists(file_path):
+        try:
+            # print(f"Loading cached data: {file_path}")
+            if cache_type == 'pickle':
+                with open(file_path, 'rb') as f:
+                    return pickle.load(f)
+            elif cache_type == 'csv':
+                return pd.read_csv(file_path, dtype={'code': str})
+            elif cache_type == 'parquet':
+                return pd.read_parquet(file_path)
+        except Exception as e:
+            print(f"Error loading cache {file_path}: {e}")
+            # Fallthrough to fetch
+
+    # Fetch data
+    try:
+        data = func(**kwargs)
+
+        # Save cache if data is valid
+        if data is not None:
+            if isinstance(data, pd.DataFrame) and data.empty:
+                return data # Don't cache empty dataframe? Or maybe do?
+
+            try:
+                if cache_type == 'pickle':
+                    with open(file_path, 'wb') as f:
+                        pickle.dump(data, f)
+                elif cache_type == 'csv' and isinstance(data, pd.DataFrame):
+                    data.to_csv(file_path, index=False)
+                elif cache_type == 'parquet' and isinstance(data, pd.DataFrame):
+                    data.to_parquet(file_path)
+            except Exception as e:
+                print(f"Error saving cache {file_path}: {e}")
+
+        return data
+    except Exception as e:
+        print(f"Error fetching data for {cache_key}: {e}")
+        return None
 
 
 def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> pd.DataFrame:

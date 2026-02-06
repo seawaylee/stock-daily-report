@@ -1,0 +1,33 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (illustration), (vintage style), (surrealism)
+
+**SUBJECT**: A surreal conceptual illustration with CLEAR TEXT.
+
+**HEADER TEXT**:
+- At the top of the image, elegantly integrate the text "**能动未来**".
+- **Font Style**: **Artistic Chinese Calligraphy** (But CLEAR and LEGIBLE).
+- **BACKGROUND for Text**: Place the text on a **Red Ink Grunge** or **Paint Brush Stroke** background.
+- **Text Color**: **Gold or White**, High Contrast for readability.
+
+1. **THE GIANTS (Top Inflow Sectors)**:
+   Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center. (NON-HUMANOID)
+   - **CENTER**: Object for **"电池"**. Label: "**电池**" (Black Bold Ink) & "+92.6亿" (Red).
+   - **LEFT**: Object for **"工业金属"**. Label: "**工业金属**" (Black Bold) & "+46.3亿".
+   - **RIGHT**: Object for **"化学制品"**. Label: "**化学制品**" (Black Bold) & "+46.0亿".
+
+2. **THE WORSHIPPERS (Top Outflow Sectors)**:
+   In the **FOREGROUND**, a group of **LARGE** figures (pilgrims) with their backs facing the viewer.
+   - **POSES**: **Varying kneeling and bowing poses**. Some slumped forward, some upright, some prostrate. **Chaotic and non-uniform arrangement**.
+   - **BACK LABELS**: The text on their backs must be **LARGE, CLEAR and LEGIBLE**.
+   - **Label Styling**: **Varying Font Sizes**. Larger losses (e.g. -300亿) should have **LARGER TEXT**.
+   - **Labels**: 半导体 (-48.0亿), 军工装备 (-41.2亿), 零售 (-31.1亿), 证券 (-28.5亿), 软件开发 (-26.1亿), 白酒 (-23.9亿), 军工电子 (-23.3亿), 建筑装饰 (-17.2亿), 文化传媒 (-16.0亿), 中药 (-13.5亿)
+   - **Style**: **Hand-written Style but Clean**.
+   - **TEXT COLOR - Name**: **Bright Glowing White** (High Visibility).
+   - **TEXT COLOR - Number**: **Light Green / Pastel Green** (Clear distinction).
+   - **Text Quality**: (perfect text:1.4), (correct chinese characters:1.2).
+
+**ART STYLE**: 
+- **Vintage Hand-drawn Illustration**: Warm paper texture background, ink lines, watercolor washes.
+- **Atmosphere**: Epic, religious scale, slightly dystopian but artistic.
+- **Colors**: Sepia, warm brown, faded red (giants), dull green/grey (worshippers).
+
+(Optimized for Nano Banana Pro: Vintage Art Style + Clear Text enforcement)

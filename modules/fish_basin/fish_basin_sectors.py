@@ -180,16 +180,17 @@ def fetch_data_router(item):
             df = df[df['date'] >= pd.to_datetime(start_date)]
             
             # Alias logic: If alias exists, rename for output
+            display_name = name
             if 'alias' in item:
-                return item['alias'], code, df, turnover
-                
-            return name, code, df, turnover
+                display_name = item['alias']
+
+            return display_name, code, df, turnover, name # Return original name at the end
 
     except Exception as e:
         # print(f"Error fetching {name}: {e}")
         pass
-        
-    return name, code, None, 0
+
+    return name, code, None, 0, name # Return original name
 
 def fetch_industry_data(name, code):
     """
@@ -425,10 +426,10 @@ def run(date_dir=None, save_excel=True):
         for future in concurrent.futures.as_completed(futures):
             item = futures[future]
             try:
-                name, code, df, turnover = future.result()
+                name, code, df, turnover, original_name = future.result()
                 if df is not None and not df.empty:
                     processed_results.append({
-                        'name': name, 'code': code, 'df': df, 'turnover': turnover
+                        'name': name, 'code': code, 'df': df, 'turnover': turnover, 'original_name': original_name
                     })
                     successful_config_names.add(item['name']) # Track by CONFIG name
                 # else: logic handles as missing implicitly
@@ -450,11 +451,11 @@ def run(date_dir=None, save_excel=True):
                 try:
                     # Sequential Retry
                     time.sleep(1.0) # Delay
-                    name, code, df, turnover = fetch_data_router(item)
+                    name, code, df, turnover, original_name = fetch_data_router(item)
                     if df is not None and not df.empty:
                         print(f"✅ Retry success: {name}")
                         processed_results.append({
-                            'name': name, 'code': code, 'df': df, 'turnover': turnover
+                            'name': name, 'code': code, 'df': df, 'turnover': turnover, 'original_name': original_name
                         })
                     else:
                         still_missing.append(item)
@@ -496,10 +497,12 @@ def run(date_dir=None, save_excel=True):
         name = item['name']
         code = item['code']
         df = item['df']
-        
+        original_name = item.get('original_name', name)
+
         # --- Apply Spot Patch ---
-        df = patch_today_spot(df, name, spot_map)
-        
+        # Use ORIGINAL NAME for spot lookup (e.g. "工业金属" not "有色金属")
+        df = patch_today_spot(df, original_name, spot_map)
+
         # Fish Basin Logic
         close = df['close']
         

@@ -1,0 +1,39 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (markers marker sketch), (hand drawn), (vivid colors)
+
+A TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN MARKER SKETCH style poster for tomorrow's market events.
+
+**DESIGN STYLE:**
+- **Visuals**: Authentic Marker / Felt-tip pen sketch. Not digital vector.
+- **Color Palette**: VIVID and COLORFUL. Use Bright Hyacinth Blue, Golden Yellow, and Energetic Orange markers on paper.
+- **Background**: Textured Sketchbook Paper (#FAF3E3).
+- **Layout**: Clean, spacious, and organized blocks. Hand-written font style.
+
+**HEADER:**
+- Title: "明日A股日历"
+- Date: "02月07日 Saturday" (Large Typography)
+- Visual: A dynamic rising sun or clock icon.
+
+**CONTENT BLOCKS (Keep Text Concise):**
+
+### 1. 📢 宏观/消息 (Macro & News)
+暂无具体宏观事件，关注盘前消息
+
+
+### 2. 📊 核心板块 (Focus Sectors)
+- **金融**:  人民银行上海总部召开2026年上海市跨境业务工作会议。会议指出，2025年，在各方共同努力下，上海跨境业务实现量质齐...
+- **地产**:  因地制宜推进城市有机更新 加快建设安全、舒适、绿色、智慧的“好房子”深圳市举行城市更新工作现场推进会。会议指出，要深...
+
+
+### 3. 💰 新股与停复牌 (IPO & Market)
+- **新股申购**: 无
+- **新股上市**: 无
+- **停/复牌**: 详见列表
+
+### 4. 📢 重点关注 (Key Watch)
+- 晚间公告与业绩披露
+
+**FOOTER:**
+- **Slogan**: "关注宏观落地与板块轮动"
+- **Note**: "每日盘前更新"
+
+(Render text clearly. Use engaging icons for each section. Make it POP!)

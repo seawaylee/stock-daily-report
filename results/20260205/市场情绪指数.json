@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-02-05 15:39:39",
+  "index": 47.9,
+  "sentiment_level": "中性",
+  "score_breakdown": {
+    "market_breadth": 7.37,
+    "indices_trend": -3.99,
+    "news_sentiment": 4.53,
+    "money_flow": -10
+  }
+}
