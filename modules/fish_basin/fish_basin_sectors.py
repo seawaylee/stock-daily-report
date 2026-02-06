@@ -614,17 +614,25 @@ def run(date_dir=None, save_excel=True):
             for days_back in range(1, 8):
                 prev_date = (today - timedelta(days=days_back)).strftime('%Y%m%d')
                 
-                # Check Merged first, then Individual
-                merged_prev = f"results/{prev_date}/趋势模型_合并.xlsx"
+                # Check Individual file FIRST (More reliable for same-type comparison)
                 old_prev = f"results/{prev_date}/趋势模型_题材.xlsx"
+                merged_prev = f"results/{prev_date}/趋势模型_合并.xlsx"
                 prev_df = None
-                
-                if os.path.exists(merged_prev):
-                    try: prev_df = pd.read_excel(merged_prev, sheet_name='题材')
+
+                if os.path.exists(old_prev):
+                    try:
+                        prev_df = pd.read_excel(old_prev)
+                        # print(f"Comparing ranks with previous file: {old_prev}")
                     except: pass
-                
-                if prev_df is None and os.path.exists(old_prev):
-                    prev_df = pd.read_excel(old_prev)
+
+                if prev_df is None and os.path.exists(merged_prev):
+                    try:
+                        prev_df = pd.read_excel(merged_prev, sheet_name='题材')
+                    except:
+                        try:
+                            # Fallback to default sheet if '题材' missing
+                            prev_df = pd.read_excel(merged_prev)
+                        except: pass
                 
                 if prev_df is not None:
                     if '名称' in prev_df.columns:
