@@ -17,13 +17,16 @@ MODEL_NAME = "gpt-3.5-turbo"
 
 # 豆包 TTS 配置
 DOUBAO_API_URL = "https://openspeech.bytedance.com/api/v3/tts/unidirectional"
-DOUBAO_API_KEY = "99407c21-4a41-4050-8557-78160150380c"
+DOUBAO_ACCESS_TOKEN = "uwHZD-4b-MVOCJYL6kS4iq-hxk2cVG9Q"
+DOUBAO_APP_ID = "1946894207"
+DOUBAO_RESOURCE_ID = "seed-tts-2.0"
 CLUSTER = "volcano_tts"
-SPEED_RATIO = 1.3  # 语速: 1.0正常, 1.5为提速50%
+SPEED_RATIO = 1.1  # 语速调整：1.1 (适中偏快)
 
 # 角色声音配置 (豆包 Voice Type)
+# M191 男声电台 (Upgrade from Horoscope project)
 VOICE_MAPPING = {
-    "Host": "zh_male_sunwukong_mars_bigtts",
+    "Host": "zh_male_m191_uranus_bigtts",
     "Guest": "zh_female_zhixingnvsheng_mars_bigtts"
 }
 # ===========================================
@@ -86,49 +89,41 @@ async def generate_script(text, script_file):
 async def generate_audio_segment_doubao(text, role, index, temp_dir):
     """使用豆包 API 生成单个音频片段"""
     # 按照用户要求，强制使用指定的音色ID，或者根据角色映射
-    # 用户提示：音色id是zh_male_sunwukong_mars_bigtts
-    # 之前的代码中 Host 已经是这个ID了。
-    voice_type = VOICE_MAPPING.get(role, "zh_male_sunwukong_mars_bigtts")
+    voice_type = VOICE_MAPPING.get(role, "zh_male_m191_uranus_bigtts")
 
     output_path = os.path.join(temp_dir, f"{index:03d}_{role}.mp3")
     req_id = str(uuid.uuid4())
 
-    # 构建基于 req_params 的 payload (参考 curl 示例)
+    # 构建基于 req_params 的 payload (升级为 seed-tts-2.0 格式)
     payload = {
         "req_params": {
             "text": text,
             "speaker": voice_type,
             "additions": json.dumps({
-                "disable_markdown_filter": True,
+                "disable_markdown_filter": False,
                 "enable_language_detector": True,
                 "enable_latex_tn": True,
                 "disable_default_bit_rate": True,
                 "max_length_to_filter_parenthesis": 0,
-                "cache_config": {
-                    "text_type": 1,
-                    "use_cache": True
-                }
+                "cache_config": {"text_type": 1, "use_cache": True}
             }),
             "audio_params": {
                 "format": "mp3",
                 "sample_rate": 24000,
-                "speed_ratio": int(SPEED_RATIO * 10) if SPEED_RATIO != 1.0 else 10 # 这里的 speed_ratio通常是整数? 不，API定义不一致。
-                # 查阅常见文档，unidirectional 接口 audio_params 中 speed_ratio 可能是 float 0.2-3.0
-                # 但 curl 示例中没有 speed_ratio。
-                # 为了保险，我们保留 float，如果报错再调整。
-                # 还是参考之前的 payload 结构，之前的 speed_ratio 是 float。
+                "speed_ratio": SPEED_RATIO,
+                "volume_ratio": 1.0,
+                "pitch_ratio": 1.0,
+                # "emotion": "story"  # 股票财经类不使用story情感，使用默认以保持专业感
             }
         }
     }
 
-    # 修正：根据 curl 示例，audio_params 在 req_params 内部
-    # 尝试将 speed_ratio 加入 audio_params，如果不生效可能需要其他字段
-    payload["req_params"]["audio_params"]["speed_ratio"] = SPEED_RATIO
-
     headers = {
-        "x-api-key": DOUBAO_API_KEY,
-        "X-Api-Resource-Id": "volc.service_type.10029",
-        "Content-Type": "application/json"
+        "X-Api-Access-Key": DOUBAO_ACCESS_TOKEN,
+        "X-Api-Resource-Id": DOUBAO_RESOURCE_ID,
+        "X-Api-App-Key": DOUBAO_APP_ID,
+        "Content-Type": "application/json",
+        "Connection": "keep-alive"
     }
 
     async with httpx.AsyncClient() as client:
