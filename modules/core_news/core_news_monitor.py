@@ -12,10 +12,71 @@ from datetime import datetime, timedelta
 import os
 import re
 import time
+import sys
+
+# Add project root to path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from common.image_generator import generate_image_from_text
+from common.pipeline_utils import run_full_media_pipeline
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
+
+def get_raw_image_prompt_daily(date_disp):
+    """Generate raw English prompt for Daily News cover"""
+    prompt = (
+        f"Hand-drawn financial infographic poster, China A-share market news, 24h summary {date_disp}. "
+        f"Style: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts. "
+        f"Visual elements: Newspaper clippings, red upward arrows for bullish news, green downward arrows for bearish news. "
+        f"Layout: 9:16 vertical, title 'A股24小时重要资讯'. "
+        f"Atmosphere: Professional, informative, vintage media style. "
+        f"--ar 9:16 --style raw --v 6"
+    )
+    return prompt
+
+def get_raw_image_prompt_weekly():
+    """Generate raw English prompt for Weekly News cover"""
+    prompt = (
+        f"Hand-drawn financial infographic poster, China A-share weekly summary. "
+        f"Style: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts. "
+        f"Visual elements: Weekly calendar pages, stacked documents, trend lines. "
+        f"Layout: 9:16 vertical, title 'A股本周重要回顾'. "
+        f"Atmosphere: Comprehensive, summary style. "
+        f"--ar 9:16 --style raw --v 6"
+    )
+    return prompt
+
+def generate_podcast_text(news_list, is_weekly=False):
+    """Generate podcast script from news list"""
+    date_str = datetime.now().strftime("%m月%d日")
+    title = "本周A股核心回顾" if is_weekly else f"{date_str} A股24小时要闻精选"
+
+    text = f"""大家好，我是量化小万。现在为您播报{title}。
+
+"""
+
+    count = 1
+    for item in news_list:
+        # Item format: "[10:30]【利多·半导体】 标题..."
+        # Extract title part
+        try:
+            # Remove timestamp and tags for reading
+            # Simple regex to remove [...]...】
+            clean_content = re.sub(r'^\[.*?\]【.*?】\s*', '', item)
+
+            # If extraction fails, use original
+            content = clean_content if clean_content else item
+
+            text += f"第{count}条：{content}。\n"
+            count += 1
+        except:
+            continue
+
+    text += """
+以上就是今天的重点资讯，感谢收听，我们下期再见。
+"""
+    return text
 
 def fetch_eastmoney_data(target_window_hours=24):
     """Fetch 7x24 news from EastMoney until target window covered"""
@@ -334,17 +395,63 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
 - Footer: "Like & Follow".
 """
     save_prompt(daily_content, "核心要闻_Prompt.txt", output_dir)
-    
+
+    # --- New: Automate Podcast Text Generation (Daily) ---
+    podcast_dir = os.path.join(output_dir, "../podcast_inputs") # Save to daily root podcast_inputs
+    os.makedirs(podcast_dir, exist_ok=True)
+    podcast_text = generate_podcast_text(daily_top, is_weekly=False)
+    podcast_file = os.path.join(podcast_dir, "core_news_daily.txt")
+    with open(podcast_file, 'w', encoding='utf-8') as f:
+        f.write(podcast_text)
+    print(f"🎙️ Podcast text saved to: {podcast_file}")
+
+    # --- New: Automate Image Generation (Daily) ---
+    raw_prompt_daily = get_raw_image_prompt_daily(date_disp)
+    image_dir = os.path.join(output_dir, "../images") # Save to daily root images
+    os.makedirs(image_dir, exist_ok=True)
+    image_path_daily = os.path.join(image_dir, "core_news_daily_cover.png")
+
+    print("\n🎨 Generating Daily News Cover Image...")
+    generate_image_from_text(raw_prompt_daily, image_path_daily)
+
+    # --- New: Full Media Pipeline (Audio + Video) ---
+    # Determine daily output dir relative to output_dir (results/YYYYMMDD)
+    # output_dir passed to run is usually results/YYYYMMDD
+    # But wait, save_prompt uses output_dir/AI提示词.
+    # So output_dir is indeed the daily root.
+    # My previous edits for podcast_dir used os.path.join(output_dir, "../podcast_inputs").
+    # If output_dir is "results/20260207", then "../podcast_inputs" is "results/podcast_inputs".
+    # That might be wrong. Let's assume output_dir is "results/20260207".
+    # Let's fix the paths to be inside the daily directory.
+
+    # Correcting paths logic assuming output_dir is "results/YYYYMMDD"
+    podcast_dir = os.path.join(output_dir, "podcast_inputs")
+    os.makedirs(podcast_dir, exist_ok=True)
+    podcast_file = os.path.join(podcast_dir, "core_news_daily.txt")
+
+    # Re-saving podcast text with correct path
+    with open(podcast_file, 'w', encoding='utf-8') as f:
+        f.write(podcast_text)
+
+    image_dir = os.path.join(output_dir, "images")
+    os.makedirs(image_dir, exist_ok=True)
+    image_path_daily = os.path.join(image_dir, "core_news_daily_cover.png")
+
+    # We already generated the image, just need to ensure path consistency if I changed it above.
+    # Let's run the pipeline.
+    run_full_media_pipeline(podcast_file, image_path_daily, output_dir, "core_news_daily")
+
+
     # 2. Weekly Summary
     if run_weekly:
         print("Generating Weekly Summary...")
         weekly_data = fetch_eastmoney_data(target_window_hours=168)
         weekly_top, w_bull, w_bear = filter_top_news(weekly_data, limit=10, is_weekly=True)
-        
+
         weekly_txt = "\n".join([f"- {news}" for news in weekly_top])
         w_bull_str = "、".join(w_bull) if w_bull else "无"
         w_bear_str = "、".join(w_bear) if w_bear else "无"
-        
+
         weekly_content = f"""# A股本周核心回顾 - AI绘图Prompt
 # 数据来源: 东方财富 (7天 Top 10)
 
@@ -385,3 +492,20 @@ Hand-drawn financial infographic poster, China A-share weekly summary.
 - Footer: "Like & Follow".
 """
         save_prompt(weekly_content, "周刊/本周要闻_Prompt.txt", output_dir)
+
+        # --- New: Automate Podcast Text Generation (Weekly) ---
+        podcast_text_weekly = generate_podcast_text(weekly_top, is_weekly=True)
+        podcast_file_weekly = os.path.join(podcast_dir, "core_news_weekly.txt")
+        with open(podcast_file_weekly, 'w', encoding='utf-8') as f:
+            f.write(podcast_text_weekly)
+        print(f"🎙️ Podcast text saved to: {podcast_file_weekly}")
+
+        # --- New: Automate Image Generation (Weekly) ---
+        raw_prompt_weekly = get_raw_image_prompt_weekly()
+        image_path_weekly = os.path.join(image_dir, "core_news_weekly_cover.png")
+
+        print("\n🎨 Generating Weekly News Cover Image...")
+        generate_image_from_text(raw_prompt_weekly, image_path_weekly)
+
+        # --- New: Full Media Pipeline (Weekly) ---
+        run_full_media_pipeline(podcast_file_weekly, image_path_weekly, output_dir, "core_news_weekly")

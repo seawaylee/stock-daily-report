@@ -10,10 +10,10 @@ from typing import Dict, Any
 def generate_analysis_prompt(sentiment_result: Dict[str, Any]) -> str:
     """
     Generate a prompt for LLM to write the market sentiment analysis report.
-    
+
     Args:
         sentiment_result: Result from calculate_sentiment_index()
-    
+
     Returns:
         Formatted prompt string
     """
@@ -21,18 +21,18 @@ def generate_analysis_prompt(sentiment_result: Dict[str, Any]) -> str:
     sentiment_level = sentiment_result['sentiment_level']
     scores = sentiment_result['score_breakdown']
     raw_data = sentiment_result['raw_data']
-    
+
     # Format indices data
     indices_text = "\n".join([
         f"- {name}: {change:+.2f}%"
         for name, change in raw_data['indices'].items()
     ])
-    
+
     # Format news data
     news = raw_data['news_sentiment']
     bullish_news = "\n".join([f"  • {n}" for n in news['bullish_news']]) or "  无"
     bearish_news = "\n".join([f"  • {n}" for n in news['bearish_news']]) or "  无"
-    
+
     # Format sector flow
     sectors = raw_data['sector_flow']
     inflow_text = "\n".join([
@@ -43,7 +43,7 @@ def generate_analysis_prompt(sentiment_result: Dict[str, Any]) -> str:
         f"  • {s['名称']}: {s['净额']/1e8:.2f}亿"
         for s in sectors['outflow_sectors']
     ]) or "  无数据"
-    
+
     prompt = f"""# 市场情绪分析报告 - {datetime.now().strftime("%Y年%m月%d日")}
 
 ## 任务说明
@@ -134,58 +134,113 @@ def generate_analysis_prompt(sentiment_result: Dict[str, Any]) -> str:
 
 请开始撰写报告。
 """
-    
+
+    return prompt
+
+
+def get_raw_image_prompt(sentiment_result: Dict[str, Any]) -> str:
+    """
+    Generate the raw English prompt for image generation.
+    """
+    index_value = sentiment_result['index']
+    sentiment_level = sentiment_result['sentiment_level']
+    color = sentiment_result['color']
+
+    # Try to get top sector for visual elements (simple mapping)
+    # This adds variety based on market data
+    visual_extras = ""
+    try:
+        raw_data = sentiment_result.get('raw_data', {})
+        sectors = raw_data.get('sector_flow', {}).get('inflow_sectors', [])
+        if sectors:
+            top_sector = sectors[0]['名称']
+            # Simple keyword mapping for common sectors
+            sector_map = {
+                "半导体": "circuit board patterns, microchip details",
+                "电子": "electronic components sketches",
+                "计算机": "binary code background elements",
+                "新能源": "solar panel sketches, lightning bolts",
+                "光伏": "sun ray patterns",
+                "电池": "energy symbols",
+                "医药": "medical cross symbols, herb sketches",
+                "医疗": "DNA helix sketches",
+                "白酒": "vintage wine bottle contours",
+                "食品": "wheat patterns",
+                "银行": "coin stacks sketches, vault door details",
+                "证券": "candlestick chart patterns",
+                "地产": "building blueprints",
+                "汽车": "gear mechanical parts"
+            }
+            # Find matching keyword
+            for key, val in sector_map.items():
+                if key in top_sector:
+                    visual_extras = f", {val} blended in background"
+                    break
+    except:
+        pass
+
+    # Map color to visual elements
+    color_themes = {
+        "red": {
+            "atmosphere": "fiery red tones, burning background",
+            "mood": "frenzy, excitement",
+            "elements": "rising arrows, flames, scattering sparks"
+        },
+        "orange": {
+            "atmosphere": "warm orange tones, bright background",
+            "mood": "optimistic, positive",
+            "elements": "upward curves, warm light rays, blooming flowers sketches"
+        },
+        "yellow": {
+            "atmosphere": "neutral yellow tones, balanced composition",
+            "mood": "calm, waiting",
+            "elements": "horizontal lines, balanced scales, pendulum"
+        },
+        "blue": {
+            "atmosphere": "cool blue tones, calm background",
+            "mood": "cautious, worried",
+            "elements": "falling curves, cool shadows, rain streaks"
+        },
+        "dark_blue": {
+            "atmosphere": "deep cold blue tones, icy background",
+            "mood": "panic, extreme pessimism",
+            "elements": "downward arrows, ice crystals, frost textures, cracked ground"
+        }
+    }
+
+    theme = color_themes.get(color, color_themes["yellow"])
+
+    prompt = (
+        f"A vintage hand-drawn illustration of a sentiment gauge for stock market analysis, "
+        f"{theme['atmosphere']}, aged paper texture, ink sketch style. "
+        f"The gauge needle is pointing to {index_value} on a scale of 0 to 100, indicating '{sentiment_level}'. "
+        f"Visual elements: {theme['elements']}{visual_extras}. "
+        f"Visual style: antique scientific instrument, da vinci sketch, detailed, {theme['mood']} atmosphere. "
+        f"--ar 9:16 --style raw --v 6"
+    )
     return prompt
 
 
 def generate_image_prompt(sentiment_result: Dict[str, Any]) -> str:
     """
-    Generate a prompt for AI image generation (Midjourney/Stable Diffusion).
-    
-    Args:
-        sentiment_result: Result from calculate_sentiment_index()
-    
-    Returns:
-        Image generation prompt string
+    Generate a formatted prompt file content for AI image generation (Midjourney/Stable Diffusion).
     """
     index_value = sentiment_result['index']
     sentiment_level = sentiment_result['sentiment_level']
     color = sentiment_result['color']
-    
-    # Map color to visual elements
-    color_themes = {
-        "red": {
-            "atmosphere": "火红色调，炽热的背景，火焰元素",
-            "mood": "狂热、兴奋",
-            "elements": "上升的箭头、火焰、红色渐变"
-        },
-        "orange": {
-            "atmosphere": "橙黄色调，温暖的背景",
-            "mood": "乐观、积极",
-            "elements": "向上的曲线、暖色光芒"
-        },
-        "yellow": {
-            "atmosphere": "中性色调，平衡的构图",
-            "mood": "平静、观望",
-            "elements": "水平线、平衡的天平"
-        },
-        "blue": {
-            "atmosphere": "冷蓝色调，冷静的背景",
-            "mood": "谨慎、担忧",
-            "elements": "下降的曲线、冷色调阴影"
-        },
-        "dark_blue": {
-            "atmosphere": "深蓝冰冷色调，寒冷的背景，冰霜元素",
-            "mood": "恐慌、极度悲观",
-            "elements": "下坠的箭头、冰晶、深蓝渐变"
-        }
+
+    raw_prompt = get_raw_image_prompt(sentiment_result)
+
+    # Map color to visual elements (Chinese for display)
+    color_themes_cn = {
+        "red": "火红色调，炽热的背景",
+        "orange": "橙黄色调，温暖的背景",
+        "yellow": "中性色调，平衡的构图",
+        "blue": "冷蓝色调，冷静的背景",
+        "dark_blue": "深蓝冰冷色调，寒冷的背景"
     }
-    
-    theme = color_themes.get(color, color_themes["yellow"])
-    
-    # Determine pointer position (0-100 mapped to gauge arc)
-    position_desc = f"指针指向{index_value}刻度位置"
-    
+    theme_cn = color_themes_cn.get(color, "中性色调")
+
     prompt = f"""# AI绘图提示词 - 市场贪婪恐惧指数可视化
 
 **风格要求**: 复古手绘风格，保持项目视觉一致性
@@ -194,13 +249,13 @@ def generate_image_prompt(sentiment_result: Dict[str, Any]) -> str:
 
 ## Midjourney / Stable Diffusion Prompt
 
-A vintage hand-drawn illustration of a sentiment gauge/thermometer for stock market analysis, {theme['atmosphere']}, aged paper texture, ink sketch style --ar 16:9 --style raw --v 6
+{raw_prompt}
 
 **主题**: 市场情绪温度计/仪表盘
 
 **核心元素**:
 - 一个半圆形或垂直的复古仪表盘，刻度从0到100
-- {position_desc}，当前指向"{sentiment_level}"区域
+- 指针指向{index_value}刻度位置，当前指向"{sentiment_level}"区域
 - 仪表盘分区标注：
   - 0-30: 极度恐惧 (深蓝色)
   - 30-45: 恐惧 (蓝色)
@@ -211,53 +266,19 @@ A vintage hand-drawn illustration of a sentiment gauge/thermometer for stock mar
 **视觉风格**:
 - 手绘墨水线条，复古铜版画质感
 - 泛黄的纸张背景，边缘有岁月痕迹
-- {theme['atmosphere']}
-- 情绪氛围：{theme['mood']}
-- 装饰元素：{theme['elements']}
+- {theme_cn}
 
-**文字信息** (嵌入画面):
-- 标题："A股市场情绪指数" (中文书法字体或复古英文)
+**文字信息** (建议后期PS添加):
+- 标题："A股市场情绪指数"
 - 日期：{datetime.now().strftime("%Y.%m.%d")}
 - 指数值：{index_value}/100
-- 情绪等级：{sentiment_level}
-
-**构图**:
-- 主体居中，仪表盘占画面60%
-- 背景使用{theme['elements']}烘托氛围
-- 四角可添加复古装饰框或印章元素
-
-**禁止元素**:
-- 现代感设计、光滑渐变
-- 3D渲染效果
-- 过于写实的照片风格
-- 卡通或可爱风格
-
----
-
-## 中文提示词 (适用于国内AI绘图工具)
-
-复古手绘风格的股市情绪仪表盘插画，{theme['atmosphere']}，泛黄纸张质感，墨水线稿风格，16:9画幅
-
-**画面描述**:
-一个精美的半圆形情绪指数表盘，刻度清晰标注0-100，指针指向{index_value}位置({sentiment_level}区域)。表盘分为五个色区：深蓝(极度恐惧)、蓝色(恐惧)、黄色(中性)、橙色(贪婪)、红色(极度贪婪)。
-
-整体采用{theme['atmosphere']}，营造{theme['mood']}的情绪氛围。画面使用手绘铜版画技法，复古墨水线条，泛黄羊皮纸背景。
-
-装饰元素包括：{theme['elements']}，四周点缀复古花纹边框。
-
-画面顶部书法标题"市场情绪指数"，底部标注日期"{datetime.now().strftime("%Y年%m月%d日")}"和数值"{index_value}/100 - {sentiment_level}"。
-
-**风格参考**: 19世纪科学仪器插图、复古股票行情图、航海图表美学
 
 ---
 
 ## 使用说明
-1. 将上述英文prompt复制到Midjourney或Stable Diffusion
-2. 或使用中文提示词在国内AI绘图平台（如文心一格、通义万相）
-3. 根据生成效果微调参数，保持与项目其他模块的视觉一致性
-4. 推荐尺寸：1920x1080 或 1600x900
+1. 复制英文Prompt到绘图工具
+2. 推荐尺寸：1024x1792 (9:16)
 """
-    
     return prompt
 
 
@@ -346,7 +367,7 @@ if __name__ == "__main__":
             }
         }
     }
-    
+
     print("=== Analysis Prompt ===")
     print(generate_analysis_prompt(test_result))
     print("\n" + "="*80 + "\n")

@@ -9,9 +9,55 @@ import os
 from datetime import datetime
 from collections import Counter
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from limit_up_ladder import get_limit_up_data, repair_board_counts, process_ladder_data
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) # Add project root
+from modules.market_ladder.limit_up_ladder import get_limit_up_data, repair_board_counts, process_ladder_data
+from common.image_generator import generate_image_from_text
+from common.pipeline_utils import run_full_media_pipeline
 
+def get_raw_image_prompt(date_str):
+    display_date = f"{date_str[4:6]}月{date_str[6:8]}日"
+    prompt = (
+        f"Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, {display_date}. "
+        f"Style: Warm cream paper texture, vintage notebook aesthetic, handwritten Chinese fonts. "
+        f"Visual elements: Ladder structure table, red tags for limit-up stocks, hot sectors list. "
+        f"Layout: 9:16 vertical, title '{display_date} A股涨停复盘'. "
+        f"Atmosphere: Professional, detailed financial analysis. "
+        f"--ar 9:16 --style raw --v 6"
+    )
+    return prompt
+
+def generate_podcast_text(date_str, ladder, top_inds):
+    """
+    生成播客文稿
+    """
+    display_date = f"{date_str[4:6]}月{date_str[6:8]}日"
+
+    # Statistics
+    total_stocks = sum(len(items) for items in ladder.values())
+    first_board = len(ladder.get(1, []))
+    lian_board = total_stocks - first_board
+
+    highest_board = max(ladder.keys()) if ladder else 0
+    highest_stock = ladder[highest_board][0]['name'] if ladder and ladder.get(highest_board) else "无"
+
+    text = f"""大家好，我是量化小万。今天是{display_date}，为您带来A股涨停天梯复盘。
+
+首先来看整体数据：今天全市场共有{total_stocks}只涨停股。其中，首板{first_board}只，连板股{lian_board}只。
+
+高度方面，今天的最高板是{highest_board}板，由{highest_stock}领衔。
+
+题材热度方面，排名前三的板块分别是：
+"""
+
+    for i, (ind, cnt) in enumerate(top_inds[:3]):
+        text += f"第{i+1}名，{ind}，共有{cnt}只涨停。\n"
+
+    text += f"""
+值得注意的是，市场的高标股表现往往代表了短线资金的风向，建议投资者密切关注{highest_stock}及其所在板块的持续性。
+
+以上就是今天的涨停复盘，我们下期再见。
+"""
+    return text
 
 def run(date_str=None, output_dir=None):
     """
@@ -21,34 +67,27 @@ def run(date_str=None, output_dir=None):
 
 def generate_ladder_prompt(date_str=None, output_dir=None):
     """
-    生成涨停阶梯的AI绘图Prompt
-    
-    Args:
-        date_str: 日期字符串 YYYYMMDD，默认今天
-        output_dir: 输出目录，默认 results/{date_str}/
-    
-    Returns:
-        生成的prompt文件路径
+    生成涨停阶梯的AI绘图Prompt + 播客文稿 + 自动生图
     """
     if date_str is None:
         date_str = datetime.now().strftime('%Y%m%d')
-    
+
     if output_dir is None:
         output_dir = f"results/{date_str}"
-    
+
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # 获取数据
     print(f"正在获取 {date_str} 涨停数据...")
     df_zt, df_fried, df_prev = get_limit_up_data(date_str)
-    
+
     if df_zt is None:
         print("无法获取数据")
         return None
-    
+
     df_zt = repair_board_counts(df_zt, date_str)
     ladder = process_ladder_data(df_zt, df_fried, df_prev)
-    
+
     # 统计题材
     all_industries = []
     for items in ladder.values():
@@ -57,11 +96,11 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
             if ind and ind != '--':
                 all_industries.append(ind)
     top_inds = Counter(all_industries).most_common(8)
-    
+
     # 格式化日期显示
     display_date = f"{date_str[4:6]}月{date_str[6:8]}日"
-    
-    # 生成prompt内容
+
+    # 生成prompt内容 (Markdown)
     prompt_lines = []
     prompt_lines.append(f"# {date_str} A股涨停阶梯 - AI绘图Prompt (完整数据)")
     prompt_lines.append("")
@@ -219,8 +258,31 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     output_path = os.path.join(prompt_dir, "涨停天梯_Prompt.txt")
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(prompt_lines))
-    
+
     print(f"Prompt已生成: {output_path}")
+
+    # --- New: Automate Podcast Text Generation ---
+    podcast_dir = os.path.join(output_dir, "podcast_inputs")
+    os.makedirs(podcast_dir, exist_ok=True)
+    podcast_text = generate_podcast_text(date_str, ladder, top_inds)
+    podcast_file = os.path.join(podcast_dir, "market_ladder.txt")
+    with open(podcast_file, 'w', encoding='utf-8') as f:
+        f.write(podcast_text)
+    print(f"🎙️ Podcast text saved to: {podcast_file}")
+
+    # --- New: Automate Image Generation ---
+    raw_prompt = get_raw_image_prompt(date_str)
+    image_dir = os.path.join(output_dir, "images")
+    os.makedirs(image_dir, exist_ok=True)
+    image_path = os.path.join(image_dir, "market_ladder_cover.png")
+
+    print("\n🎨 Generating Market Ladder Cover Image...")
+    generate_image_from_text(raw_prompt, image_path)
+
+    # --- New: Full Media Pipeline (Audio + Video) ---
+    # We use the podcast text file and the generated image
+    run_full_media_pipeline(podcast_file, image_path, output_dir, "market_ladder")
+
     return output_path
 
 

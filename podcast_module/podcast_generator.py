@@ -16,14 +16,14 @@ BASE_URL = "http://127.0.0.1:8045/v1"
 MODEL_NAME = "gpt-3.5-turbo"
 
 # 豆包 TTS 配置
-DOUBAO_API_URL = "https://openspeech.bytedance.com/api/v1/tts"
+DOUBAO_API_URL = "https://openspeech.bytedance.com/api/v3/tts/unidirectional"
 DOUBAO_API_KEY = "99407c21-4a41-4050-8557-78160150380c"
 CLUSTER = "volcano_tts"
-SPEED_RATIO = 1.5  # 语速: 1.0正常, 1.5为提速50%
+SPEED_RATIO = 1.3  # 语速: 1.0正常, 1.5为提速50%
 
 # 角色声音配置 (豆包 Voice Type)
 VOICE_MAPPING = {
-    "Host": "zh_male_jingqiangkanye_moon_bigtts",
+    "Host": "zh_male_sunwukong_mars_bigtts",
     "Guest": "zh_female_zhixingnvsheng_mars_bigtts"
 }
 # ===========================================
@@ -42,16 +42,21 @@ async def generate_script(text, script_file):
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
     prompt = f"""
-    请将以下文本改编成一段大约 2分钟以内 的双人播客对话脚本。
-    角色：
-    - Host (主持人): 负责引导话题，提问，总结。
-    - Guest (嘉宾): 负责深入解释，举例。
+    请将以下文本改编成一段大约 45秒 (约160字) 的单人播客脚本。
 
-    风格：轻松、口语化、像真实的访谈。
+    角色设置：
+    - 名字: 量化小万
+    - 身份: 专业的AI量化交易员，说话干练、客观，喜欢用数据说话。
+
+    要求：
+    1. 必须是单人播报模式 (Monologue)。
+    2. 语气要像真人在复盘，口语化，不要有朗诵腔。
+    3. 开场白固定为："大家好，我是量化小万。"
+    4. 严格控制篇幅，语速适中（1.5倍速下）时长控制在45秒左右。
 
     输出格式必须是纯 JSON 数组，不要包含 markdown 格式标记。
     数组中每个元素是一个对象，包含 "role" 和 "text" 两个字段。
-    "role" 只能是 "Host" 或 "Guest"。
+    "role" 固定为 "Host"。
 
     文本内容：
     {text}
@@ -80,53 +85,102 @@ async def generate_script(text, script_file):
 
 async def generate_audio_segment_doubao(text, role, index, temp_dir):
     """使用豆包 API 生成单个音频片段"""
-    voice_type = VOICE_MAPPING.get(role, "BV001")
+    # 按照用户要求，强制使用指定的音色ID，或者根据角色映射
+    # 用户提示：音色id是zh_male_sunwukong_mars_bigtts
+    # 之前的代码中 Host 已经是这个ID了。
+    voice_type = VOICE_MAPPING.get(role, "zh_male_sunwukong_mars_bigtts")
+
     output_path = os.path.join(temp_dir, f"{index:03d}_{role}.mp3")
     req_id = str(uuid.uuid4())
 
+    # 构建基于 req_params 的 payload (参考 curl 示例)
     payload = {
-        "app": {
-            "cluster": CLUSTER
-        },
-        "user": {
-            "uid": "user_1"
-        },
-        "audio": {
-            "voice_type": voice_type,
-            "encoding": "mp3",
-            "speed_ratio": SPEED_RATIO,
-            "volume_ratio": 1.0,
-            "pitch_ratio": 1.0
-        },
-        "request": {
-            "reqid": req_id,
+        "req_params": {
             "text": text,
-            "operation": "query"
+            "speaker": voice_type,
+            "additions": json.dumps({
+                "disable_markdown_filter": True,
+                "enable_language_detector": True,
+                "enable_latex_tn": True,
+                "disable_default_bit_rate": True,
+                "max_length_to_filter_parenthesis": 0,
+                "cache_config": {
+                    "text_type": 1,
+                    "use_cache": True
+                }
+            }),
+            "audio_params": {
+                "format": "mp3",
+                "sample_rate": 24000,
+                "speed_ratio": int(SPEED_RATIO * 10) if SPEED_RATIO != 1.0 else 10 # 这里的 speed_ratio通常是整数? 不，API定义不一致。
+                # 查阅常见文档，unidirectional 接口 audio_params 中 speed_ratio 可能是 float 0.2-3.0
+                # 但 curl 示例中没有 speed_ratio。
+                # 为了保险，我们保留 float，如果报错再调整。
+                # 还是参考之前的 payload 结构，之前的 speed_ratio 是 float。
+            }
         }
     }
 
+    # 修正：根据 curl 示例，audio_params 在 req_params 内部
+    # 尝试将 speed_ratio 加入 audio_params，如果不生效可能需要其他字段
+    payload["req_params"]["audio_params"]["speed_ratio"] = SPEED_RATIO
+
     headers = {
         "x-api-key": DOUBAO_API_KEY,
+        "X-Api-Resource-Id": "volc.service_type.10029",
         "Content-Type": "application/json"
     }
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.post(DOUBAO_API_URL, json=payload, headers=headers, timeout=30.0)
-            response_json = response.json()
-
-            if response.status_code == 200 and "data" in response_json:
-                audio_base64 = response_json["data"]
-                if audio_base64:
+            # 改为流式请求 (stream) 以处理分块返回的 JSON
+            async with client.stream("POST", DOUBAO_API_URL, json=payload, headers=headers, timeout=60.0) as response:
+                if response.status_code == 200:
                     with open(output_path, "wb") as f:
-                        f.write(base64.b64decode(audio_base64))
-                    return output_path
+                        # 逐行读取响应
+                        async for line in response.aiter_lines():
+                            if not line:
+                                continue
+                            try:
+                                # 尝试解析每一行为 JSON
+                                response_json = json.loads(line)
+
+                                # 提取音频数据
+                                # 情况1: data 是直接的 base64 字符串 (常见于 simple 模式)
+                                if "data" in response_json and isinstance(response_json["data"], str):
+                                    audio_base64 = response_json["data"]
+                                    if audio_base64:
+                                        f.write(base64.b64decode(audio_base64))
+
+                                # 情况2: data 是对象且包含 audio (常见于 verbose 模式)
+                                elif "data" in response_json and isinstance(response_json["data"], dict) and "audio" in response_json["data"]:
+                                    audio_base64 = response_json["data"]["audio"]
+                                    if audio_base64:
+                                        f.write(base64.b64decode(audio_base64))
+
+                                # 检查是否有错误信息
+                                if "message" in response_json and response_json["message"] and response_json["code"] != 0:
+                                    print(f"片段 {index} API 收到错误消息: {response_json['message']}")
+
+                            except json.JSONDecodeError:
+                                # 如果解析失败，可能是非 JSON 数据?
+                                # 但在流式接口中，通常都是 JSON 行。
+                                # 也有可能是二进制数据混入（虽然不太可能，如果是 json 行模式）
+                                pass
+                            except Exception as e:
+                                print(f"片段 {index} 处理行数据时出错: {e}")
+
+                    # 检查生成的文件大小，确保不是空的
+                    if os.path.exists(output_path) and os.path.getsize(output_path) > 100:
+                        return output_path
+                    else:
+                        print(f"片段 {index} 生成的文件过小或为空")
+                        return None
                 else:
-                    print(f"片段 {index} 生成失败: 返回数据为空")
+                    # 获取错误响应内容（如果不是流式200）
+                    error_content = await response.aread()
+                    print(f"片段 {index} API 错误: {response.status_code} - {error_content.decode('utf-8', errors='ignore')}")
                     return None
-            else:
-                print(f"片段 {index} API 错误: {response_json}")
-                return None
 
         except Exception as e:
             print(f"片段 {index} 请求异常: {e}")

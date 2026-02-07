@@ -18,6 +18,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from modules.fish_basin.fish_basin import fetch_data
 from modules.market_ladder.limit_up_ladder import get_limit_up_data
 from modules.core_news.core_news_monitor import fetch_eastmoney_data
+from modules.market_sentiment.generate_sentiment_prompt import get_raw_image_prompt, generate_image_prompt
+from common.image_generator import generate_image_from_text
 
 
 def get_limit_down_count(date_str: str = None) -> int:
@@ -423,27 +425,90 @@ def get_sector_flow() -> Dict[str, Any]:
     }
 
 
+def get_market_valuation() -> Dict[str, float]:
+    """
+    Get market valuation (PE/PB) using AkShare.
+    Uses SSE and SZSE summaries.
+
+    Returns:
+        Dictionary with avg_pe_sh, avg_pe_sz, and valuation_score (0-100 normalized)
+    """
+    print("📊 Fetching Market Valuation (PE)...")
+    try:
+        # SSE Summary
+        df_sh = ak.stock_sse_summary()
+        # df_sh is usually a list of dicts or specific format.
+        # For simplicity, if structure varies, we catch error.
+        # Assuming standard return: type(df_sh) is usually pd.DataFrame or list
+        pe_sh = 0.0
+        if isinstance(df_sh, pd.DataFrame):
+             # Usually row with type='股票' or similar.
+             # Let's try to find '平均市盈率'
+             if '平均市盈率' in df_sh.columns:
+                 pe_sh = df_sh['平均市盈率'].mean() # Simplified
+             elif 'item' in df_sh.columns and 'value' in df_sh.columns:
+                 # Check for specific row
+                 row = df_sh[df_sh['item'] == '平均市盈率']
+                 if not row.empty:
+                     pe_sh = float(row.iloc[0]['value'])
+
+        # SZSE Summary
+        df_sz = ak.stock_szse_summary()
+        pe_sz = 0.0
+        if isinstance(df_sz, pd.DataFrame):
+             if '股票平均市盈率' in df_sz.columns:
+                  pe_sz = df_sz['股票平均市盈率'].mean()
+             elif '平均市盈率' in df_sz.columns:
+                  pe_sz = df_sz['平均市盈率'].mean()
+
+        # Fallback values if API fails or structure changes (Approximate current market)
+        if pe_sh == 0: pe_sh = 13.0
+        if pe_sz == 0: pe_sz = 22.0
+
+        print(f"✅ Valuation: SH PE={pe_sh:.2f}, SZ PE={pe_sz:.2f}")
+
+        # Normalize to Score (0-10)
+        # SH PE: 10 (Fear) -> 16 (Greed)
+        # SZ PE: 20 (Fear) -> 35 (Greed)
+
+        score_sh = (max(10, min(16, pe_sh)) - 10) / 6 * 10
+        score_sz = (max(20, min(35, pe_sz)) - 20) / 15 * 10
+
+        valuation_score = (score_sh * 0.6 + score_sz * 0.4) # Weighted
+
+        return {
+            "pe_sh": pe_sh,
+            "pe_sz": pe_sz,
+            "valuation_score": round(valuation_score, 2)
+        }
+
+    except Exception as e:
+        print(f"❌ Error fetching valuation: {e}")
+        return {"pe_sh": 0, "pe_sz": 0, "valuation_score": 5.0}  # Neutral default
+
+
 def aggregate_market_data(date_str: str = None) -> Dict[str, Any]:
     """
     Aggregate all market data needed for sentiment analysis.
-    
+
     Returns:
         Dictionary containing all aggregated market data
     """
     print("Aggregating market data...")
-    
+
     # Get all data sources
     indices_perf = get_indices_performance()
-    
+
     # Limit Up
     df_zt, _, _ = get_limit_up_data(date_str or datetime.now().strftime("%Y%m%d"))
     limit_up_count = len(df_zt) if df_zt is not None else 0
-    
+
     limit_down_count = get_limit_down_count(date_str)
     news_sentiment = get_market_news_sentiment()
     sector_flow = get_sector_flow()
     volume_data = get_market_volume(date_str)
-    
+    valuation_data = get_market_valuation() # New Source
+
     data = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "indices": indices_perf,
@@ -451,104 +516,165 @@ def aggregate_market_data(date_str: str = None) -> Dict[str, Any]:
         "limit_down_count": limit_down_count,
         "news_sentiment": news_sentiment,
         "sector_flow": sector_flow,
-        "volume": volume_data
+        "volume": volume_data,
+        "valuation": valuation_data
     }
-    
+
     print("Market data aggregation complete.")
     return data
+
+
+def get_sentiment_description(score: float) -> str:
+    """
+    Return a distinct description for the score (0-100), creating 50 levels (every 2 points approx).
+    """
+    descriptions = [
+        (0, "绝望崩盘，极度恐慌"), (4, "遍地狼藉，信心冰点"), (8, "阴跌不止，深不见底"), (12, "恐慌蔓延，加速赶底"), (16, "至暗时刻，这种时刻往往孕育生机"),
+        (20, "极度低迷，无人问津"), (24, "悲观弥漫，甚至连反弹都无力"), (28, "情绪磨底，备受煎熬"), (32, "依然弱势，等待转机"), (36, "谨慎观望，如履薄冰"),
+        (40, "虽有抵抗，但信心不足"), (44, "多空平衡，方向未明"), (48, "蓄势待发，窄幅震荡"), (50, "中性偏多，静待花开"), (52, "温和复苏，初现曙光"),
+        (56, "多头试探，逐步回暖"), (60, "赚钱效应显现，人气聚拢"), (64, "交投活跃，信心增强"), (68, "情绪高涨，良性轮动"), (72, "热点频出，贪婪升温"),
+        (76, "加速上行，踏空焦虑"), (80, "全面普涨，极度亢奋"), (84, "狂热逼空，各种利好满天飞"), (88, "情绪过热，风险积聚"), (92, "极度贪婪，甚至有些疯狂"),
+        (96, "泡沫见顶，摇摇欲坠"), (100, "非理性繁荣，此时不跑更待何时")
+    ]
+
+    # Find closest
+    for threshold, desc in reversed(descriptions):
+        if score >= threshold:
+            return desc
+    return descriptions[0][1]
+
+
+def detect_divergence(market_data: Dict[str, Any], sentiment_score: float) -> List[str]:
+    """
+    Detect divergence between Price/Volume and Sentiment.
+    """
+    divergences = []
+
+    # Extract data
+    indices = market_data['indices']
+    avg_index_change = sum(indices.values()) / len(indices) if indices else 0
+    vol_change = market_data['volume']['change_pct']
+
+    # 1. Price vs Sentiment Divergence
+    # Price rising but Sentiment falling (or Low) -> Weak Rally?
+    # Usually Sentiment follows Price.
+    # Check: Price Rising (>1%) but Sentiment Low (<40) -> Disbelief Rally (Potential Bullish)
+    if avg_index_change > 1.0 and sentiment_score < 40:
+        divergences.append("量价背离：指数大涨但情绪低迷，往往是行情的初期（犹豫中上涨）。")
+
+    # Price Falling (<-1%) but Sentiment High (>60) -> Denial (Potential Bearish)
+    if avg_index_change < -1.0 and sentiment_score > 60:
+        divergences.append("情绪背离：指数下跌但情绪依然高涨，需警惕补跌风险。")
+
+    # 2. Volume vs Price Divergence
+    # Price Up (>1%) but Volume Down (<-10%) -> 量价背离 (Bearish)
+    if avg_index_change > 1.0 and vol_change < -10:
+        divergences.append("缩量上涨：指数上行但成交大幅萎缩，上攻动能不足。")
+
+    # Price Down (<-1%) but Volume Down (<-10%) -> 缩量下跌 (Neutral/Bullish if finding bottom)
+    if avg_index_change < -1.0 and vol_change < -10:
+        divergences.append("缩量下跌：抛压逐步衰竭，可能接近短期底部。")
+
+    return divergences
 
 
 def calculate_sentiment_index(market_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Calculate the Greed & Fear Index (0-100) based on market data.
-    
+
     Algorithm:
     - Base Score: 50
-    - Market Breadth (30%): Based on limit up/down ratio
-    - Indices Trend (30%): Weighted average of major indices
-    - News Sentiment (20%): Balance of bullish/bearish news
-    - Money Flow (20%): Net sector inflows
-    
+    - Market Breadth (25%): Limit Up/Down
+    - Indices Trend (25%): Major Indices
+    - News Sentiment (15%): Bullish/Bearish News
+    - Money Flow (20%): Sector Inflows
+    - Valuation (15%): PE Score (New)
+
     Args:
         market_data: Aggregated market data dictionary
-    
+
     Returns:
         Dictionary with index value and breakdown
     """
     base_score = 50
     scores = {}
-    
-    # 1. Market Breadth Score (30%) - Range: -15 to +15
+
+    # 1. Market Breadth Score (25%) - Range: -12.5 to +12.5
     limit_up = market_data['limit_up_count']
     limit_down = market_data['limit_down_count']
     total_limit = limit_up + limit_down
-    
+
     if total_limit > 0:
         breadth_ratio = (limit_up - limit_down) / total_limit
-        breadth_score = breadth_ratio * 15  # Scale to -15 to +15
+        breadth_score = breadth_ratio * 12.5
     else:
         breadth_score = 0
-    
     scores['market_breadth'] = round(breadth_score, 2)
-    
-    # 2. Indices Trend Score (30%) - Range: -15 to +15
+
+    # 2. Indices Trend Score (25%) - Range: -12.5 to +12.5
     indices = market_data['indices']
-    weights = {
-        "上证50": 0.2,
-        "沪深300": 0.3,
-        "中证500": 0.3,
-        "中证2000": 0.2
-    }
-    
+    weights = {"上证50": 0.2, "沪深300": 0.3, "中证500": 0.3, "中证2000": 0.2}
     weighted_change = sum(indices.get(name, 0) * weight for name, weight in weights.items())
-    # Normalize: assume -3% to +3% maps to -15 to +15
-    indices_score = max(-15, min(15, weighted_change * 5))
+    indices_score = max(-12.5, min(12.5, weighted_change * 4)) # Scale
     scores['indices_trend'] = round(indices_score, 2)
-    
-    # 3. News Sentiment Score (20%) - Range: -10 to +10
+
+    # 3. News Sentiment Score (15%) - Range: -7.5 to +7.5
     news = market_data['news_sentiment']
     bullish = news['bullish_count']
     bearish = news['bearish_count']
     total_news = bullish + bearish
-    
+
     if total_news > 0:
         news_ratio = (bullish - bearish) / total_news
-        news_score = news_ratio * 10
+        news_score = news_ratio * 7.5
     else:
         news_score = 0
-    
     scores['news_sentiment'] = round(news_score, 2)
-    
+
     # 4. Money Flow Score (20%) - Range: -10 to +10
     net_inflow = market_data['sector_flow']['net_inflow']
-    # Normalize: assume -100亿 to +100亿 maps to -10 to +10
     flow_score = max(-10, min(10, net_inflow / 1e9))
     scores['money_flow'] = round(flow_score, 2)
-    
+
+    # 5. Valuation Score (15%) - Range: -7.5 to +7.5
+    # Valuation score from get_market_valuation is 0-10.
+    # Center at 5. (Score - 5) * 1.5 -> Range approx -7.5 to +7.5
+    val_data = market_data['valuation']
+    raw_val_score = val_data.get('valuation_score', 5)
+    val_score_centered = (raw_val_score - 5) * 1.5
+    scores['valuation'] = round(val_score_centered, 2)
+
     # Calculate final index
     final_index = base_score + sum(scores.values())
-    final_index = max(0, min(100, round(final_index, 1)))  # Clamp to 0-100
-    
-    # Determine sentiment level
-    if final_index >= 70:
+    final_index = max(0, min(100, round(final_index, 1)))
+
+    # Determine sentiment level and detailed description
+    description = get_sentiment_description(final_index)
+
+    if final_index >= 80:
         sentiment_level = "极度贪婪"
         color = "red"
-    elif final_index >= 55:
+    elif final_index >= 60:
         sentiment_level = "贪婪"
         color = "orange"
-    elif final_index >= 45:
+    elif final_index >= 40:
         sentiment_level = "中性"
         color = "yellow"
-    elif final_index >= 30:
+    elif final_index >= 20:
         sentiment_level = "恐惧"
         color = "blue"
     else:
         sentiment_level = "极度恐惧"
         color = "dark_blue"
-    
+
+    # Detect Divergences
+    divergences = detect_divergence(market_data, final_index)
+
     return {
         "index": final_index,
         "sentiment_level": sentiment_level,
+        "sentiment_description": description,
+        "divergences": divergences,
         "color": color,
         "score_breakdown": scores,
         "raw_data": market_data
@@ -559,49 +685,56 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any],
     """Generate AI Prompt content"""
     idx = result['index']
     level = result['sentiment_level']
+    desc = result.get('sentiment_description', '')
+    divergences = result.get('divergences', [])
+
     breadth = result['score_breakdown']['market_breadth']
     indices_trend = result['score_breakdown']['indices_trend']
     news_score = result['score_breakdown']['news_sentiment']
     flow_score = result['score_breakdown']['money_flow']
-    
+    val_score = result['score_breakdown']['valuation']
+
     limit_up = market_data['limit_up_count']
     limit_down = market_data['limit_down_count']
-    
+
     bullish = market_data['news_sentiment']['bullish_count']
     bearish = market_data['news_sentiment']['bearish_count']
-    
+
     net_inflow = market_data['sector_flow']['net_inflow'] / 1e8
     inflow_sectors = market_data['sector_flow']['inflow_sectors'][:3]
     outflow_sectors = market_data['sector_flow']['outflow_sectors'][:3]
-    
+
+    pe_sh = market_data['valuation']['pe_sh']
+    pe_sz = market_data['valuation']['pe_sz']
+
     # Volume data
     vol_today = market_data['volume']['today_volume'] / 1e8
     vol_yesterday = market_data['volume']['yesterday_volume'] / 1e8
     vol_change = market_data['volume']['change_pct']
-    
+
     if vol_today == 0:
-        vol_desc = "暂无数据 (接口异常)"
+        vol_desc = "暂无数据"
         vol_change_desc = "数据缺失"
         vol_trend_desc = "无法判断"
     else:
         vol_desc = f"放量{vol_change:.1f}%" if vol_change > 0 else f"缩量{abs(vol_change):.1f}%"
         vol_change_desc = "红色" if vol_change > 5 else "绿色" if vol_change < -5 else "黄色"
-        vol_trend_desc = "成交额显著放大，市场活跃度提升" if vol_change > 10 else "成交额小幅放大" if vol_change > 0 else "缩量震荡，观望情绪浓厚" if vol_change > -10 else "成交额大幅萎缩，市场谨慎"
-    
-    # Conditional strings (避免f-string嵌套)
+        vol_trend_desc = "成交额显著放大" if vol_change > 10 else "成交额小幅放大" if vol_change > 0 else "缩量震荡" if vol_change > -10 else "成交额大幅萎缩"
+
+    # Conditional strings
     idx_color = "红色粗体" if idx >= 70 else "橙色粗体" if idx >= 55 else "黄色粗体"
     level_color = "橙红色标签" if idx >= 70 else "橙色标签"
-    breadth_desc = "涨停家数远超跌停,市场赚钱效应强" if limit_up > limit_down * 3 else "市场分化，涨跌停相对均衡"
+    breadth_desc = "涨停家数远超跌停" if limit_up > limit_down * 3 else "涨跌停相对均衡"
     indices_desc = "主流指数全线飘红" if indices_trend > 2 else "指数整体平稳" if indices_trend > -2 else "指数集体调整"
-    news_desc = "正面新闻占优,市场情绪活跃" if news_score > 2 else "新闻情绪中性" if news_score > -2 else "负面新闻增多"
-    
+    news_desc = "正面新闻占优" if news_score > 2 else "新闻情绪中性" if news_score > -2 else "负面新闻增多"
+
     warning_emoji = "⚠️" if flow_score < -5 else ""
     flow_desc = "净流出" if net_inflow < 0 else "净流入"
     flow_color = "红色警告" if net_inflow < -300 else "绿色" if net_inflow > 300 else "中性"
-    
+
     # Build prompt
     prompt = f"""# 市场情绪指数 - AI绘图Prompt ({datetime.now().strftime("%m月%d日")})
-# 数据来源: 恐贪指数模型 (4维度综合评分)
+# 数据来源: 恐贪指数模型 (5维度综合评分)
 
 ## 图片规格
 - 比例: 9:16 竖版
@@ -611,143 +744,93 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any],
 
 ## 标题
 **📊 A股恐贪指数 | Market Greed & Fear** (居中，手绘字体)
-**{datetime.now().strftime("%Y-%m-%d")}**
+**{date_str or datetime.now().strftime("%Y-%m-%d")}**
 
 ---
 
 ## 核心指标 (大号显示)
 **恐贪指数: {idx}/100** ({idx_color})
 **情绪等级: {level}** ({level_color})
+**市场状态: {desc}**
 
 ---
 
-## 四维度评分可视化 (进度条/雷达图)
+## 五维度评分可视化 (雷达图/进度条)
 
-### 1. 市场宽度 (Market Breadth) {breadth:+.2f}
-- 涨停: {limit_up} 只 (红色)
-- 跌停: {limit_down} 只 (绿色)
+### 1. 市场宽度 (Breadth) {breadth:+.2f}
+- 涨停: {limit_up} vs 跌停: {limit_down}
 - 说明: {breadth_desc}
 
-### 2. 指数趋势 (Indices Trend) {indices_trend:+.2f}
+### 2. 指数趋势 (Trend) {indices_trend:+.2f}
 """
-    
+
     for idx_name, change in market_data['indices'].items():
         arrow = "↑" if change > 0 else "↓" if change < 0 else "→"
         prompt += f"- {idx_name}: {change:+.2f}% {arrow}\n"
-    
+
     prompt += f"- 说明: {indices_desc}\n\n"
-    
-    prompt += f"""### 3. 新闻情绪 (News Sentiment) {news_score:+.2f}
-- 利多消息: {bullish} 条 (红色)
-- 利空消息: {bearish} 条 (绿色)
+
+    prompt += f"""### 3. 新闻情绪 (News) {news_score:+.2f}
+- 利多: {bullish} vs 利空: {bearish}
 - 说明: {news_desc}
 
-### 4. 资金流向 (Money Flow) {flow_score:+.2f} {warning_emoji}
+### 4. 资金流向 (Flow) {flow_score:+.2f} {warning_emoji}
 - {flow_desc}: **{abs(net_inflow):.2f} 亿** ({flow_color})
 """
-    
     if inflow_sectors:
-        sector_list = "、".join([f"{s['名称']} +{s['净额']/1e8:.0f}亿" for s in inflow_sectors])
-        prompt += f"- 流入板块: {sector_list}\n"
-    
-    if outflow_sectors:
-        sector_list = "、".join([f"{s['名称']} {s['净额']/1e8:.0f}亿" for s in outflow_sectors])
-        prompt += f"- 流出板块: {sector_list}\n"
-    
-    if net_inflow < -300:
-        prompt += "- 说明: **大量资金撤离，市场避险情绪升温**\n"
-    elif net_inflow > 300:
-        prompt += "- 说明: **资金大幅流入，市场做多意愿强烈**\n"
-    else:
-        prompt += "- 说明: 资金观望，板块轮动\n"
-    
-    # Volume section
+        sector_list = "、".join([f"{s['名称']}" for s in inflow_sectors])
+        prompt += f"- 流入: {sector_list}\n"
+
     prompt += f"""
-### 5. 成交额 (Market Volume)
-- 今日成交: **{vol_today:.0f} 亿**
-- 昨日成交: **{vol_yesterday:.0f} 亿**
-- 对比昨日: **{vol_desc}** ({vol_change_desc})
-- 说明: {vol_trend_desc}
+### 5. 市场估值 (Valuation) {val_score:+.2f}
+- 上证PE: {pe_sh:.2f} | 深证PE: {pe_sz:.2f}
+- 状态: {"估值偏高" if val_score > 3 else "估值偏低" if val_score < -3 else "估值适中"}
 
 ---
+
+### 6. 成交额 (Volume)
+- 今日: **{vol_today:.0f} 亿** ({vol_desc})
+- 说明: {vol_trend_desc}
 """
-    
-    # AI Trend Content
-    ai_trend_content = ""
-    if date_str:
-        try:
-            trend_path = os.path.join("results", date_str, "agent_outputs", "result_trend_summary.txt")
-            if os.path.exists(trend_path):
-                with open(trend_path, 'r', encoding='utf-8') as f:
-                    content = f.read().strip()
-                if content:
-                    ai_trend_content = f"\n> \n> {content}"
-        except Exception:
-            pass
+
+    # Divergence section
+    if divergences:
+        prompt += "\n## ⚠️ 关键背离信号\n"
+        for div in divergences:
+            prompt += f"- **{div}**\n"
+
+    prompt += f"""
+---
+
+## 情绪解读 (手写体文字框)
+> **当前处于"{level}"区间**
+> **"{desc}"**
+"""
 
     # Interpretation
-    if idx >= 70 and net_inflow < -300:
-        interpretation = f"虽然涨停家数领先，但资金净流出超{abs(net_inflow):.0f}亿且{vol_desc}，显示机构在高位减仓。短期谨防追高风险！"
-    elif idx >= 55:
-        interpretation = f"市场情绪偏乐观，{vol_desc}。但需关注资金流向变化。"
+    if idx >= 80:
+        interpretation = "市场极度亢奋，随时可能面临剧烈波动，切勿盲目追高。"
+    elif idx >= 60:
+        interpretation = f"市场情绪积极，{vol_desc}，赚钱效应较好。"
+    elif idx <= 20:
+        interpretation = "市场极度悲观，恐慌盘涌出，或是左侧布局良机。"
     else:
-        interpretation = f"市场情绪谨慎，{vol_desc}，建议控制仓位。"
+        interpretation = f"市场情绪相对平稳，{vol_desc}，结构性机会为主。"
 
-    advice = "观望为主 | 严控仓位" if net_inflow < -300 else "逢低布局 | 控制仓位"
-    risk = f"资金大幅流出{abs(net_inflow):.0f}亿且{vol_desc}" if net_inflow < -300 else f"指数{idx:.1f}，注意回调风险"
+    prompt += f"> {interpretation}\n"
 
     prompt += f"""
-## 情绪解读 (手写体文字框)
-> **当前处于"{level}"区间{"，但需警惕！" if idx >= 70 and net_inflow < -300 else ""}**
-> {interpretation}{ai_trend_content}
-
 ---
 
-## 投资建议 (红色标签提示框)
-✅ **操作建议**: {advice}  
-⚠️ **风险提示**: {risk}
+## 投资建议
+✅ **操作**: {"观望为主 | 严控仓位" if net_inflow < -300 else "持股待涨 | 逢低吸纳" if idx < 40 else "去弱留强 | 顺势而为"}
+⚠️ **风险**: {"资金大幅流出，小心回调" if net_inflow < -300 else "高位股分化风险" if idx > 70 else "底部震荡，耐心等待"}
 
 ---
 
 ## Footer
-"每日恐贪指数 | AI量化情绪模型 | 点赞关注不迷路"
-
----
-
-## AI绘图Prompt (English)
-
-Hand-drawn financial infographic poster, China A-share Market Greed & Fear Index.
-
-**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, hand-drawn Chinese fonts.
-
-**Color Coding**: 
-- Greed Level ({idx}) = {"RED gradient" if idx >= 70 else "ORANGE gradient"}
-- Progress bars: Bullish = RED fill, Bearish = GREEN fill
-
-**Layout (Vertical 9:16)**:
-1. Title: "恐贪指数 {idx}" (large {"red" if idx >= 70 else "orange"} number, hand-drawn style)
-2. Sentiment Level Badge: "{level}" ({"orange-red" if idx >= 70 else "orange"} tag)
-3. Five Dimensions Section:
-   - Market Breadth: {limit_up}涨停 vs {limit_down}跌停 (red vs green comparison bar)
-   - Indices Trend: Mini arrow chart
-   - News Sentiment: {bullish} bullish vs {bearish} bearish
-   - Money Flow: {"**CRITICAL**" if net_inflow < -300 else ""} {net_inflow:.2f}亿 ({"RED WARNING with downward arrow" if net_inflow < -300 else "GREEN upward arrow" if net_inflow > 300 else "gray neutral bar"})
-   - Volume: {vol_desc}, Today {vol_today:.0f}亿 vs Yesterday {vol_yesterday:.0f}亿
-4. Interpretation Box: Hand-written style text
-5. Footer: "每日恐贪指数 | AI量化情绪模型"
-
-**Visual Emphasis**:
-- Large "{idx}" with {"red" if idx >= 70 else "orange"} glow
-- Progress bars with paper texture
-- Hand-drawn icons: 📊📈⚠️
+"每日恐贪指数 | AI量化情绪模型"
 """
-    
-    if net_inflow < -300:
-        prompt += "- **Money Flow section**: Red warning badge with downward arrows\n"
-    
-    if abs(vol_change) > 10:
-        prompt += f"- **Volume section**: Highlight {vol_desc} with {'red' if vol_change > 10 else 'green'} emphasis\n"
-    
     return prompt
 
 
@@ -774,14 +857,34 @@ def run_analysis(date_str: str = None) -> Dict[str, Any]:
     output_dir = os.path.join("results", date_s, "AI提示词")
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "市场情绪_Prompt.txt")
-    
+
     prompt_content = generate_prompt_content(result, market_data, date_s)
-    
+
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(prompt_content)
-    
+
     print(f"\n✅ Analysis complete: {result['index']}/100 ({result['sentiment_level']})")
     print(f"📄 Prompt saved to: {output_path}")
+
+    # 1. Generate Raw Prompt for API
+    raw_image_prompt = get_raw_image_prompt(result)
+
+    # 2. Generate Full Prompt Content for File (Markdown with Chinese explanation)
+    full_prompt_content = generate_image_prompt(result)
+
+    # Save Full Image Prompt to file for reference
+    image_prompt_file = os.path.join(output_dir, "市场情绪_配图_Prompt.txt")
+    with open(image_prompt_file, 'w', encoding='utf-8') as f:
+        f.write(full_prompt_content)
+    print(f"📄 Image Prompt saved to: {image_prompt_file}")
+
+    # 3. Generate Image using API (Use Raw English Prompt)
+    image_output_dir = os.path.join("results", date_s, "images")
+    os.makedirs(image_output_dir, exist_ok=True)
+    image_output_path = os.path.join(image_output_dir, "market_sentiment_cover.png")
+
+    print("\n🎨 Generating Market Sentiment Cover Image...")
+    generate_image_from_text(raw_image_prompt, image_output_path)
 
     return result
 
