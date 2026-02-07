@@ -2,7 +2,7 @@
 
 An automated AI-driven stock analysis system that generates daily market reports, stock selections, and visual prompts for content creation.
 
-## 🚀 Features (10+ Modules)
+## 🚀 Features (12+ Modules)
 
 This system consists of the following independent modules, typically executed in parallel:
 
@@ -16,6 +16,8 @@ This system consists of the following independent modules, typically executed in
 8.  **Abnormal Alert (异动预警)**: Monitors significant stock price anomalies.
 9.  **Weekly Preview (周刊前瞻)**: (Weekend Only) Strategy for the upcoming week.
 10. **Weekly Review (本周要闻)**: (Weekend Only) Summary of the past week.
+11. **Market Sentiment (市场情绪)**: Greed & Fear Index, Market Temperature analysis.
+12. **Automated Media (多媒体生成)**: Auto-generates Podcasts (Audio), Videos, and Cover Images for reports.
 
 ## 🛠️ Usage
 
@@ -44,6 +46,9 @@ python main.py earnings_prompt
 # Sector Capital Flow
 python main.py sector_flow
 
+# Market Sentiment
+python main.py sentiment
+
 # Fish Basin Trend
 python main.py fish_basin
 ```
@@ -53,6 +58,9 @@ All results are saved in `results/YYYYMMDD/`:
 - `AI提示词/`: Generated Prompts for AI Image Generation (Midjourney/Stable Diffusion).
   - `趋势Model.txt`, `趋势B1选股_Prompt.txt`, `涨停天梯_Prompt.txt`, etc.
 - `agent_outputs/`: AI Analysis Reports (`result_analysis.txt`).
+- `mp3/`: Generated Podcast Audio files.
+- `video/`: Generated Short Videos.
+- `scripts/`: Podcast Scripts.
 - `selected_top10.json`: Raw data for selected stocks.
 
 ## ⚙️ Configuration

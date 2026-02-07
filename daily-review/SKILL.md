@@ -37,11 +37,15 @@ Once `main.py` finishes:
     - Read and display the content of: `results/{YYYYMMDD}/AI提示词/市场情绪_Prompt.txt`
     - This contains the "Greed & Fear Index" and key market indicators.
 
-2.  **Stock Selection (B1 Strategy)**:
+2.  **Media Generation**:
+    - Check for generated media in `results/{YYYYMMDD}/mp3/` and `results/{YYYYMMDD}/video/`.
+    - Confirm creation of podcast audio and video summaries.
+
+3.  **Stock Selection (B1 Strategy)**:
     - Check for `results/{YYYYMMDD}/selected_top10.json` or `selected_{YYYYMMDD}_*.json`.
     - If found, list the **Count** of selected stocks and the **Top 3** names.
 
-3.  **Abnormal Alerts**:
+4.  **Abnormal Alerts**:
     - Check `results/{YYYYMMDD}/AI提示词/异常异动_Prompt.txt`.
     - Briefly summarize if there are major warnings.
 
