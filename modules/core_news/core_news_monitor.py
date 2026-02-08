@@ -17,7 +17,6 @@ import sys
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from common.image_generator import generate_image_from_text
-from common.pipeline_utils import run_full_media_pipeline
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -414,33 +413,6 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
     print("\n🎨 Generating Daily News Cover Image...")
     generate_image_from_text(raw_prompt_daily, image_path_daily)
 
-    # --- New: Full Media Pipeline (Audio + Video) ---
-    # Determine daily output dir relative to output_dir (results/YYYYMMDD)
-    # output_dir passed to run is usually results/YYYYMMDD
-    # But wait, save_prompt uses output_dir/AI提示词.
-    # So output_dir is indeed the daily root.
-    # My previous edits for podcast_dir used os.path.join(output_dir, "../podcast_inputs").
-    # If output_dir is "results/20260207", then "../podcast_inputs" is "results/podcast_inputs".
-    # That might be wrong. Let's assume output_dir is "results/20260207".
-    # Let's fix the paths to be inside the daily directory.
-
-    # Correcting paths logic assuming output_dir is "results/YYYYMMDD"
-    podcast_dir = os.path.join(output_dir, "podcast_inputs")
-    os.makedirs(podcast_dir, exist_ok=True)
-    podcast_file = os.path.join(podcast_dir, "core_news_daily.txt")
-
-    # Re-saving podcast text with correct path
-    with open(podcast_file, 'w', encoding='utf-8') as f:
-        f.write(podcast_text)
-
-    image_dir = os.path.join(output_dir, "images")
-    os.makedirs(image_dir, exist_ok=True)
-    image_path_daily = os.path.join(image_dir, "core_news_daily_cover.png")
-
-    # We already generated the image, just need to ensure path consistency if I changed it above.
-    # Let's run the pipeline.
-    run_full_media_pipeline(podcast_file, image_path_daily, output_dir, "core_news_daily")
-
 
     # 2. Weekly Summary
     if run_weekly:
@@ -506,6 +478,3 @@ Hand-drawn financial infographic poster, China A-share weekly summary.
 
         print("\n🎨 Generating Weekly News Cover Image...")
         generate_image_from_text(raw_prompt_weekly, image_path_weekly)
-
-        # --- New: Full Media Pipeline (Weekly) ---
-        run_full_media_pipeline(podcast_file_weekly, image_path_weekly, output_dir, "core_news_weekly")

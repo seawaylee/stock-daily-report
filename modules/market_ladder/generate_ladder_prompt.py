@@ -12,7 +12,6 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) # Add project root
 from modules.market_ladder.limit_up_ladder import get_limit_up_data, repair_board_counts, process_ladder_data
 from common.image_generator import generate_image_from_text
-from common.pipeline_utils import run_full_media_pipeline
 
 def get_raw_image_prompt(date_str):
     display_date = f"{date_str[4:6]}月{date_str[6:8]}日"
@@ -278,10 +277,6 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
 
     print("\n🎨 Generating Market Ladder Cover Image...")
     generate_image_from_text(raw_prompt, image_path)
-
-    # --- New: Full Media Pipeline (Audio + Video) ---
-    # We use the podcast text file and the generated image
-    run_full_media_pipeline(podcast_file, image_path, output_dir, "market_ladder")
 
     return output_path
 
