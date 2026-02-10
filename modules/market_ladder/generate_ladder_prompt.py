@@ -261,10 +261,10 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     print(f"Prompt已生成: {output_path}")
 
     # --- New: Automate Podcast Text Generation ---
-    podcast_dir = os.path.join(output_dir, "podcast_inputs")
-    os.makedirs(podcast_dir, exist_ok=True)
+    temp_dir = os.path.join(output_dir, "temp_data")
+    os.makedirs(temp_dir, exist_ok=True)
     podcast_text = generate_podcast_text(date_str, ladder, top_inds)
-    podcast_file = os.path.join(podcast_dir, "market_ladder.txt")
+    podcast_file = os.path.join(temp_dir, "market_ladder.txt")
     with open(podcast_file, 'w', encoding='utf-8') as f:
         f.write(podcast_text)
     print(f"🎙️ Podcast text saved to: {podcast_file}")

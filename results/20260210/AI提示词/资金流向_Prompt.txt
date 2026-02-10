@@ -1,33 +1,18 @@
-(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (hand drawn), (illustration), (vintage style), (surrealism)
+Hand-drawn infographic poster, Chinese A-share Sector Fund Flow (资金流向), 2026-02-11.
 
-**SUBJECT**: A surreal conceptual illustration with CLEAR TEXT.
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+**Visual Elements**:
+- Diverging Bar Chart (Red bars for Inflow, Green bars for Outflow).
+- List of top sectors with financial numbers.
+- Paper texture background with ink annotations.
 
-**HEADER TEXT**:
-- At the top of the image, elegantly integrate the text "**文化传媒霸榜**".
-- **Font Style**: **Artistic Chinese Calligraphy** (But CLEAR and LEGIBLE).
-- **BACKGROUND for Text**: Place the text on a **Red Ink Grunge** or **Paint Brush Stroke** background.
-- **Text Color**: **Gold or White**, High Contrast for readability.
+**Layout**: 9:16 vertical.
+**Title**: "阿里巴巴领涨 - 资金流向".
 
-1. **THE GIANTS (Top Inflow Sectors)**:
-   Three COLOSSAL, SYMBOLIC MONUMENTS towering in the center. (NON-HUMANOID)
-   - **CENTER**: Object for **"文化传媒"**. Label: "**文化传媒**" (Black Bold Ink) & "+32.2亿" (Red).
-   - **LEFT**: Object for **"影视院线"**. Label: "**影视院线**" (Black Bold) & "+31.1亿".
-   - **RIGHT**: Object for **"游戏"**. Label: "**游戏**" (Black Bold) & "+23.0亿".
+**Content Details**:
+- **Top Inflow (Red)**: 1. 阿里巴巴 (+76.5亿), 2. DeepSeek (+74.5亿), 3. AIGC (+73.2亿), 4. 文化传媒 (+69.7亿), 5. AI应用 (+68.8亿)
+- **Top Outflow (Green)**: 1. 芯片 (-247.9亿), 2. 商业航天 (-191.5亿), 3. 光伏 (-170.6亿), 4. 储能 (-138.7亿), 5. 新能源汽车 (-130.7亿)
 
-2. **THE WORSHIPPERS (Top Outflow Sectors)**:
-   In the **FOREGROUND**, a group of **LARGE** figures (pilgrims) with their backs facing the viewer.
-   - **POSES**: **Varying kneeling and bowing poses**. Some slumped forward, some upright, some prostrate. **Chaotic and non-uniform arrangement**.
-   - **BACK LABELS**: The text on their backs must be **LARGE, CLEAR and LEGIBLE**.
-   - **Label Styling**: **Varying Font Sizes**. Larger losses (e.g. -300亿) should have **LARGER TEXT**.
-   - **Labels**: 半导体 (-64.9亿), 光伏设备 (-59.5亿), 通信设备 (-45.2亿), 电池 (-36.2亿), 建筑装饰 (-34.6亿), 电力 (-33.5亿), 通用设备 (-29.8亿), 工业金属 (-28.8亿), 零售 (-28.7亿), 军工电子 (-27.8亿)
-   - **Style**: **Hand-written Style but Clean**.
-   - **TEXT COLOR - Name**: **Bright Glowing White** (High Visibility).
-   - **TEXT COLOR - Number**: **Light Green / Pastel Green** (Clear distinction).
-   - **Text Quality**: (perfect text:1.4), (correct chinese characters:1.2).
+**Atmosphere**: Professional, detailed financial analysis, retro financial newspaper style.
 
-**ART STYLE**: 
-- **Vintage Hand-drawn Illustration**: Warm paper texture background, ink lines, watercolor washes.
-- **Atmosphere**: Epic, religious scale, slightly dystopian but artistic.
-- **Colors**: Sepia, warm brown, faded red (giants), dull green/grey (worshippers).
-
-(Optimized for Nano Banana Pro: Vintage Art Style + Clear Text enforcement)
+--ar 9:16 --style raw --v 6

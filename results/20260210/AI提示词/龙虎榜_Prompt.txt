@@ -1,0 +1,23 @@
+Hand-drawn infographic poster, Chinese A-share Dragon Tiger List (龙虎榜), 02月10日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Visual Layout**:
+1. **Top Section**: "Institutional Funds Divergence" (机构资金分歧)
+   - **Chart Type**: **Diverging Bar Chart** (Center axis).
+   - **Left Side (Red)**: Top Net Buy Institutions.
+   - **Right Side (Green)**: Top Net Sell Institutions.
+   - **Data**:
+     - BUY: 长飞光纤 (+2.05亿), 翔鹭钨业 (+1.35亿), 顶固集创 (+0.95亿), 海翔药业 (+0.93亿), 联德股份 (+0.92亿)
+     - SELL: 中文在线 (-7.72亿), 横店影视 (-3.00亿), 万达电影 (-1.18亿), 闰土股份 (-1.03亿), 协鑫集成 (-0.78亿)
+
+2. **Bottom Section**: "Active Hot Money Seats" (活跃游资)
+   - **List Style**: Ranked list with Medal/Badge icons for Top 3.
+   - **Content**: 1. 深股通专用 (买 35.9亿, 净 -8.5亿, 主攻: 红太阳 万向钱潮 视觉中国 博纳影业 海翔药业 西部材料 奥飞娱乐 巨力索具 闰土股份 百川股份 协鑫集成 顺灏股份 万达电影 捷成股份 光线传媒 中文在线 幸福蓝海 亚康股份 海看股份), 2. 沪股通专用 (买 16.2亿, 净 -0.4亿, 主攻: 大位科技 文投控股 杭州解百 中国电影 浙文互联 上海电影 长飞光纤 海南矿业 可川科技 振德医疗 风语筑 杭电股份 科森科技 联德股份 菜百股份), 3. 开源西安太华路证券. (买 7.0亿, 净 +5.5亿, 主攻: 万向钱潮 文投控股 视觉中国 中国电影 雅博股份 上海电影 顶固集创 引力传媒 亚康股份 海看股份), 4. 国泰海通上海松江区. (买 6.5亿, 净 +6.3亿, 主攻: 万向钱潮 博纳影业 捷成股份 光线传媒), 5. 国泰海通北京知春路. (买 6.1亿, 净 +3.4亿, 主攻: 大位科技 协鑫集成 天地在线 捷成股份 中文在线), 6. 国泰海通上海长宁区. (买 5.1亿, 净 +1.4亿, 主攻: 大位科技 中文在线 上海电影 长飞光纤 荣信文化), 7. 中国银河北京中关村. (买 4.8亿, 净 +3.5亿, 主攻: 巨力索具 中文在线), 8. 高盛(中国)证券上. (买 4.6亿, 净 -1.9亿, 主攻: 大位科技 杭州解百 长飞光纤 万丰股份 引力传媒 韩建河山 杭电股份 科森科技 *ST原尚 醋化股份 读者传媒 联德股份 菜百股份)
+   - **Details**: Shows Buy Amount (买), Net Amount (净), and Top Focus Stock (主攻).
+   - **Color**: Gold/Black text for names, Red for money.
+
+**Title**: "02月10日 龙虎榜资金动向" (Bold Calligraphy).
+**Background**: Paper texture with ink splatter effects. Professional financial analysis atmosphere.
+
+--ar 9:16 --style raw --v 6

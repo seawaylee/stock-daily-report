@@ -151,9 +151,9 @@ Data:
 {sector_text}
 """
                 # Save Task File
-                task_dir = os.path.join(date_dir, "agent_tasks")
-                os.makedirs(task_dir, exist_ok=True)
-                task_path = os.path.join(task_dir, "task_trend_summary.txt")
+                temp_dir = os.path.join(date_dir, "temp_data")
+                os.makedirs(temp_dir, exist_ok=True)
+                task_path = os.path.join(temp_dir, "task_trend_summary.txt")
                 with open(task_path, "w", encoding="utf-8") as f:
                     f.write(task_prompt)
                 print(f"✅ Agent Task Saved: {task_path}")

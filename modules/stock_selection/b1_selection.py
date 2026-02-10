@@ -29,8 +29,8 @@ from common.prompts import (
 # 导入数据获取和信号检测模块
 from common.data_fetcher import get_all_stock_list, get_stock_data
 from common.signals import check_stock_signal
-# from modules.daily_report.sector_flow import run_daily_analysis (Refactored)
-# from modules.daily_report.generate_ladder_prompt import generate_ladder_prompt (Refactored)
+# Import new LLM client
+from common.llm_client import chat_completion
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -404,7 +404,7 @@ def desensitize_stock_code(code):
 
 
 def call_gemini_analysis(selected_stocks, date_dir):
-    """使用Agent分析Top10值博率"""
+    """使用LLM直接分析Top10值博率 (全自动模式)"""
     # 准备分析数据
     stocks_info = []
     for s in selected_stocks:
@@ -423,32 +423,43 @@ def call_gemini_analysis(selected_stocks, date_dir):
             '收盘价': raw['close'],
             '成交量': raw['volume']
         })
-    
+
+    # 统一中间文件目录
+    temp_dir = os.path.join(date_dir, "temp_data")
+    os.makedirs(temp_dir, exist_ok=True)
+
     prompt = get_analysis_prompt(stocks_info)
 
-    # 保存任务到文件供Agent处理
-    agent_task_dir = os.path.join(date_dir, "agent_tasks")
-    os.makedirs(agent_task_dir, exist_ok=True)
-    
-    task_file = os.path.join(agent_task_dir, "task_analysis.txt")
+    # 保存Prompt备份
+    task_file = os.path.join(temp_dir, "task_analysis_prompt.txt")
     with open(task_file, 'w', encoding='utf-8') as f:
         f.write(prompt)
-    
-    print(f"\n[4/4] 任务已保存，等待Agent分析Top10...")
-    print(f"📝 任务文件: {task_file}")
-    
-    # 读取Agent生成的结果
-    agent_output_dir = os.path.join(date_dir, "agent_outputs")
-    output_file = os.path.join(agent_output_dir, "result_analysis.txt")
-    
-    if os.path.exists(output_file):
-        with open(output_file, 'r', encoding='utf-8') as f:
-            result = f.read()
-        print("✅ Agent分析完成")
-        
+
+    print(f"\n[4/4] 正在调用 LLM 进行深度分析 (Top {len(selected_stocks)} 只)...")
+    print(f"⏳ 请求已发送，请稍候...")
+
+    # === 直接调用 LLM ===
+    try:
+        start_time = time.time()
+        analysis_result = chat_completion(prompt, system_prompt="You are a professional quantitative financial analyst.")
+        duration = time.time() - start_time
+
+        if not analysis_result:
+            print("❌ LLM 分析失败: 返回为空")
+            return None, prompt
+
+        print(f"✅ LLM 分析完成 (耗时 {duration:.1f}s)")
+
+        # 保存结果备份
+        output_file = os.path.join(temp_dir, "result_analysis.txt")
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(analysis_result)
+        print(f"💾 分析报告已保存: {output_file}")
+
         # --- 提取并保存 Top 10 ---
         import re
-        top_codes = re.findall(r'\((\d{6})\)', result)
+        # 匹配 (600123) 格式
+        top_codes = re.findall(r'\((\d{6})\)', analysis_result)
         seen = set()
         unique_codes = []
         for c in top_codes:
@@ -456,22 +467,22 @@ def call_gemini_analysis(selected_stocks, date_dir):
                 unique_codes.append(c)
                 seen.add(c)
         unique_codes = unique_codes[:20] # Top 20
-        
+
         stock_map = {s['code']: s for s in selected_stocks}
         top_stocks = []
         for c in unique_codes:
             if c in stock_map:
                 top_stocks.append(stock_map[c])
-        
-        top10_file = os.path.join(date_dir, "selected_top10.json") # Keep filenamesame for compat or change? Let's keep it.
+
+        top10_file = os.path.join(temp_dir, "selected_top10.json") # Save to temp
         with open(top10_file, 'w', encoding='utf-8') as f:
             json.dump(top_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
-        print(f"📁 已生成中间文件: {top10_file} ({len(top_stocks)}只)")
-        
-        return result, prompt
-    else:
-        print(f"⚠️  等待Agent生成结果: {output_file}")
-        print("提示：请运行 Agent 工作流来处理分析任务")
+        print(f"📁 已提取 Top 股票池: {top10_file} ({len(top_stocks)}只)")
+
+        return analysis_result, prompt
+
+    except Exception as e:
+        print(f"❌ LLM 调用过程出错: {e}")
         return None, prompt
 
 
@@ -710,16 +721,17 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
     """从分析报告回填行业/题材"""
     try:
         print("🔄 正在从分析报告回填 [行业] 和 [脱敏信息]...")
-        analysis_file = os.path.join(date_dir, "agent_outputs", "result_analysis.txt")
+        temp_dir = os.path.join(date_dir, "temp_data")
+        analysis_file = os.path.join(temp_dir, "result_analysis.txt")
         if os.path.exists(analysis_file):
             import re
             with open(analysis_file, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             # 解析模式: 1. **中航光电 (002179)** | 军工电子/高端连接器 |
             # 兼容带有 ** 的 markdown 格式
             pattern = re.compile(r'\d+\.\s*(?:\*\*)?(.+?)\s*(?:\*\*)?\s*\((?:\*\*)?(\d{6})(?:\*\*)?\)\s*(?:\*\*)?\s*\|\s*(.+?)\s*\|')
-            
+
             # 构建映射表 code -> industry
             industry_map = {}
             matches = pattern.findall(content)
@@ -738,21 +750,21 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
                 if code in industry_map:
                     stock['industry'] = industry_map[code]
                     count += 1
-            
+
             print(f"✅ 成功从分析报告回填 {count} 条行业数据")
-            
+
             # 保存回填后的结果到 selected_top10.json
-            top10_file = os.path.join(date_dir, "selected_top10.json")
+            top10_file = os.path.join(temp_dir, "selected_top10.json")
             with open(top10_file, 'w', encoding='utf-8') as f:
                 json.dump(selected_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
             print(f"💾 已更新 selected_top10.json")
-            
+
             return True
         else:
             print("⚠️ 未找到 result_analysis.txt，无法回填信息")
             return False
     except Exception as e:
-        print(f"⚠️ 回填信息出错: {e}") 
+        print(f"⚠️ 回填信息出错: {e}")
         return False
 
 
@@ -848,17 +860,17 @@ def run(date_dir=None, force=False):
         
         # 调用Agent分析（传入题材过滤后的候选）
         gemini_analysis, analysis_prompt = call_gemini_analysis(all_stocks, date_dir)
-        
-        # 如果Agent还未生成结果，等待用户运行工作流
+
+        # 如果分析失败
         if gemini_analysis is None:
-            print("\n⏸️  脚本暂停：等待Agent工作流处理任务")
-            print("请运行 Agent 工作流完成分析，然后再次执行此脚本")
-            return True # Not a failure, just a pause
-        
-        print("\n✅ Agent分析完成")
-        
-        # 加载 Top 10 中间文件
-        top10_file = os.path.join(date_dir, "selected_top10.json")
+            print("\n❌ LLM 分析失败，无法生成后续报告")
+            return False
+
+        print("\n✅ AI 智能分析流程结束")
+
+        # 加载 Top 10 中间文件 (call_gemini_analysis 已经生成)
+        temp_dir = os.path.join(date_dir, "temp_data")
+        top10_file = os.path.join(temp_dir, "selected_top10.json")
         top_stocks_list = all_stocks # 默认
         
         if os.path.exists(top10_file):

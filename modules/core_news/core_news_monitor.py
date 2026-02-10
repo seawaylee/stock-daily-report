@@ -396,10 +396,10 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
     save_prompt(daily_content, "核心要闻_Prompt.txt", output_dir)
 
     # --- New: Automate Podcast Text Generation (Daily) ---
-    podcast_dir = os.path.join(output_dir, "podcast_inputs") # Save to daily root podcast_inputs
-    os.makedirs(podcast_dir, exist_ok=True)
+    temp_dir = os.path.join(output_dir, "temp_data") # Save to daily root temp_data
+    os.makedirs(temp_dir, exist_ok=True)
     podcast_text = generate_podcast_text(daily_top, is_weekly=False)
-    podcast_file = os.path.join(podcast_dir, "core_news_daily.txt")
+    podcast_file = os.path.join(temp_dir, "core_news_daily.txt")
     with open(podcast_file, 'w', encoding='utf-8') as f:
         f.write(podcast_text)
     print(f"🎙️ Podcast text saved to: {podcast_file}")
@@ -467,7 +467,7 @@ Hand-drawn financial infographic poster, China A-share weekly summary.
 
         # --- New: Automate Podcast Text Generation (Weekly) ---
         podcast_text_weekly = generate_podcast_text(weekly_top, is_weekly=True)
-        podcast_file_weekly = os.path.join(podcast_dir, "core_news_weekly.txt")
+        podcast_file_weekly = os.path.join(temp_dir, "core_news_weekly.txt")
         with open(podcast_file_weekly, 'w', encoding='utf-8') as f:
             f.write(podcast_text_weekly)
         print(f"🎙️ Podcast text saved to: {podcast_file_weekly}")

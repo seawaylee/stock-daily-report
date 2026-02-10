@@ -125,6 +125,11 @@ def run_market_sentiment(args):
     generate_sentiment_prompt.generate_prompts(analyzer, args.date_dir)
     return True
 
+def run_dragon_tiger(args):
+    print("\n=== [Module 12] Dragon Tiger List ===")
+    from modules.dragon_tiger import dragon_tiger
+    return dragon_tiger.run(args.date_dir)
+
 def run_all(args):
     print("🌟 Starting Full Daily Workflow (Parallel Execution) 🌟")
     print(f"Target Directory: {args.date_dir}")
@@ -153,7 +158,8 @@ def run_all(args):
         (run_weekly_preview, args),
         (run_earnings_analysis, args),
         (run_earnings_prompt, args),
-        (run_market_sentiment, args)
+        (run_market_sentiment, args),
+        (run_dragon_tiger, args)
     ]
 
     # Switch to sequential execution to avoid akshare/mini_racer multiprocessing crashes
@@ -258,6 +264,7 @@ def main():
     subparsers.add_parser('earnings', parents=[parent_parser], help='Run Earnings Analysis')
     subparsers.add_parser('earnings_prompt', parents=[parent_parser], help='Generate Earnings Performance Prompt')
     subparsers.add_parser('sentiment', parents=[parent_parser], help='Run Market Sentiment Analysis')
+    subparsers.add_parser('dragon', parents=[parent_parser], help='Run Dragon Tiger Analysis')
 
     args = parser.parse_args()
     
@@ -293,6 +300,8 @@ def main():
         run_earnings_prompt(args)
     elif args.command == 'sentiment':
         run_market_sentiment(args)
+    elif args.command == 'dragon':
+        run_dragon_tiger(args)
     else:
         parser.print_help()
 
