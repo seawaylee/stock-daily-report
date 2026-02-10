@@ -40,11 +40,11 @@ def run_fish_basin(args):
     
     # 1. Indices (In-Memory)
     print("--- Part A: Indices ---")
-    df_index = fish_basin.run(args.date_dir, save_excel=False)
-    
+    df_index = fish_basin.run(args.date_dir, save_excel=True)
+
     # 2. Sectors (In-Memory)
     print("\n--- Part B: Sectors ---")
-    df_sector = fish_basin_sectors.run(args.date_dir, save_excel=False)
+    df_sector = fish_basin_sectors.run(args.date_dir, save_excel=True)
     
     # 3. Save Merged Excel (Index and Sector together in ONE sheet)
     if not df_index.empty or not df_sector.empty:
@@ -77,26 +77,11 @@ def run_sector_flow(args):
 def run_market_ladder(args):
     print("\n=== [Module 4] Market Limit-up Ladder ===")
     from modules.market_ladder import generate_ladder_prompt
-    
+
     # Needs date_str and output_dir
     # args.date_dir is full path "results/20260122"
     # generate_ladder_prompt expects (date_str, output_dir)
     return generate_ladder_prompt.run(args.date_str, args.date_dir)
-
-def run_market_calendar(args):
-    print("\n=== [Module 5] Market Calendar (Tomorrow & Next Week) ===")
-    from modules.market_calendar import generate_calendar
-    
-    # Check if Fri/Sat/Sun
-    dt = datetime.strptime(args.date_str, '%Y%m%d')
-    is_weekend = dt.weekday() >= 4
-    
-    return generate_calendar.run(args.date_str, args.date_dir, run_weekly=is_weekend)
-
-def run_abnormal_alert(args):
-    print("\n=== [Module 6] Abnormal Fluctuation Alert ===")
-    from modules.abnormal_alert import abnormal_monitor
-    return abnormal_monitor.run(args.date_str, args.date_dir)
 
 def run_core_news (args):
     print("\n=== [Module 7] Core News Monitor ===")
@@ -158,24 +143,12 @@ def run_all(args):
     # 3. Sector Flow
     # 4. Market Ladder
     # 5. Core News (EastMoney)
-    # 6. Calendar
-    # 7. Abnormal Alert
-    
-    from concurrent.futures import ProcessPoolExecutor, wait
-    
-    # Note: ProcessPoolExecutor requires functions to be picklable. 
-    # Wrapper partials might be needed if we pass complex args, but here we just pass 'args' namespace?
-    # Actually, args (Namespace) is picklable. But we need to import modules inside the worker functions 
-    # if we use ProcessPoolExecutor to avoid global state issues, OR just rely on standard multiprocessing.
-    # The existing run_* functions import modules inside them, which is good.
-    
+
     tasks = [
         (run_fish_basin, args),
         (run_b1_selection, args),
         (run_sector_flow, args),
         (run_market_ladder, args),
-        (run_market_calendar, args),
-        (run_abnormal_alert, args),
         (run_core_news, args),
         (run_weekly_preview, args),
         (run_earnings_analysis, args),
@@ -183,17 +156,46 @@ def run_all(args):
         (run_market_sentiment, args)
     ]
 
-    with ProcessPoolExecutor(max_workers=4) as executor:
-        futures = [executor.submit(task, arg) for task, arg in tasks]
-        
-        # Wait for all to complete
-        wait(futures)
-        
-        for future in futures:
-            try:
-                future.result()
-            except Exception as e:
-                print(f"⚠️ Task failed with error: {e}")
+    # Switch to sequential execution to avoid akshare/mini_racer multiprocessing crashes
+    print("⚠️ Running tasks sequentially to ensure stability...")
+
+    for task_func, task_args in tasks:
+        try:
+            task_func(task_args)
+        except Exception as e:
+            print(f"⚠️ Task {task_func.__name__} failed with error: {e}")
+
+    # from concurrent.futures import ProcessPoolExecutor, wait
+    #
+    # # Note: ProcessPoolExecutor requires functions to be picklable.
+    # # Wrapper partials might be needed if we pass complex args, but here we just pass 'args' namespace?
+    # # Actually, args (Namespace) is picklable. But we need to import modules inside the worker functions
+    # # if we use ProcessPoolExecutor to avoid global state issues, OR just rely on standard multiprocessing.
+    # # The existing run_* functions import modules inside them, which is good.
+    #
+    # tasks = [
+    #     (run_fish_basin, args),
+    #     (run_b1_selection, args),
+    #     (run_sector_flow, args),
+    #     (run_market_ladder, args),
+    #     (run_core_news, args),
+    #     (run_weekly_preview, args),
+    #     (run_earnings_analysis, args),
+    #     (run_earnings_prompt, args),
+    #     (run_market_sentiment, args)
+    # ]
+    #
+    # with ProcessPoolExecutor(max_workers=4) as executor:
+    #     futures = [executor.submit(task, arg) for task, arg in tasks]
+    #
+    #     # Wait for all to complete
+    #     wait(futures)
+    #
+    #     for future in futures:
+    #         try:
+    #             future.result()
+    #         except Exception as e:
+    #             print(f"⚠️ Task failed with error: {e}")
 
     print("\n✅ All parallel tasks completed.")
     
@@ -251,8 +253,6 @@ def main():
     subparsers.add_parser('b1', parents=[parent_parser], help='Run B1 Stock Selection')
     subparsers.add_parser('sector_flow', parents=[parent_parser], help='Run Sector Flow')
     subparsers.add_parser('ladder', parents=[parent_parser], help='Run Market Ladder')
-    subparsers.add_parser('calendar', parents=[parent_parser], help='Run Market Calendar')
-    subparsers.add_parser('abnormal', parents=[parent_parser], help='Run Abnormal Alert')
     subparsers.add_parser('core_news', parents=[parent_parser], help='Run Core News Monitor')
     subparsers.add_parser('weekly_preview', parents=[parent_parser], help='Run Weekly Events Preview')
     subparsers.add_parser('earnings', parents=[parent_parser], help='Run Earnings Analysis')
@@ -281,10 +281,6 @@ def main():
         run_sector_flow(args)
     elif args.command == 'ladder':
         run_market_ladder(args)
-    elif args.command == 'calendar':
-        run_market_calendar(args)
-    elif args.command == 'abnormal':
-        run_abnormal_alert(args)
     elif args.command == 'core_news':
         run_core_news(args)
     elif args.command == 'weekly_preview':

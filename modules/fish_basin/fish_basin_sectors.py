@@ -1,5 +1,5 @@
 
-
+# -*- coding: utf-8 -*-
 
 import akshare as ak
 import pandas as pd
@@ -302,86 +302,212 @@ def load_sector_config(config_path="config/fish_basin_sectors.json"):
 
 def get_spot_data_map():
     """
-    Fetch Real-time Spot Data (Sectors) from THS Summary.
-    Returns dict: {'SectorName': {'pct': float, 'avg_price': float, 'turnover': float}}
+    Fetch Real-time Spot Data (Sectors) from multiple sources.
+    Returns dict: {'SectorName': {'pct': float, 'source': str}}
+
+    Enhanced with:
+    1. THS Industry Summary (Primary)
+    2. EM Industry Summary (Fallback)
+    3. THS Concept Summary (For concepts)
+    4. Name alias mapping (工业金属 -> 有色金属)
     """
     spot_map = {}
+
+    # Name Mapping: Config Name -> Common Spot Name
+    # This handles cases where config uses different names than spot data
+    NAME_ALIASES = {
+        '工业金属': ['有色金属', '工业金属'],
+        '贵金属': ['贵金属', '黄金'],
+        '煤炭开采加工': ['煤炭', '煤炭开采加工'],
+        '养殖业': ['养殖', '养殖业', '畜牧业'],
+        '机器人概念': ['机器人', '机器人概念'],
+        '旅游及酒店': ['旅游', '旅游及酒店', '旅游酒店'],
+        '食品加工制造': ['食品加工', '食品加工制造', '食品饮料'],
+        '石油加工贸易': ['石油加工', '石油加工贸易', '石油石化']
+    }
+
+    # 1. THS Industry Summary (Primary Source)
     try:
-        # Use THS Summary
+        print("📡 Fetching THS Industry spot data...")
         df = ak.stock_board_industry_summary_ths()
         if df is not None and not df.empty:
-            # Expected cols: 板块, 涨跌幅, 均价, ...
             for _, row in df.iterrows():
                 name = row['板块']
                 try:
-                    pct = float(row['涨跌幅']) # e.g. 10.32 or 0.55
-                except: pct = 0.0
-                
-                try:
-                    # '均价' might be price, but for Index Trend, we mostly care about % Change
-                    # We will calculate NewPrice = OldPrice * (1 + pct/100)
+                    pct = float(row['涨跌幅'])
+                    spot_map[name] = {'pct': pct, 'source': 'THS_Industry'}
+                except:
                     pass
-                except: pass
-                
-                spot_map[name] = {'pct': pct}
-        return spot_map
+            print(f"✅ THS Industry: {len(spot_map)} sectors loaded")
     except Exception as e:
-        print(f"⚠️ Spot Data Fetch Failed: {e}")
-        return {}
+        print(f"⚠️ THS Industry fetch failed: {e}")
+
+    # 2. EM Industry Summary (Fallback for missing items)
+    try:
+        print("📡 Fetching EM Industry spot data...")
+        df_em = ak.stock_board_industry_summary_em()
+        if df_em is not None and not df_em.empty:
+            em_count = 0
+            for _, row in df_em.iterrows():
+                name = row['板块名称']
+                if name not in spot_map:  # Only add if not already in map
+                    try:
+                        pct = float(row['涨跌幅'])
+                        spot_map[name] = {'pct': pct, 'source': 'EM_Industry'}
+                        em_count += 1
+                    except:
+                        pass
+            print(f"✅ EM Industry: {em_count} additional sectors loaded")
+    except Exception as e:
+        print(f"⚠️ EM Industry fetch failed: {e}")
+
+    # 3. EM Concept Spot (Primary for Concepts) - REPLACED THS
+    try:
+        print("📡 Fetching EM Concept spot data (Real-time)...")
+        # 东方财富概念板块实时行情
+        df_concept = ak.stock_board_concept_name_em()
+        if df_concept is not None and not df_concept.empty:
+            concept_count = 0
+            # EM Column Names: "板块名称", "板块代码", "最新价", "涨跌幅", ...
+            for _, row in df_concept.iterrows():
+                name = row['板块名称']
+                if name not in spot_map:
+                    try:
+                        pct = float(row['涨跌幅'])
+                        spot_map[name] = {'pct': pct, 'source': 'EM_Concept'}
+                        concept_count += 1
+                    except:
+                        pass
+            print(f"✅ EM Concept: {concept_count} concepts loaded")
+    except Exception as e:
+        print(f"⚠️ EM Concept fetch failed: {e}")
+
+    # 4. THS Concept (Fallback - Only if we find a better API, currently skipped)
+    # The previous API stock_board_concept_summary_ths has NO price data.
+    pass
+
+    # 5. A-Share Index Spot (For INDEX type sectors)
+    try:
+        print("📡 Fetching A-Share Index spot data...")
+        df_index_spot = ak.stock_zh_index_spot_sina()
+        if df_index_spot is not None and not df_index_spot.empty:
+            index_count = 0
+            for _, row in df_index_spot.iterrows():
+                name = row['名称']
+                if name not in spot_map:
+                    try:
+                        # 新浪指数spot: 涨跌幅 是百分比数值
+                        pct = float(row['涨跌幅'])
+                        spot_map[name] = {'pct': pct, 'source': 'Sina_Index'}
+                        index_count += 1
+                    except:
+                        pass
+            print(f"✅ A-Share Index Spot: {index_count} indices loaded")
+    except Exception as e:
+        print(f"⚠️ A-Share Index Spot fetch failed: {e}")
+
+    # 4. Create reverse mapping with aliases
+    final_spot_map = {}
+    for key, value in spot_map.items():
+        final_spot_map[key] = value
+
+    # Add alias mappings
+    for config_name, alias_list in NAME_ALIASES.items():
+        for alias in alias_list:
+            if alias in spot_map and config_name not in final_spot_map:
+                final_spot_map[config_name] = spot_map[alias]
+                print(f"🔗 Mapped '{config_name}' -> '{alias}' ({spot_map[alias]['source']})")
+
+    print(f"📊 Total spot data entries: {len(final_spot_map)}")
+    return final_spot_map
 
 def patch_today_spot(df, name, spot_map):
     """
     Patch the DataFrame with today's spot data if missing.
+
+    **STRICT DATA QUALITY POLICY**:
+    - If no spot data is found, return None (品种将被过滤掉)
+    - Better to have NO data than STALE data
+    - 宁可没有数据，也不要使用昨天的价格
     """
-    if df is None or df.empty: return df
-    if name not in spot_map: return df
-    
-    try:
-        spot_info = spot_map[name]
-        spot_pct = spot_info['pct'] # Percentage (e.g. 5.0 for 5%)
-        
-        # Check last date
-        last_date = pd.to_datetime(df.iloc[-1]['date']).date()
-        today_date = datetime.now().date()
-        
-        if last_date < today_date:
-            # Need Patch
+    if df is None or df.empty:
+        return df
+
+    # Check last date
+    last_date = pd.to_datetime(df.iloc[-1]['date']).date()
+    today_date = datetime.now().date()
+
+    # If data is NOT from today, we MUST have spot data
+    if last_date < today_date:
+        if name not in spot_map:
+            print(f"❌ '{name}': 历史数据截止 {last_date}，无今日实时数据，**跳过此品种**")
+            return None  # 返回None，品种将被过滤
+
+        # We have spot data - use it to patch
+        try:
+            spot_info = spot_map[name]
+            spot_pct = spot_info['pct']
+            source = spot_info.get('source', 'Unknown')
+
             last_row = df.iloc[-1]
             last_close = float(last_row['close'])
-            
-            # Calculate New Close
             new_close = last_close * (1 + spot_pct / 100.0)
-            
-            # Construct New Row
+
             new_row = last_row.copy()
             new_row['date'] = pd.Timestamp(today_date)
             new_row['close'] = new_close
-            new_row['high'] = new_close # Approx
-            new_row['low'] = new_close  # Approx
-            new_row['open'] = new_close # Approx
-            
-            # Append
-            # df = df.append(new_row, ignore_index=True) # Deprecated
+            new_row['high'] = new_close
+            new_row['low'] = new_close
+            new_row['open'] = new_close
+
             new_df = pd.DataFrame([new_row])
             df = pd.concat([df, new_df], ignore_index=True)
-            
-            # print(f"🔧 Patched {name}: {last_date} -> {today_date} (Pct: {spot_pct}%)")
-            
-        elif last_date == today_date:
-            # Already has today? Check if it looks stale (e.g. if spot is huge but data is small)
-            # But usually THS historical is just yesterday.
-            # If it HAS today, trusting it is usually safer unless we are sure it's wrong.
-            # However, for White Liquor, user said 0.55 vs 10.
-            # If the DF has today's date but the change is mismatching spot, we might want to OVERWRITE.
-            # But let's assume the issue is MISSING date generally.
-            pass
-            
-            # Advanced: Overwrite if deviation is huge?
-            # Let's start with missing date patch.
-            
-    except Exception as e:
-        print(f"Patch failed for {name}: {e}")
-        
+
+            print(f"🔧 Patched '{name}': {last_date} -> {today_date} | Δ{spot_pct:+.2f}% | Source: {source}")
+            return df
+
+        except Exception as e:
+            print(f"❌ '{name}' patch failed: {e}，**跳过此品种**")
+            return None
+
+    # Data is from today - verify quality if we have spot data
+    elif last_date == today_date:
+        if name in spot_map:
+            try:
+                spot_info = spot_map[name]
+                spot_pct = spot_info['pct']
+                source = spot_info.get('source', 'Unknown')
+
+                last_row = df.iloc[-1]
+                prev_row = df.iloc[-2] if len(df) >= 2 else last_row
+
+                current_close = float(last_row['close'])
+                prev_close = float(prev_row['close'])
+
+                actual_pct = ((current_close - prev_close) / prev_close) * 100
+                deviation = abs(actual_pct - spot_pct)
+
+                # If deviation > 3%, data is suspicious - overwrite
+                if deviation > 3.0:
+                    print(f"⚠️ '{name}': 数据偏差 {deviation:.2f}% (Actual {actual_pct:+.2f}% vs Spot {spot_pct:+.2f}%)")
+                    print(f"   -> 使用 {source} 实时数据修正")
+
+                    new_close = prev_close * (1 + spot_pct / 100.0)
+                    df.at[df.index[-1], 'close'] = new_close
+                    df.at[df.index[-1], 'high'] = max(new_close, df.at[df.index[-1], 'high'])
+                    df.at[df.index[-1], 'low'] = min(new_close, df.at[df.index[-1], 'low'])
+                else:
+                    print(f"✅ '{name}': 数据验证通过 Δ{actual_pct:+.2f}% (via {source})")
+
+            except Exception as e:
+                print(f"⚠️ '{name}' validation failed: {e}")
+
+        else:
+            # Data is from today but no spot to verify - trust it
+            print(f"ℹ️ '{name}': 今日数据，无spot验证")
+
+        return df
+
     return df
 
 
@@ -502,6 +628,10 @@ def run(date_dir=None, save_excel=True):
         # --- Apply Spot Patch ---
         # Use ORIGINAL NAME for spot lookup (e.g. "工业金属" not "有色金属")
         df = patch_today_spot(df, original_name, spot_map)
+
+        # Strict Mode: If patch returned None (meaning no valid today's data), SKIP this sector
+        if df is None or df.empty:
+            continue
 
         # Fish Basin Logic
         close = df['close']

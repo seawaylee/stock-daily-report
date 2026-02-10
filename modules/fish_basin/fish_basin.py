@@ -4,7 +4,10 @@ import numpy as np
 from datetime import datetime
 import time
 import os
-from .fish_basin_helper import save_to_excel
+try:
+    from modules.fish_basin.fish_basin_helper import save_to_excel
+except ImportError:
+    from .fish_basin_helper import save_to_excel
 
 # Symbol Mapping
 # Format: "Name": "Code"
@@ -92,19 +95,23 @@ def fetch_data(name, code):
                 df = df[df['date'] >= '2024-01-01']
                 return df
 
-        # 2. HK Indices
+        # 2. HK Indices - Enhanced with better spot data fetching
         if code.startswith("hk"):
              try:
                  symbol_clean = code[2:]
                  df = ak.stock_hk_index_daily_sina(symbol=symbol_clean)
-                 
+
                  # Append Spot
                  if df is not None and not df.empty:
                      df['date'] = pd.to_datetime(df['date'])
                      last_date = df['date'].iloc[-1].date()
                      today_date = datetime.now().date()
-                     
+
                      if last_date < today_date:
+                         # Try multiple spot data sources
+                         spot_added = False
+
+                         # Method 1: Try EM spot data
                          try:
                              spot_df = ak.stock_hk_index_spot_em()
                              target_row = spot_df[spot_df['代码'] == symbol_clean]
@@ -119,9 +126,36 @@ def fetch_data(name, code):
                                      'volume': row['成交量']
                                  }
                                  df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
+                                 spot_added = True
+                                 print(f"✅ HK Spot added for {name} via EM")
                          except Exception as e_spot:
-                             print(f"Failed to fetch HK spot data for {code}: {e_spot}")
-             except Exception as e: 
+                             print(f"⚠️ EM HK spot failed for {code}: {e_spot}")
+
+                         # Method 2: Try Sina realtime if EM failed
+                         if not spot_added:
+                             try:
+                                 spot_df_sina = ak.stock_hk_index_spot_sina()
+                                 target_row = spot_df_sina[spot_df_sina['代码'] == symbol_clean]
+                                 if not target_row.empty:
+                                     row = target_row.iloc[0]
+                                     new_data = {
+                                         'date': pd.to_datetime(today_date),
+                                         'open': row['今开'],
+                                         'high': row['最高'],
+                                         'low': row['最低'],
+                                         'close': row['最新价'],
+                                         'volume': row['成交量']
+                                     }
+                                     df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
+                                     spot_added = True
+                                     print(f"✅ HK Spot added for {name} via Sina")
+                             except Exception as e_sina:
+                                 print(f"⚠️ Sina HK spot also failed for {code}: {e_sina}")
+
+                         if not spot_added:
+                             print(f"❌ Failed to get HK spot data for {name} - data may be stale!")
+
+             except Exception as e:
                  print(f"Error fetching HK history: {e}")
 
 

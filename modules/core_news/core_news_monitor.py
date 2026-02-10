@@ -396,7 +396,7 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
     save_prompt(daily_content, "核心要闻_Prompt.txt", output_dir)
 
     # --- New: Automate Podcast Text Generation (Daily) ---
-    podcast_dir = os.path.join(output_dir, "../podcast_inputs") # Save to daily root podcast_inputs
+    podcast_dir = os.path.join(output_dir, "podcast_inputs") # Save to daily root podcast_inputs
     os.makedirs(podcast_dir, exist_ok=True)
     podcast_text = generate_podcast_text(daily_top, is_weekly=False)
     podcast_file = os.path.join(podcast_dir, "core_news_daily.txt")
@@ -406,7 +406,7 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
 
     # --- New: Automate Image Generation (Daily) ---
     raw_prompt_daily = get_raw_image_prompt_daily(date_disp)
-    image_dir = os.path.join(output_dir, "../images") # Save to daily root images
+    image_dir = os.path.join(output_dir, "images") # Save to daily root images
     os.makedirs(image_dir, exist_ok=True)
     image_path_daily = os.path.join(image_dir, "core_news_daily_cover.png")
 

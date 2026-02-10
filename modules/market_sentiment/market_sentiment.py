@@ -238,33 +238,44 @@ def get_market_volume(date_str: str = None) -> Dict[str, float]:
 def get_indices_performance() -> Dict[str, float]:
     """
     Get performance (% change) for major indices.
-    
+    Corrected codes and added filtering for failed data.
+
     Returns:
         Dictionary with index names and their % changes
     """
     indices = {
         "上证50": "sh000016",
         "沪深300": "sh000300",
-        "中证500": "sh000905",
-        "中证2000": "sh932000"
+        "中证500": "sz399905",   # Corrected from sh000905
+        "中证2000": "sz399303"   # Changed to CNI 2000 (more reliable data source)
     }
-    
+
     performance = {}
-    
+
     for name, code in indices.items():
         try:
+            # Use shared fetch_data from fish_basin (proven reliability)
             df = fetch_data(name, code)
             if df is not None and not df.empty and len(df) >= 2:
-                latest = df.iloc[-1]['close']
-                previous = df.iloc[-2]['close']
+                latest = float(df.iloc[-1]['close'])
+                previous = float(df.iloc[-2]['close'])
+
+                # Check if data is fresh (today)
+                last_date = pd.to_datetime(df.iloc[-1]['date']).date()
+                today_date = datetime.now().date()
+
+                # Simple validation: if date is not today, try to get spot or accept it might be close price
+                # For sentiment, we accept latest available if it's recent
+
                 pct_change = ((latest - previous) / previous) * 100
                 performance[name] = round(pct_change, 2)
+                print(f"✅ {name}: {pct_change:+.2f}%")
             else:
-                performance[name] = 0.0
+                print(f"⚠️ Failed to get data for {name}, skipping.")
         except Exception as e:
-            print(f"Error fetching {name} performance: {e}")
-            performance[name] = 0.0
-    
+            print(f"❌ Error fetching {name} performance: {e}")
+            # Do NOT add to performance dict if failed (so it won't show as 0%)
+
     return performance
 
 

@@ -1,0 +1,67 @@
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 10:16) HAND-DRAWN SKETCH style stock market infographic poster.
+
+**CRITICAL: VERTICAL PORTRAIT FORMAT (10:16)**
+- The image MUST be significantly taller than it is wide (Phone wallpaper style).
+- Aspect Ratio: 10:16.
+- Canvas Size: 1600x2560.
+
+**CRITICAL: HAND-DRAWN AESTHETIC**
+- Use ONLY pencil sketch lines, charcoal shading, ink pen strokes
+- Visible paper grain texture throughout
+- Line wobbles and imperfections (authentic hand-drawn feel)
+- NO digital smoothness, NO vector graphics
+- Shading: crosshatching, stippling, charcoal smudges only
+- Background: Hand-drawn red-gold gradient with visible pencil strokes
+
+
+Center: "AI大模型量化策略 · 热门题材筛选" + "2026-02-10"
+**Visual Highlight**: Add a realistic "Red Ink Stamp" (Seal) near the title with text: "次日择机买入"
+
+**NEW: 基于趋势模型Top5热门题材筛选**
+
+5 stock cards in a single column layout:
+Background: Pale blue background with paper texture
+
+**VISUAL CONTENT:**
+Refined Hand-Drawn Table/Cards:
+
+#1 四川黄金 | 001337 | 🏭 贵金属
+🚀 **超卖缩量拐头Buy** (Red Ink) | **J=-11.09** (Blue) **RSI=36.79** (Purple)
+💰 **买入区间**: 47.67-49.61元 | **止损**: 44.75元(-8%)
+📍 **操作**: 超卖区，可分批建仓 | **风险**: ⚠️ 高风险 (波动较大，建议轻仓)
+
+#2 兴业银锡 | 000426 | 🏭 有色金属
+🚀 **超卖缩量拐头Buy** (Red Ink) | **J=-3.69** (Blue) **RSI=38.52** (Purple)
+💰 **买入区间**: 49.21-51.21元 | **止损**: 46.19元(-8%)
+📍 **操作**: 超卖区，可分批建仓 | **风险**: ⚠️ 高风险 (波动较大，建议轻仓)
+
+#3 紫金矿业 | 601899 | 🏭 有色金属
+🚀 **超卖缩量拐头Buy** (Red Ink) | **J=17.55** (Blue) **RSI=56.24** (Purple)
+💰 **买入区间**: 37.47-38.63元 | **止损**: 35.54元(-8%)
+📍 **操作**: 回调企稳后买入 | **风险**: ⚠️ 高风险 (波动较大，建议轻仓)
+
+#4 江波龙 | 301308 | 🏭 半导体
+🚀 **超卖缩量拐头Buy** (Red Ink) | **J=-9.29** (Blue) **RSI=32.72** (Purple)
+💰 **买入区间**: 288.07-299.83元 | **止损**: 270.43元(-8%)
+📍 **操作**: 超卖区，可分批建仓 | **风险**: ⚠️ 高风险 (波动较大，建议轻仓)
+
+#5 山东黄金 | 600547 | 🏭 贵金属
+🚀 **超卖缩量Buy** (Red Ink) | **J=-6.58** (Blue) **RSI=23.8** (Purple)
+💰 **买入区间**: 44.64-46.46元 | **止损**: 41.91元(-8%)
+📍 **操作**: 超卖区，可分批建仓 | **风险**: ⚠️ 高风险 (波动较大，建议轻仓)
+
+
+
+
+**FOOTER:**
+"Daily AI Algo Strategy | High Value Ratio Stocks | Follow for Updates"
+(Render in Chinese: "每日盘后分享AI量化策略的高值博率股票，点赞关注不迷路")
+
+**免责声明 (Disclaimer):**
+本内容仅供学习交流，不构成任何投资建议。
+股市有风险，投资需谨慎。请独立思考，理性决策。
+
+
+(Note: This prompt is optimized for the 'Nano Banana Pro3' model. Please ensure all details are consistent with high-quality hand-drawn vector art.)

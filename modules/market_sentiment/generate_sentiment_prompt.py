@@ -210,12 +210,42 @@ def get_raw_image_prompt(sentiment_result: Dict[str, Any]) -> str:
 
     theme = color_themes.get(color, color_themes["yellow"])
 
+    # 构建更丰富的信息图Prompt (包含5大维度区块)
+    scores = sentiment_result.get('score_breakdown', {})
+
+    # 维度描述生成
+    dim_desc = []
+    # 1. 宽度
+    breadth_score = scores.get('market_breadth', 0)
+    dim_desc.append(f"Panel 1 (Breadth): {'Rising' if breadth_score > 0 else 'Falling'} bar chart sketch")
+    # 2. 趋势
+    trend_score = scores.get('indices_trend', 0)
+    dim_desc.append(f"Panel 2 (Trend): {'Upward' if trend_score > 0 else 'Downward'} line graph")
+    # 3. 资金
+    flow_score = scores.get('money_flow', 0)
+    dim_desc.append(f"Panel 3 (Capital): {'Inflow' if flow_score > 0 else 'Outflow'} coin stack illustration")
+    # 4. 新闻
+    news_score = scores.get('news_sentiment', 0)
+    dim_desc.append(f"Panel 4 (News): {'Sun' if news_score > 0 else 'Cloud'} weather icon over newspaper")
+    # 5. 估值
+    val_score = scores.get('valuation_score', 0) # Note: key might vary, check raw data usage if needed
+    dim_desc.append(f"Panel 5 (Value): Balance scale sketch")
+
+    blocks_text = ", ".join(dim_desc)
+
     prompt = (
-        f"A vintage hand-drawn illustration of a sentiment gauge for stock market analysis, "
-        f"{theme['atmosphere']}, aged paper texture, ink sketch style. "
-        f"The gauge needle is pointing to {index_value} on a scale of 0 to 100, indicating '{sentiment_level}'. "
-        f"Visual elements: {theme['elements']}{visual_extras}. "
-        f"Visual style: antique scientific instrument, da vinci sketch, detailed, {theme['mood']} atmosphere. "
+        f"(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)\n\n"
+        f"Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market sentiment infographic poster.\n\n"
+        f"**Layout Structure**:\n"
+        f"1. **Top Section**: A large vintage MAIN GAUGE (Speedometer style) pointing to {index_value} ({sentiment_level}).\n"
+        f"2. **Middle Section**: 5 distinct rectangular DATA BLOCKS/PANELS arranged in a grid below the gauge.\n"
+        f"   - {blocks_text}\n"
+        f"3. **Background**: {theme['atmosphere']}, aged paper texture, ink sketch lines.\n\n"
+        f"**Visual Details**:\n"
+        f"- Style: Da Vinci engineering sketch, complex mechanical details, infographic layout.\n"
+        f"- Color Palette: {theme['mood']} tones (Mainly {color} highlights) on parchment paper.\n"
+        f"- Textures: Crosshatching, ink splatters, rough paper grain.\n"
+        f"- No digital text, just visual representations of data.\n\n"
         f"--ar 9:16 --style raw --v 6"
     )
     return prompt
@@ -241,9 +271,9 @@ def generate_image_prompt(sentiment_result: Dict[str, Any]) -> str:
     }
     theme_cn = color_themes_cn.get(color, "中性色调")
 
-    prompt = f"""# AI绘图提示词 - 市场贪婪恐惧指数可视化
+    prompt = f"""# AI绘图提示词 - 市场贪婪恐惧指数可视化 (信息图版)
 
-**风格要求**: 复古手绘风格，保持项目视觉一致性
+**风格要求**: 复古手绘风格，竖版信息图海报
 
 ---
 
@@ -251,22 +281,10 @@ def generate_image_prompt(sentiment_result: Dict[str, Any]) -> str:
 
 {raw_prompt}
 
-**主题**: 市场情绪温度计/仪表盘
-
-**核心元素**:
-- 一个半圆形或垂直的复古仪表盘，刻度从0到100
-- 指针指向{index_value}刻度位置，当前指向"{sentiment_level}"区域
-- 仪表盘分区标注：
-  - 0-30: 极度恐惧 (深蓝色)
-  - 30-45: 恐惧 (蓝色)
-  - 45-55: 中性 (黄色)
-  - 55-70: 贪婪 (橙色)
-  - 70-100: 极度贪婪 (红色)
-
-**视觉风格**:
-- 手绘墨水线条，复古铜版画质感
-- 泛黄的纸张背景，边缘有岁月痕迹
-- {theme_cn}
+**画面结构**:
+1. **顶部核心**: 复古仪表盘，指针指向 {index_value} ({sentiment_level})
+2. **中部模块**: 5个独立的数据可视化方块 (代表宽度、趋势、资金、新闻、估值)
+3. **整体风格**: 达芬奇手稿风格，机械细节，{theme_cn}
 
 **文字信息** (建议后期PS添加):
 - 标题："A股市场情绪指数"

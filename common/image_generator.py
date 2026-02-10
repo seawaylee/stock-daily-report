@@ -13,15 +13,16 @@ client = OpenAI(
     base_url=os.getenv("LLM_BASE_URL")
 )
 
-def generate_image_from_text(prompt: str, output_path: str, model: str = "NanoBanana Pro", size: str = "1024x1792"):
+def generate_image_from_text(prompt: str, output_path: str, model: str = "gemini-3-pro-image", size: str = "1024x1792", quality: str = "hd"):
     """
     Generate an image using the OpenAI-compatible API and save it to the output path.
 
     Args:
         prompt: The image generation prompt.
         output_path: Full path to save the generated image.
-        model: Model name to use (default: NanoBanana Pro).
+        model: Model name to use (default: gemini-3-pro-image).
         size: Image size (default: 1024x1792 for 9:16).
+        quality: Image quality (default: hd for high quality).
 
     Returns:
         bool: True if successful, False otherwise.
@@ -33,6 +34,8 @@ def generate_image_from_text(prompt: str, output_path: str, model: str = "NanoBa
             prompt=prompt,
             n=1,
             size=size,
+            quality=quality,
+            output_format="png",
             response_format="b64_json"
         )
 
