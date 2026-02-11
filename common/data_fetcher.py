@@ -10,6 +10,7 @@ import time
 import os
 import pickle
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from .tushare_manager import TushareManager
 
 CACHE_DIR = "results/cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -132,6 +133,30 @@ def get_all_stock_list(min_market_cap: float = 0, exclude_st: bool = False) -> p
             return result
         except Exception as e:
             print(f"Persistent cache load failed: {e}")
+
+    # --- Optim: Try Tushare first ---
+    ts_manager = TushareManager()
+    if ts_manager.is_ready:
+        print("尝试使用 Tushare 获取股票列表...")
+        ts_df = ts_manager.get_stock_list()
+        if ts_df is not None and not ts_df.empty:
+            # Apply filters
+            if exclude_st:
+                ts_df = ts_df[~ts_df['name'].str.contains('ST', case=False, na=False)]
+            if min_market_cap > 0:
+                ts_df = ts_df[ts_df['market_cap'] >= min_market_cap]
+
+            print(f"✅ Tushare 获取成功: {len(ts_df)} 只股票 (市值>={min_market_cap}亿, 排除ST={exclude_st})")
+
+            # Save to cache
+            try:
+                ts_df.to_csv(cache_file, index=False)
+                ts_df.to_csv(persistent_cache, index=False)
+                print(f"Saved stock list cache to {cache_file} and {persistent_cache}")
+            except Exception as e:
+                print(f"Failed to save cache: {e}")
+
+            return ts_df
 
     try:
         # 获取A股股票列表（包含市值和行业信息）
@@ -376,8 +401,18 @@ def _add_market_prefix(code: str) -> str:
 
 def get_stock_data(code: str, days: int = 300) -> Optional[pd.DataFrame]:
     """
-    获取单只股票的日线数据 (Prioritize Sina -> Fallback to EastMoney)
+    获取单只股票的日线数据 (Prioritize Tushare -> Sina -> Fallback to EastMoney)
     """
+    # 0. Try Tushare (Primary if configured)
+    ts_manager = TushareManager()
+    if ts_manager.is_ready:
+        try:
+            df = ts_manager.get_daily_data(code, days)
+            if df is not None and not df.empty:
+                return df
+        except Exception as e:
+            print(f"Tushare fetching failed for {code}: {e}")
+
     # 1. Try Sina (Primary now due to EM blocking)
     try:
         sina_code = _add_market_prefix(code)
