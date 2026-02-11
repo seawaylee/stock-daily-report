@@ -491,10 +491,13 @@ def call_gemini_analysis(selected_stocks, date_dir):
 
 def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     """直接生成信息图提示词 (无需Agent二次处理)"""
+    # Import data masking utilities
+    from common.data_masking import mask_stock_info
+
     # 准备股票数据摘要(包含技术指标 + 脱敏信息)
-    if len(selected_stocks) > 5:
-        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 5。")
-        selected_stocks = selected_stocks[:5]
+    if len(selected_stocks) > 10:
+        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 10。")
+        selected_stocks = selected_stocks[:10]
 
     # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
@@ -567,25 +570,25 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     # --- Generate Card Text with Trading Strategy (Python Logic) ---
     cards_text = ""
     for idx, s in enumerate(selected_stocks, 1):
-        # 不再脱敏，直接使用原始名称和代码
-        name = s['name']
-        code = s['code']
+        # 应用数据脱敏：代码后2位替换为**，名称后2字替换为拼音缩写
+        masked_code, masked_name = mask_stock_info(s['code'], s['name'])
+
         industry = s.get('industry', '未知')
-        if not industry or industry == '未知' or str(industry).lower() == 'nan': 
-            industry = guess_sector_by_name(name)
-        
+        if not industry or industry == '未知' or str(industry).lower() == 'nan':
+            industry = guess_sector_by_name(s['name'])
+
         signals = ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点')
         signals = signals.split(',')[0] # First signal
         signals = signals.replace('标准买点', 'Buy').replace('回踩', 'Retrace')
-        
+
         J_val = round(s.get('J', 0), 2)
         RSI_val = round(s.get('RSI', 0), 2)
-        
+
         # 获取价格：优先从price字段，否则从raw_data_mock中获取
         price = s.get('price', 0)
         if price == 0 and 'raw_data_mock' in s:
             price = s['raw_data_mock'].get('close', 0)
-        
+
         # 计算操作策略
         # 买入时机：根据J值和RSI值判断
         if J_val < 20 and RSI_val < 40:
@@ -597,11 +600,11 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         else:
             buy_timing = "突破确认后追涨"
             entry_zone = f"{price:.2f}-{price * 1.03:.2f}"
-        
+
         # 止损位：通常设置在5-8%
         stop_loss = f"{price * 0.92:.2f}"
         stop_loss_pct = "8%"
-        
+
         # 风险评估：根据RSI和振幅判断
         near_amp = s.get('near_amplitude', 0)
         if RSI_val < 30 or near_amp > 15:
@@ -613,12 +616,13 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         else:
             risk_level = "📊 相对稳健"
             risk_note = "可适当增仓"
-        
-        line1 = f"#{idx} {name} | {code} | 🏭 {industry}"
+
+        # 使用脱敏后的代码和名称
+        line1 = f"#{idx} {masked_name} | {masked_code} | 🏭 {industry}"
         line2 = f"🚀 **{signals}** (Red Ink) | **J={J_val}** (Blue) **RSI={RSI_val}** (Purple)"
         line3 = f"💰 **买入区间**: {entry_zone}元 | **止损**: {stop_loss}元(-{stop_loss_pct})"
         line4 = f"📍 **操作**: {buy_timing} | **风险**: {risk_level} ({risk_note})"
-        
+
         cards_text += f"{line1}\n{line2}\n{line3}\n{line4}\n\n"
 
     # --- Final Prompt Construction ---
@@ -728,9 +732,11 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
             with open(analysis_file, 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # 解析模式: 1. **中航光电 (002179)** | 军工电子/高端连接器 |
-            # 兼容带有 ** 的 markdown 格式
-            pattern = re.compile(r'\d+\.\s*(?:\*\*)?(.+?)\s*(?:\*\*)?\s*\((?:\*\*)?(\d{6})(?:\*\*)?\)\s*(?:\*\*)?\s*\|\s*(.+?)\s*\|')
+            # 超强兼容版解析模式:
+            # 1. 允许股票名称前有任意数量的 * 或空格
+            # 2. 允许代码括号前后有任意 * 或空格
+            # 3. 允许行业信息前后有任意标记或直接结尾
+            pattern = re.compile(r'\d+\.\s*[\*]*\s*(.+?)\s*[\*]*\s*\(\s*[\*]*(\d{6})[\*]*\s*\)\s*[\*]*\s*\|\s*(.+?)(?:\s*\||\s*\*|$)')
 
             # 构建映射表 code -> industry
             industry_map = {}
@@ -746,9 +752,15 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
             # 回填到 selected_stocks
             count = 0
             for stock in selected_stocks:
-                code = stock['code']
-                if code in industry_map:
-                    stock['industry'] = industry_map[code]
+                # 兼容性处理：提取纯数字代码进行匹配
+                raw_code = stock['code']
+                pure_code = re.sub(r'\D', '', raw_code) # 提取 600338
+
+                if pure_code in industry_map:
+                    stock['industry'] = industry_map[pure_code]
+                    count += 1
+                elif raw_code in industry_map:
+                    stock['industry'] = industry_map[raw_code]
                     count += 1
 
             print(f"✅ 成功从分析报告回填 {count} 条行业数据")
@@ -831,22 +843,29 @@ def run(date_dir=None, force=False):
         print("⚠️ 未能获取热门题材，跳过题材过滤，使用全部B1股票")
         filtered_stocks = selected
     else:
-        # 按题材过滤
-        filtered_stocks = [s for s in selected if match_stock_sector(s, hot_sectors)]
-        print(f"\n✅ 题材过滤完成:")
+        # 按题材过滤逻辑优化：优先选题材，不足则按信号强度补齐
+        hot_stocks = [s for s in selected if match_stock_sector(s, hot_sectors)]
+
+        print(f"\n✅ 题材匹配完成:")
         print(f"   - 热门题材Top5: {', '.join(hot_sectors)}")
-        print(f"   - 原始B1股票数: {len(selected)}")
-        print(f"   - 过滤后股票数: {len(filtered_stocks)}")
-        
-        if not filtered_stocks:
-            print("\n❌ 没有符合热门题材的B1股票，放宽条件使用全部B1股票")
-            filtered_stocks = selected
+        print(f"   - 匹配题材的B1股票: {len(hot_stocks)} 只")
+
+        # 补齐逻辑：确保至少有 15-20 只候选股供 AI 筛选 Top 10
+        target_pool_size = 20
+        if len(hot_stocks) < target_pool_size:
+            # 排除已选中的题材股
+            remaining = [s for s in selected if s not in hot_stocks]
+            # 按 J 值排序（越低代表超卖越严重，信号通常越强）
+            remaining.sort(key=lambda x: x.get('J', 100))
+
+            padding_needed = min(len(remaining), target_pool_size - len(hot_stocks))
+            padding_stocks = remaining[:padding_needed]
+
+            filtered_stocks = hot_stocks + padding_stocks
+            print(f"   - 信号补齐: 题材股 {len(hot_stocks)} 只 + 强信号补齐 {len(padding_stocks)} 只 = 总计 {len(filtered_stocks)} 只候选")
         else:
-            # 显示过滤出的股票样例
-            sample = min(5, len(filtered_stocks))
-            print(f"\n   过滤后股票示例（前{sample}只）:")
-            for i, stock in enumerate(filtered_stocks[:sample], 1):
-                print(f"      {i}. {stock['name']} ({stock['code']}) - {stock.get('industry', 'N/A')}")
+            filtered_stocks = hot_stocks
+            print(f"   - 题材股充足，使用前 {len(filtered_stocks)} 只候选")
     
     # 3. 调用AI分析 (使用filtered_stocks而不是selected)
     print("\n" + "="*70)

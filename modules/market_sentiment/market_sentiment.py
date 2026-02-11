@@ -201,10 +201,14 @@ def get_market_volume(date_str: str = None) -> Dict[str, float]:
     except Exception as e:
         print(f"⚠️ Error fetching history from AkShare: {e}")
 
-    # Fallback if yesterday_vol is still 0
+    # PRIORITY: Try Prompt File First (More Reliable)
     if yesterday_vol == 0:
-        print("   Trying to fetch yesterday's volume from previous prompt...")
+        print("   AkShare history failed, trying previous prompt file...")
         yesterday_vol = get_volume_from_previous_prompt(target_date)
+        if yesterday_vol > 0:
+            print(f"   ✅ Recovered yesterday volume from prompt: {yesterday_vol/1e8:.0f}亿")
+        else:
+            print("   ⚠️ WARNING: Both AkShare and Prompt file failed for yesterday_vol!")
 
     # 2. Get Today's Volume
     today_vol = 0.0
@@ -727,6 +731,11 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any],
         vol_desc = "暂无数据"
         vol_change_desc = "数据缺失"
         vol_trend_desc = "无法判断"
+    elif vol_change == 0 and vol_yesterday == 0:
+        # Yesterday data unavailable, don't show percentage
+        vol_desc = ""
+        vol_change_desc = ""
+        vol_trend_desc = "成交额正常"
     else:
         vol_desc = f"放量{vol_change:.1f}%" if vol_change > 0 else f"缩量{abs(vol_change):.1f}%"
         vol_change_desc = "红色" if vol_change > 5 else "绿色" if vol_change < -5 else "黄色"
@@ -800,7 +809,7 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any],
 ---
 
 ### 6. 成交额 (Volume)
-- 今日: **{vol_today:.0f} 亿** ({vol_desc})
+- 今日: **{vol_today:.0f} 亿**{f' ({vol_desc})' if vol_desc else ''}
 - 说明: {vol_trend_desc}
 """
 
@@ -841,6 +850,35 @@ def generate_prompt_content(result: Dict[str, Any], market_data: Dict[str, Any],
 
 ## Footer
 "每日恐贪指数 | AI量化情绪模型"
+
+---
+
+## AI绘图Prompt (Midjourney/SD)
+
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market sentiment infographic poster.
+
+**Layout Structure**:
+1. **Top Section**: A large vintage MAIN GAUGE (Speedometer style) pointing to {idx} ({level}).
+2. **Middle Section**: A PROMINENT HEXAGONAL RADAR CHART (六边形雷达图) showing 5 dimensions:
+   - Dimension 1 (Market Breadth): Score {breadth:+.1f} - {'Strong' if breadth > 5 else 'Weak' if breadth < -5 else 'Neutral'}
+   - Dimension 2 (Index Trend): Score {indices_trend:+.1f} - {'Bullish' if indices_trend > 2 else 'Bearish' if indices_trend < -2 else 'Flat'}
+   - Dimension 3 (Money Flow): Score {flow_score:+.1f} - {'Inflow' if flow_score > 0 else 'Outflow'}
+   - Dimension 4 (News Sentiment): Score {news_score:+.1f} - {'Positive' if news_score > 2 else 'Negative' if news_score < -2 else 'Neutral'}
+   - Dimension 5 (Valuation): Score {val_score:+.1f} - {'Expensive' if val_score > 3 else 'Cheap' if val_score < -3 else 'Fair'}
+   - **Chart Style**: Hand-drawn hexagon with 5 axes radiating from center, filled area shows current scores
+   - **Color**: Use {'fiery red' if idx >= 80 else 'warm orange' if idx >= 60 else 'calm yellow' if idx >= 40 else 'cool blue' if idx >= 20 else 'deep cold blue'} tones, with filled area showing intensity
+3. **Background**: {'fiery red tones, burning background' if idx >= 80 else 'warm orange tones, bright background' if idx >= 60 else 'neutral yellow tones, balanced composition' if idx >= 40 else 'cool blue tones, calm background' if idx >= 20 else 'deep cold blue tones, icy background'}, aged paper texture, ink sketch lines.
+
+**Visual Details**:
+- Style: Da Vinci engineering sketch, complex mechanical details, infographic layout.
+- **IMPORTANT**: The hexagonal radar chart MUST be the dominant visual element in the middle section.
+- Color Palette: {'excitement, frenzy' if idx >= 80 else 'optimistic, positive' if idx >= 60 else 'calm, waiting' if idx >= 40 else 'cautious, worried' if idx >= 20 else 'panic, extreme pessimism'} tones on parchment paper.
+- Textures: Crosshatching, ink splatters, rough paper grain.
+- No digital text, just visual representations of data.
+
+--ar 9:16 --style raw --v 6
 """
     return prompt
 
@@ -877,19 +915,11 @@ def run_analysis(date_str: str = None) -> Dict[str, Any]:
     print(f"\n✅ Analysis complete: {result['index']}/100 ({result['sentiment_level']})")
     print(f"📄 Prompt saved to: {output_path}")
 
-    # 1. Generate Raw Prompt for API
+    # DISABLED: No longer generate intermediate files
+    # The final 市场情绪_Prompt.txt now contains the complete Midjourney/SD prompt with hexagonal radar chart
+
+    # Generate Image using API (Use Raw English Prompt)
     raw_image_prompt = get_raw_image_prompt(result)
-
-    # 2. Generate Full Prompt Content for File (Markdown with Chinese explanation)
-    full_prompt_content = generate_image_prompt(result)
-
-    # Save Full Image Prompt to file for reference
-    image_prompt_file = os.path.join(output_dir, "市场情绪_配图_Prompt.txt")
-    with open(image_prompt_file, 'w', encoding='utf-8') as f:
-        f.write(full_prompt_content)
-    print(f"📄 Image Prompt saved to: {image_prompt_file}")
-
-    # 3. Generate Image using API (Use Raw English Prompt)
     image_output_dir = os.path.join("results", date_s, "images")
     os.makedirs(image_output_dir, exist_ok=True)
     image_output_path = os.path.join(image_output_dir, "market_sentiment_cover.png")

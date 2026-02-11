@@ -116,13 +116,12 @@ def run_earnings_prompt(args):
 def run_market_sentiment(args):
     print("\n=== [Module 11] Market Sentiment Index ===")
     from modules.market_sentiment import market_sentiment
-    from modules.market_sentiment import generate_sentiment_prompt
 
-    # Run analysis
+    # Run analysis (Now generates final 市场情绪_Prompt.txt with hexagonal radar chart)
     analyzer = market_sentiment.run_analysis(args.date_str)
 
-    # Generate prompts
-    generate_sentiment_prompt.generate_prompts(analyzer, args.date_dir)
+    # DISABLED: No longer generate intermediate files
+    # The final 市场情绪_Prompt.txt now contains complete Midjourney/SD prompt
     return True
 
 def run_dragon_tiger(args):
@@ -144,17 +143,24 @@ def run_all(args):
     
     # We can run these in parallel:
     # 1. Fish Basin (Indices & Sectors)
-    # 2. B1 Selection (might be slow)
+    # 2. B1 Selection (with data masking)
     # 3. Sector Flow
     # 4. Market Ladder
-    # 5. Core News (EastMoney)
+    # 5. Weekly Preview (if weekend)
+    # 6. Earnings Analysis
+    # 7. Market Sentiment
+    # 8. Dragon Tiger
+
+    # DISABLED by default: Core News
+    # - Core News module is available for manual execution but excluded from daily workflow
+    # - Other modules can still import its data functions (e.g., fetch_eastmoney_data)
 
     tasks = [
         (run_fish_basin, args),
-        (run_b1_selection, args),
+        (run_b1_selection, args),  # ENABLED: B1 Selection with data masking (code: 5133**, name: 平安YH)
         (run_sector_flow, args),
         (run_market_ladder, args),
-        (run_core_news, args),
+        # (run_core_news, args),  # DISABLED: Core News - Manual execution only (data functions still available)
         (run_weekly_preview, args),
         (run_earnings_analysis, args),
         (run_earnings_prompt, args),

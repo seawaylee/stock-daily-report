@@ -210,39 +210,33 @@ def get_raw_image_prompt(sentiment_result: Dict[str, Any]) -> str:
 
     theme = color_themes.get(color, color_themes["yellow"])
 
-    # 构建更丰富的信息图Prompt (包含5大维度区块)
+    # 构建六边形雷达图Prompt（恢复原版设计）
     scores = sentiment_result.get('score_breakdown', {})
 
-    # 维度描述生成
-    dim_desc = []
-    # 1. 宽度
+    # 获取各维度分数
     breadth_score = scores.get('market_breadth', 0)
-    dim_desc.append(f"Panel 1 (Breadth): {'Rising' if breadth_score > 0 else 'Falling'} bar chart sketch")
-    # 2. 趋势
     trend_score = scores.get('indices_trend', 0)
-    dim_desc.append(f"Panel 2 (Trend): {'Upward' if trend_score > 0 else 'Downward'} line graph")
-    # 3. 资金
     flow_score = scores.get('money_flow', 0)
-    dim_desc.append(f"Panel 3 (Capital): {'Inflow' if flow_score > 0 else 'Outflow'} coin stack illustration")
-    # 4. 新闻
     news_score = scores.get('news_sentiment', 0)
-    dim_desc.append(f"Panel 4 (News): {'Sun' if news_score > 0 else 'Cloud'} weather icon over newspaper")
-    # 5. 估值
-    val_score = scores.get('valuation_score', 0) # Note: key might vary, check raw data usage if needed
-    dim_desc.append(f"Panel 5 (Value): Balance scale sketch")
-
-    blocks_text = ", ".join(dim_desc)
+    val_score = scores.get('valuation', 0)
 
     prompt = (
         f"(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)\n\n"
         f"Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market sentiment infographic poster.\n\n"
         f"**Layout Structure**:\n"
         f"1. **Top Section**: A large vintage MAIN GAUGE (Speedometer style) pointing to {index_value} ({sentiment_level}).\n"
-        f"2. **Middle Section**: 5 distinct rectangular DATA BLOCKS/PANELS arranged in a grid below the gauge.\n"
-        f"   - {blocks_text}\n"
+        f"2. **Middle Section**: A PROMINENT HEXAGONAL RADAR CHART (六边形雷达图) showing 5 dimensions:\n"
+        f"   - Dimension 1 (Market Breadth): Score {breadth_score:+.1f} - {'Strong' if breadth_score > 5 else 'Weak' if breadth_score < -5 else 'Neutral'}\n"
+        f"   - Dimension 2 (Index Trend): Score {trend_score:+.1f} - {'Bullish' if trend_score > 2 else 'Bearish' if trend_score < -2 else 'Flat'}\n"
+        f"   - Dimension 3 (Money Flow): Score {flow_score:+.1f} - {'Inflow' if flow_score > 0 else 'Outflow'}\n"
+        f"   - Dimension 4 (News Sentiment): Score {news_score:+.1f} - {'Positive' if news_score > 2 else 'Negative' if news_score < -2 else 'Neutral'}\n"
+        f"   - Dimension 5 (Valuation): Score {val_score:+.1f} - {'Expensive' if val_score > 3 else 'Cheap' if val_score < -3 else 'Fair'}\n"
+        f"   - **Chart Style**: Hand-drawn hexagon with 5 axes radiating from center, filled area shows current scores\n"
+        f"   - **Color**: Use {theme['mood']} tones, with filled area showing intensity\n"
         f"3. **Background**: {theme['atmosphere']}, aged paper texture, ink sketch lines.\n\n"
         f"**Visual Details**:\n"
         f"- Style: Da Vinci engineering sketch, complex mechanical details, infographic layout.\n"
+        f"- **IMPORTANT**: The hexagonal radar chart MUST be the dominant visual element in the middle section.\n"
         f"- Color Palette: {theme['mood']} tones (Mainly {color} highlights) on parchment paper.\n"
         f"- Textures: Crosshatching, ink splatters, rough paper grain.\n"
         f"- No digital text, just visual representations of data.\n\n"

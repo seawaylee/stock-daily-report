@@ -297,13 +297,25 @@ def filter_top_news(data, limit=10, is_weekly=False):
     # Net Score Logic
     sector_scores = {}
     
+    # Calculate current time for "X hours ago"
+    now = datetime.now()
+
     for item in top_items:
         if is_weekly:
             wd_idx = item['time'].weekday()
             t_str = wd_map[wd_idx]
         else:
-            t_str = item['time'].strftime('%H:%M')
-            
+            # Calculate hours ago
+            delta = now - item['time']
+            hours_ago = int(delta.total_seconds() / 3600)
+            if hours_ago == 0:
+                t_str = "刚刚"
+            elif hours_ago < 24:
+                t_str = f"{hours_ago}小时前"
+            else:
+                days_ago = int(hours_ago / 24)
+                t_str = f"{days_ago}天前"
+
         # Display Tag: Hide generic targets
         generic_targets = ["行业", "宏观", "个股"]
         target_display = ""
@@ -312,12 +324,12 @@ def filter_top_news(data, limit=10, is_weekly=False):
             sem_tag = f"【{item['direction']}·{item['target']}】"
         else:
             sem_tag = f"【{item['direction']}】"
-        
+
         # Truncate for brevity (User Request)
         display_title = item['title']
         if len(display_title) > 60:
             display_title = display_title[:58] + "..."
-            
+
         formatted_list.append(f"[{t_str}]{sem_tag} {display_title}")
         
         # Accumulate Net Score for Footer
@@ -389,9 +401,16 @@ Hand-drawn financial infographic poster, China A-share market news, 24h summary 
 **Color Coding**: Tags "利多" MUST be RED. Tags "利空" MUST be GREEN.
 
 **Layout**:
-- Title: "Important Selection" hand-drawn style.
-- Section 1: Top 10 News List with Sector Tags.
+- Title: "Important Selection" hand-drawn style at top.
+- **Left Side**: Vertical timeline with dots connected by a line (showing relative time like "2小时前", "5小时前", etc.)
+- **Right Side**: News content with sentiment tags and titles (aligned with timeline dots).
 - Footer: "Like & Follow".
+
+**Timeline Design**:
+- Draw a vertical line on the left (20% width)
+- Place time markers (e.g., "刚刚", "3小时前", "12小时前") along the line
+- News items aligned on the right side, no connecting lines (maximize text display space)
+- Use dots/circles on the timeline for visual clarity
 """
     save_prompt(daily_content, "核心要闻_Prompt.txt", output_dir)
 
