@@ -2,7 +2,71 @@
 Data Masking Utilities for Stock Information
 用于对股票代码和名称进行脱敏处理
 """
-from pypinyin import lazy_pinyin, Style
+try:
+    from pypinyin import lazy_pinyin, Style
+    _HAS_PYPINYIN = True
+except ImportError:  # pragma: no cover - depends on runtime env
+    lazy_pinyin = None
+    Style = None
+    _HAS_PYPINYIN = False
+
+
+def _fallback_initial(ch: str) -> str:
+    """
+    Derive an uppercase initial from one character without external deps.
+
+    - ASCII letters/digits: uppercase itself
+    - Chinese chars: approximate pinyin initial by GBK code ranges
+    - Others: X
+    """
+    if not ch:
+        return "X"
+
+    if ch.isascii():
+        return ch.upper()
+
+    try:
+        gbk = ch.encode("gbk")
+    except Exception:
+        return "X"
+
+    if len(gbk) < 2:
+        return "X"
+
+    code = gbk[0] * 256 + gbk[1] - 65536
+    mapping = (
+        (-20319, -20284, "A"),
+        (-20283, -19776, "B"),
+        (-19775, -19219, "C"),
+        (-19218, -18711, "D"),
+        (-18710, -18527, "E"),
+        (-18526, -18240, "F"),
+        (-18239, -17923, "G"),
+        (-17922, -17418, "H"),
+        (-17417, -16475, "J"),
+        (-16474, -16213, "K"),
+        (-16212, -15641, "L"),
+        (-15640, -15166, "M"),
+        (-15165, -14923, "N"),
+        (-14922, -14915, "O"),
+        (-14914, -14631, "P"),
+        (-14630, -14150, "Q"),
+        (-14149, -14091, "R"),
+        (-14090, -13319, "S"),
+        (-13318, -12839, "T"),
+        (-12838, -12557, "W"),
+        (-12556, -11848, "X"),
+        (-11847, -11056, "Y"),
+        (-11055, -10247, "Z"),
+    )
+    for start, end, letter in mapping:
+        if start <= code <= end:
+            return letter
+    return "X"
+
+
+def _fallback_initials(text: str) -> str:
+    return "".join(_fallback_initial(ch) for ch in text)
 
 
 def mask_stock_code(code: str) -> str:
@@ -45,9 +109,13 @@ def mask_stock_name(name: str) -> str:
     # Get last 2 characters
     last_two = name[-2:]
 
-    # Convert to pinyin and get first letter of each character
-    pinyin_list = lazy_pinyin(last_two, style=Style.FIRST_LETTER)
-    abbreviation = ''.join(pinyin_list).upper()
+    if _HAS_PYPINYIN:
+        # Convert to pinyin and get first letter of each character
+        pinyin_list = lazy_pinyin(last_two, style=Style.FIRST_LETTER)
+        abbreviation = ''.join(pinyin_list).upper()
+    else:
+        # Fallback when pypinyin is unavailable: derive initials without third-party deps.
+        abbreviation = _fallback_initials(last_two)
 
     # Replace last 2 characters with abbreviation
     return name[:-2] + abbreviation

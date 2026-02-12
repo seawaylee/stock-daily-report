@@ -88,6 +88,55 @@ class TestB1SelectionPromptStyle(unittest.TestCase):
         self.assertEqual(card_count, 5)
         self.assertNotIn("#6 ", prompt)
 
+    def test_generate_image_prompt_uses_llm_industry_without_guess_suffix(self):
+        fake_pypinyin = types.SimpleNamespace(
+            lazy_pinyin=lambda s, style=None: [ch for ch in s],
+            Style=types.SimpleNamespace(FIRST_LETTER="FIRST_LETTER"),
+        )
+        stocks = [
+            {
+                "code": "600877",
+                "name": "电科芯片",
+                "industry": "",
+                "signals": ["超卖缩量B"],
+                "J": 12.3,
+                "RSI": 25.6,
+                "near_amplitude": 10.2,
+                "far_amplitude": 19.8,
+                "raw_data_mock": {"close": 15.2, "volume": 34567.0},
+            }
+        ]
+        gemini_analysis = (
+            "1. Top5股票排名\n\n"
+            "[电科芯片] (600877) | 半导体芯片 / 信创军工\n"
+            "推荐理由：多重买点叠加，芯片超卖区。\n"
+        )
+        with patch.dict("sys.modules", {"pypinyin": fake_pypinyin}):
+            prompt, _ = b1_selection.generate_image_prompt(
+                gemini_analysis=gemini_analysis,
+                selected_stocks=stocks,
+                date_dir="results/20260212",
+            )
+
+        self.assertIn("半导体芯片 / 信创军工", prompt)
+        self.assertNotIn("(猜)", prompt)
+
+    def test_generate_image_prompt_contains_color_accent_guidelines(self):
+        fake_pypinyin = types.SimpleNamespace(
+            lazy_pinyin=lambda s, style=None: [ch for ch in s],
+            Style=types.SimpleNamespace(FIRST_LETTER="FIRST_LETTER"),
+        )
+        with patch.dict("sys.modules", {"pypinyin": fake_pypinyin}):
+            prompt, _ = b1_selection.generate_image_prompt(
+                gemini_analysis="测试分析文本",
+                selected_stocks=_sample_stocks(),
+                date_dir="results/20260212",
+            )
+
+        self.assertIn("COLOR ACCENT GUIDELINES", prompt)
+        self.assertIn("soft AI-cyan", prompt)
+        self.assertIn("rounded light highlight background", prompt)
+
 
 if __name__ == "__main__":
     unittest.main()

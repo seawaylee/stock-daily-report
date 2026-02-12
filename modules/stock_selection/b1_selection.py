@@ -486,6 +486,34 @@ def extract_reason_map_from_analysis(analysis_text):
     return reason_map
 
 
+def extract_industry_map_from_analysis(analysis_text):
+    """从分析文本中提取 code->行业/题材 映射。"""
+    import re
+
+    if not analysis_text:
+        return {}
+
+    industry_map = {}
+    for raw_line in analysis_text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        match = re.search(r"\((\d{6})\)\s*\|\s*(.+)$", line)
+        if not match:
+            continue
+
+        code = match.group(1)
+        industry = match.group(2).strip()
+        industry = re.sub(r"^[\-\*\s]+", "", industry)
+        industry = re.sub(r"[\*\s]+$", "", industry)
+        industry = re.sub(r"\s{2,}", " ", industry)
+        if industry and "推荐理由" not in industry:
+            industry_map[code] = industry
+
+    return industry_map
+
+
 def build_fallback_reason(stock):
     """没有LLM理由时，使用技术指标生成简洁回退理由。"""
     signal = ",".join(stock.get("signals", []))
@@ -574,11 +602,15 @@ def call_gemini_analysis(selected_stocks, date_dir):
                 top_stocks.append(stock_map[c])
 
         reason_map = extract_reason_map_from_analysis(analysis_result)
+        industry_map = extract_industry_map_from_analysis(analysis_result)
         for stock in top_stocks:
             norm_code = normalize_stock_code(stock.get("code"))
             reason = reason_map.get(norm_code)
             if reason:
                 stock["reason"] = reason
+            industry = industry_map.get(norm_code)
+            if industry:
+                stock["industry"] = industry
 
         top5_file = os.path.join(temp_dir, "selected_top5.json")
         with open(top5_file, 'w', encoding='utf-8') as f:
@@ -680,21 +712,22 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
 
     # --- Generate Card Text with Trading Strategy (Python Logic) ---
     reason_map = extract_reason_map_from_analysis(gemini_analysis)
+    industry_map = extract_industry_map_from_analysis(gemini_analysis)
     cards_text = ""
     for idx, s in enumerate(selected_stocks, 1):
         # 应用数据脱敏：代码后2位替换为**，名称后2字替换为拼音缩写
         masked_code, masked_name = mask_stock_info(s['code'], s['name'])
 
-        industry = s.get('industry', '未知')
+        norm_code = normalize_stock_code(s.get("code"))
+        industry = s.get('industry', '')
         if not industry or industry == '未知' or str(industry).lower() == 'nan':
-            industry = guess_sector_by_name(s['name'])
+            industry = industry_map.get(norm_code, "行业待补充")
 
         signals = ','.join(s.get('signals', [])).replace('B1', '买点').replace('B', '买点').replace('原始买点', '买点')
         signals = signals.split(',')[0]  # First signal
 
         J_val = round(s.get('J', 0), 2)
         RSI_val = round(s.get('RSI', 0), 2)
-        norm_code = normalize_stock_code(s.get("code"))
         llm_reason = s.get("reason") or reason_map.get(norm_code) or build_fallback_reason(s)
         llm_reason = compact_reason_text(llm_reason)
 
@@ -732,6 +765,14 @@ Center: "AI大模型量化策略 · 热门题材筛选" + "{datetime.now().strft
 5 stock cards in a single column layout:
 Background: Pale blue background with paper texture
 
+**COLOR ACCENT GUIDELINES (Avoid monotone):**
+- Keep overall palette soft and low-saturation, not neon.
+- Use soft AI-cyan accents (e.g., #BFEFFF / #DFF4FF) for small icons like 📌 📊 🏭.
+- Render line icons and separators with light tint + hand-drawn ink texture.
+- For key sentences (especially "选股理由"), add a rounded light highlight background.
+- Highlight chip colors: pale cyan #EAF7FF or light amber #FFF4E6.
+- Keep text readable: dark gray text on light backgrounds.
+
 **VISUAL CONTENT:**
 Refined Hand-Drawn Table/Cards:
 
@@ -743,44 +784,6 @@ Refined Hand-Drawn Table/Cards:
 """
 
     return final_prompt, final_prompt
-
-def guess_sector_by_name(name):
-    """根据股票名称猜测行业 (Fallback)"""
-    sector_map = {
-        # Specific overrides
-        '星图': '商业航天',
-        '诚志': '化工/显示',
-        '茅台': '白酒', '五粮液': '白酒', '老窖': '白酒', 
-        '中科': '科技',
-        
-        # General Categories
-        '银行': '银行', '证券': '证券', '保险': '保险',
-        '酒': '酿酒',
-        '药': '医药', '医': '医疗',
-        '油': '石油', '石化': '石油',
-        '煤': '煤炭', '矿': '采掘',
-        '金': '贵金属', '银': '贵金属', '铝': '有色', '铜': '有色',
-        '钢': '钢铁', '铁': '钢铁',
-        '电': '电力/电网', '能': '能源',
-        '机': '机械', '装备': '设备',
-        '车': '汽车', '汽': '汽车',
-        '建': '基建', '工': '工程',
-        '房': '地产', '地': '地产',
-        '科': '科技', '技': '科技', '芯': '芯片',
-        '软': '软件', '网': '互联网',
-        '航': '航空航天',
-        '海': '航运', '运': '物流',
-        '食': '食品', '乳': '食品',
-        '纸': '造纸',
-        '纺': '纺织',
-        '商': '商业',
-        '光': '光伏/光学',
-    }
-    for kw, sec in sector_map.items():
-        if kw in name:
-            return sec + "(猜)"
-    return "热门题材"  # Final fallback
-
 
 def save_reports(gemini_analysis, today):
     """保存报告（简化版 - 仅保存到agent_outputs）"""
@@ -808,39 +811,17 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
         temp_dir = os.path.join(date_dir, "temp_data")
         analysis_file = os.path.join(temp_dir, "result_analysis.txt")
         if os.path.exists(analysis_file):
-            import re
             with open(analysis_file, 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # 超强兼容版解析模式:
-            # 1. 允许股票名称前有任意数量的 * 或空格
-            # 2. 允许代码括号前后有任意 * 或空格
-            # 3. 允许行业信息前后有任意标记或直接结尾
-            pattern = re.compile(r'\d+\.\s*[\*]*\s*(.+?)\s*[\*]*\s*\(\s*[\*]*(\d{6})[\*]*\s*\)\s*[\*]*\s*\|\s*(.+?)(?:\s*\||\s*\*|$)')
-
-            # 构建映射表 code -> industry
-            industry_map = {}
-            matches = pattern.findall(content)
-            for name, code, ind in matches:
-                # 清理数据
-                clean_name = name.replace('*', '').strip()
-                clean_code = code.replace('*', '').strip()
-                clean_ind = ind.replace('*', '').strip()
-                industry_map[clean_code] = clean_ind
-                # print(f"  - 识别到: {clean_code} -> {clean_ind}")
+            industry_map = extract_industry_map_from_analysis(content)
 
             # 回填到 selected_stocks
             count = 0
             for stock in selected_stocks:
-                # 兼容性处理：提取纯数字代码进行匹配
-                raw_code = stock['code']
-                pure_code = re.sub(r'\D', '', raw_code) # 提取 600338
-
+                pure_code = normalize_stock_code(stock.get("code"))
                 if pure_code in industry_map:
                     stock['industry'] = industry_map[pure_code]
-                    count += 1
-                elif raw_code in industry_map:
-                    stock['industry'] = industry_map[raw_code]
                     count += 1
 
             print(f"✅ 成功从分析报告回填 {count} 条行业数据")
