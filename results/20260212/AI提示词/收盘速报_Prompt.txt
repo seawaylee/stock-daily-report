@@ -1,0 +1,61 @@
+# A股收盘速报 - AI绘图Prompt
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+- 配色: 指数涨跌遵循A股红涨绿跌
+
+## 标题
+**📌 A股收盘速报**（主标题）
+**2026年2月12日**（副标题）
+
+---
+
+## 硬性文案（必须逐字呈现）
+- 指标1：上证指数  +0.05%  4134.02
+- 指标2：沪深300  +0.12%  4719.58
+- 指标3：创业板指  +1.32%  3328.06
+- 成交额：2.14万亿
+- 点评：三大指数收涨且创业板领涨，成交额维持高位，市场风险偏好边际回升。
+- 有利因素标题：有利因素
+- 有利因素正文：支持汽车置换更新 最高补贴1.5万四川省发改委、财政厅发布关于印发《四川省2026年实施大规模设备更新和消费品以旧换新政策措施》的通知。通知提到，支持汽车置换更新。2026年，对个人消费者通过售卖方式转让登记在本人名下的乘用车，并购买纳入工业和信息化部《减免车辆购置税的新能源汽车车型目录》的新能源乘用车或2.0升及以下排量燃油的乘用车，给予一次性补贴。
+- 有利因素点评：四川汽车置换补贴加码，提振新能源车消费预期。
+- 不利因素标题：不利因素
+- 不利因素正文：商业航天人气股澄清 没有4.58亿海南项目且25年商业航天订单不足千万近日，A股及海外市场潜在风险事件如下。国内经济信息方面包括：1）硅片价格本周再次下跌，总库存处于合理水位之上；2）应对商品LOF高溢价风险，多家基金公司限购低至1元；公司方面重点关注包括：1）天际股份涉嫌信息披露违法违规，被证监会立案调查；2）巨力索具公告，未签署过4.58亿的海南项目，公司2025年度在商业航天领域取得订单累计金额996.51万等。
+- 不利因素点评：航天题材澄清降温，叠加监管立案压制情绪。
+
+## 排版要求
+1) 顶部为标题区：主标题 + 日期横条。
+2) 第二屏为三列指数卡片：指数名、涨跌幅、收盘点位。
+3) 第三屏为成交额与点评信息框，点评文字控制在2-3行。
+4) 第四屏为“有利因素”模块，红色小标题与强调图标。
+5) 第五屏为“不利因素”模块，绿色小标题与强调图标。
+6) 版面强调信息可读性，避免花哨插画和过多装饰。
+7) 重点结论（点评/有利因素点评/不利因素点评）使用浅红底色块轻微高亮：#FDECEC。
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn financial infographic poster, China A-share close report, 2026年2月12日.
+
+Style: warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+Layout (9:16 vertical):
+- Title area: "A股收盘速报" with date.
+- Three index cards: SSE, CSI300, ChiNext with red-up green-down values.
+- Turnover and commentary block.
+- Favorable factor block with red highlight icon.
+- Unfavorable factor block with green highlight icon.
+- Use subtle light-red background highlight (#FDECEC) for key conclusion lines.
+- Keep all Chinese text exactly as provided, no paraphrase.
+
+Atmosphere: Professional, concise, hand-drawn finance poster style, high readability.
+
+--ar 9:16 --style raw --v 6
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**

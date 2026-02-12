@@ -1,0 +1,127 @@
+# 20260211 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**02月11日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+文化传媒(11) | 玻璃玻纤(6) | 小金属(5) | 化学制品(4) | 化学原料(3) | 专用设备(3) | 装修建材(2) | 家电行业(2)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 4板 (1只)
+```
+    百川股份    
+    化学制品    
+
+```
+
+### 3板 (20只) - 2炸板+11断板
+```
+  [一字]大位科技    [一字]掌阅科技    [一字]龙韵股份      雅博股份    
+    互联网服        文化传媒        文化传媒        装修建材    
+
+    欢瑞世纪        吉华集团        德才股份      [X]博纳影业   
+    文化传媒        化学制品        装修装饰        文化传媒    
+
+   [X]风语筑     [X]兆驰股份     [X]荣信文化     [X]上海电影   
+    文化传媒        家电行业        文化传媒        文化传媒    
+
+  [X]横店影视     [X]捷成股份     [X]顶固集创     [X]联德股份   
+    文化传媒        文化传媒        装修建材        通用设备    
+
+  [X]振德医疗     [X]长飞光纤     [X]中文在线     [X]引力传媒   
+    医疗器械        通信设备        文化传媒        文化传媒    
+
+```
+
+### 2板 (3只)
+```
+  [一字]特发信息      醋化股份        小崧股份    
+    通信设备        化学制品        家电行业    
+
+```
+
+### 首板 (40只)
+```
+  [一字]豫能控股      华尔泰         山东玻纤        南兴股份        中材科技    
+    电力行业        化学原料        玻璃玻纤        专用设备        玻璃玻纤    
+
+    国际复材        宏和科技        翔鹭钨业        锦和商管        海量数据    
+    玻璃玻纤        玻璃玻纤        小金属         房地产服        软件开发    
+
+    章源钨业        美邦股份        金时科技        天创时尚        聚杰微纤    
+    小金属         农药兽药        电源设备        纺织服装        纺织服装    
+
+    新金路         北矿科技        莲花控股        金富科技        东方钽业    
+    化学原料        小金属         食品饮料        塑料制品        小金属     
+
+    江钨装备        华明装备        金牛化工        金正大         常青科技    
+    专用设备        电网设备        化学原料        化肥行业        化学制品    
+
+    中钨高新        再升科技        宝地矿业        中国巨石        百通能源    
+    小金属         玻璃玻纤        钢铁行业        玻璃玻纤        公用事业    
+
+    利通电子        泰和新材        汇绿生态        德邦科技        平安电工    
+    消费电子        化纤行业        工程建设        电子元件        非金属材    
+
+    格林美         海油工程        珠海中富        电投水电        卓郎智能    
+    能源金属        采掘行业        包装材料        环保行业        专用设备    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 02月11日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "02月11日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 4板: 百川股份 - highest streak
+- 文化传媒 dominates with 11 stocks
+- Total 64 stocks (40 first-time + 24 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

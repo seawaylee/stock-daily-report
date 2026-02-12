@@ -124,6 +124,11 @@ def run_market_sentiment(args):
     # The final 市场情绪_Prompt.txt now contains complete Midjourney/SD prompt
     return True
 
+def run_close_report(args):
+    print("\n=== [Module 13] Close Report Prompt ===")
+    from modules.close_report import run as run_close_report_module
+    return run_close_report_module(args.date_str, args.date_dir)
+
 def run_dragon_tiger(args):
     print("\n=== [Module 12] Dragon Tiger List ===")
     from modules.dragon_tiger import dragon_tiger
@@ -165,6 +170,7 @@ def run_all(args):
         (run_earnings_analysis, args),
         (run_earnings_prompt, args),
         (run_market_sentiment, args),
+        (run_close_report, args),
         (run_dragon_tiger, args)
     ]
 
@@ -270,6 +276,7 @@ def main():
     subparsers.add_parser('earnings', parents=[parent_parser], help='Run Earnings Analysis')
     subparsers.add_parser('earnings_prompt', parents=[parent_parser], help='Generate Earnings Performance Prompt')
     subparsers.add_parser('sentiment', parents=[parent_parser], help='Run Market Sentiment Analysis')
+    subparsers.add_parser('close_report', parents=[parent_parser], help='Generate Close Report Prompt')
     subparsers.add_parser('dragon', parents=[parent_parser], help='Run Dragon Tiger Analysis')
 
     args = parser.parse_args()
@@ -306,6 +313,8 @@ def main():
         run_earnings_prompt(args)
     elif args.command == 'sentiment':
         run_market_sentiment(args)
+    elif args.command == 'close_report':
+        run_close_report(args)
     elif args.command == 'dragon':
         run_dragon_tiger(args)
     else:

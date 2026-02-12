@@ -1,0 +1,1227 @@
+✅ Activated Conda Env: py311 (/Users/NikoBelic/anaconda3/envs/stock311/bin/python)
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+✅ Network Logging Activated: Auto-Retry (3x) + UA Injection enabled.
+🌟 Starting Full Daily Workflow (Parallel Execution) 🌟
+Target Directory: results/20260212
+📅 Weekday Mode -> Daily Summaries Only
+⚠️ Running tasks sequentially to ensure stability...
+
+=== [Module 1] Fish Basin Trend Analysis ===
+--- Part A: Indices ---
+
+=== 鱼盆趋势模型v2.0 (Fish Basin Model) ===
+Date: 2026.02.12
+Starting Fish Basin Analysis for 17 symbols...
+✅ Success: https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_S2026_2_12=/GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=SI&_=2026_2_12&source=web
+✅ 白银现货 Done.
+✅ Success: https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_S2026_2_12=/GlobalFuturesService.getGlobalFuturesDailyKLine?symbol=GC&_=2026_2_12&source=web
+✅ 黄金现货 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399905/hisdata/klc_kl.js?d=2020_2_4
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCountSimple?node=hs_s
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:00<00:01,  6.87it/s] 38%|███▊      | 3/8 [00:00<00:00, 10.19it/s] 62%|██████▎   | 5/8 [00:00<00:00, 10.27it/s] 88%|████████▊ | 7/8 [00:00<00:00, 11.00it/s]                                             /Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=1&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=2&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=3&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=4&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=5&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=6&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=7&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=8&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ 中证500 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000688/hisdata/klc_kl.js?d=2020_2_4
+✅ 科创50 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399303/hisdata/klc_kl.js?d=2020_2_4
+✅ 中证2000 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399852/hisdata/klc_kl.js?d=2020_2_4
+✅ 中证1000 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000510/hisdata/klc_kl.js?d=2020_2_4
+✅ 中证A500 Done.
+✅ Success: https://q.10jqka.com.cn/gn/detail/code/307822/
+✅ Success: http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/1/ajax/1/
+  0%|          | 0/39 [00:00<?, ?it/s]  5%|▌         | 2/39 [00:00<00:13,  2.80it/s]  8%|▊         | 3/39 [00:02<00:33,  1.07it/s] 10%|█         | 4/39 [00:02<00:22,  1.54it/s] 15%|█▌        | 6/39 [00:02<00:12,  2.64it/s] 21%|██        | 8/39 [00:03<00:08,  3.63it/s] 23%|██▎       | 9/39 [00:03<00:07,  3.90it/s] 28%|██▊       | 11/39 [00:03<00:05,  5.23it/s] 31%|███       | 12/39 [00:03<00:04,  5.47it/s] 33%|███▎      | 13/39 [00:03<00:04,  5.27it/s] 38%|███▊      | 15/39 [00:04<00:03,  6.85it/s] 41%|████      | 16/39 [00:04<00:03,  6.81it/s] 44%|████▎     | 17/39 [00:04<00:03,  6.47it/s] 49%|████▊     | 19/39 [00:04<00:02,  7.83it/s] 51%|█████▏    | 20/39 [00:04<00:02,  7.43it/s] 54%|█████▍    | 21/39 [00:04<00:02,  6.72it/s] 59%|█████▉    | 23/39 [00:05<00:01,  8.28it/s] 64%|██████▍   | 25/39 [00:05<00:01,  8.17it/s] 67%|██████▋   | 26/39 [00:05<00:01,  8.35it/s] 72%|███████▏  | 28/39 [00:05<00:01,  9.34it/s] 74%|███████▍  | 29/39 [00:05<00:01,  8.44it/s] 79%|███████▉  | 31/39 [00:06<00:00,  8.01it/s] 85%|████████▍ | 33/39 [00:06<00:00,  7.95it/s] 90%|████████▉ | 35/39 [00:06<00:00,  7.94it/s] 95%|█████████▍| 37/39 [00:06<00:00,  7.75it/s]100%|██████████| 39/39 [00:07<00:00,  7.82it/s]                                               /Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+✅ Success: http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/1/ajax/1/
+✅ Success: http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/2/ajax/1/
+✅ Success: http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/3/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/4/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/5/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/6/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/7/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/8/ajax/1/
+✅ Success: http://q.10jqka.com.cn/account/login/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/10/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/11/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/12/ajax/1/
+✅ Success: http://q.10jqka.com.cn/account/login/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/14/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/15/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/16/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/17/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/18/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/19/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/20/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/21/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/22/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/23/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/24/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/25/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/26/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/27/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/28/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/29/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/30/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/31/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/32/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/33/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/34/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/35/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/36/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/37/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/38/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/gn/index/field/addtime/order/desc/page/39/ajax/1/
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/bj899050/hisdata/klc_kl.js?d=2020_2_4
+✅ 北证50 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399006/hisdata/klc_kl.js?d=2020_2_4
+✅ 创业板指 Done.
+✅ Success: https://finance.sina.com.cn/stock/hkstock/HSTECH/klc_kl.js?d=2023_5_01
+❌ Exception (Attempt 1/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+⚠️ EM HK spot failed for hkHSTECH: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://hq.sinajs.cn/rn=mtf2t&list=hkCES100,hkCES120,hkCES280,hkCES300,hkCESA80,hkCESG10,hkCESHKM,hkCSCMC,hkCSHK100,hkCSHKDIV,hkCSHKLC,hkCSHKLRE,hkCSHKMCS,hkCSHKME,hkCSHKPE,hkCSHKSE,hkCSI300,hkCSRHK50,hkGEM,hkHKL,hkHSCCI,hkHSCEI,hkHSI,hkHSMBI,hkHSMOGI,hkHSMPI,hkHSTECH,hkSSE180,hkSSE180GV,hkSSE380,hkSSE50,hkSSECEQT,hkSSECOMP,hkSSEDIV,hkSSEITOP,hkSSEMCAP,hkSSEMEGA,hkVHSI
+⚠️ Sina HK spot also failed for hkHSTECH: '成交量'
+❌ Failed to get HK spot data for 恒生科技 - data may be stale!
+✅ 恒生科技 Done.
+✅ Success: https://finance.sina.com.cn/stock/hkstock/HSI/klc_kl.js?d=2023_5_01
+❌ Exception (Attempt 1/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin.py:353: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+
+❌ Exception (Attempt 2/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://15.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+⚠️ EM HK spot failed for hkHSI: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://hq.sinajs.cn/rn=mtf2t&list=hkCES100,hkCES120,hkCES280,hkCES300,hkCESA80,hkCESG10,hkCESHKM,hkCSCMC,hkCSHK100,hkCSHKDIV,hkCSHKLC,hkCSHKLRE,hkCSHKMCS,hkCSHKME,hkCSHKPE,hkCSHKSE,hkCSI300,hkCSRHK50,hkGEM,hkHKL,hkHSCCI,hkHSCEI,hkHSI,hkHSMBI,hkHSMOGI,hkHSMPI,hkHSTECH,hkSSE180,hkSSE180GV,hkSSE380,hkSSE50,hkSSECEQT,hkSSECOMP,hkSSEDIV,hkSSEITOP,hkSSEMCAP,hkSSEMEGA,hkVHSI
+⚠️ Sina HK spot also failed for hkHSI: '成交量'
+❌ Failed to get HK spot data for 恒生指数 - data may be stale!
+✅ 恒生指数 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000300/hisdata/klc_kl.js?d=2020_2_4
+✅ 沪深300 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000016/hisdata/klc_kl.js?d=2020_2_4
+✅ 上证50 Done.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000001/hisdata/klc_kl.js?d=2020_2_4
+✅ 上证指数 Done.
+
+🔄 Retry Cycle 1/2 for 3 items...
+
+🔄 Retry Cycle 2/2 for 3 items...
+
+========================================
+📊 趋势模型(指数) 执行汇总
+✅ 成功: 14/17
+❌ 失败: 3/17
+⚠️ 最终失败列表: 微盘股, 标普500, 纳指100
+========================================
+
+Excel report saved to: results/20260212/趋势模型_指数.xlsx
+[1m代码          名称          状态          涨幅%         现价          黄线          白线          黄线偏离率       白线偏离率       金叉天数        死叉天数        排名变化      [0m
+GC          黄金现货        [91mYES       [0m  [92m-0.49%    [0m  5082        4691        4964        [91m8.33%     [0m  [91m2.38%     [0m  281         -           [0m-     [0m
+sz399905    中证500       [91mYES       [0m  [91m+1.17%    [0m  8423        7941        8289        [91m6.07%     [0m  [91m1.61%     [0m  166         -           [0m-     [0m
+sz399303    中证2000      [91mYES       [0m  [91m+0.79%    [0m  10969       10466       10828       [91m4.80%     [0m  [91m1.30%     [0m  180         -           [91m+1    [0m
+SI          白银现货        [91mYES       [0m  [92m-1.14%    [0m  83          79          88          [91m4.46%     [0m  [92m-5.99%    [0m  210         -           [92m-1    [0m
+sz399852    中证1000      [91mYES       [0m  [91m+0.91%    [0m  8314        7960        8206        [91m4.45%     [0m  [91m1.33%     [0m  169         -           [0m-     [0m
+sh000510    中证A500      [91mYES       [0m  [91m+0.46%    [0m  5923        5769        5875        [91m2.66%     [0m  [91m0.81%     [0m  168         -           [0m-     [0m
+sh000688    科创50        [91mYES       [0m  [91m+1.78%    [0m  1480        1444        1478        [91m2.55%     [0m  [91m0.15%     [0m  33          -           [91m+5    [0m
+sz399006    创业板指        [91mYES       [0m  [91m+1.32%    [0m  3328        3251        3306        [91m2.34%     [0m  [91m0.65%     [0m  159         -           [91m+2    [0m
+hkHSI       恒生指数        [91mYES       [0m  [91m+0.58%    [0m  27183       26583       26932       [91m2.26%     [0m  [91m0.93%     [0m  24          -           [92m-2    [0m
+sh000001    上证指数        [91mYES       [0m  [91m+0.05%    [0m  4134        4046        4104        [91m2.17%     [0m  [91m0.72%     [0m  187         -           [92m-2    [0m
+sh000300    沪深300       [91mYES       [0m  [91m+0.12%    [0m  4719        4669        4698        [91m1.07%     [0m  [91m0.44%     [0m  182         -           [0m-     [0m
+sh000016    上证50        [91mYES       [0m  [92m-0.28%    [0m  3079        3050        3065        [91m0.97%     [0m  [91m0.47%     [0m  190         -           [92m-3    [0m
+bj899050    北证50        [91mYES       [0m  [92m-0.44%    [0m  1525        1515        1534        [91m0.67%     [0m  [92m-0.60%    [0m  21          -           [0m-     [0m
+hkHSTECH    恒生科技        [92mNO        [0m  [91m+0.62%    [0m  5451        5684        5618        [92m-4.11%    [0m  [92m-2.99%    [0m  -           4           [0m-     [0m
+
+--- Part B: Sectors ---
+=== Fish Basin Sector Analysis (Configured List) ===
+Loading Sector Config...
+Total items to process from config: 36
+✅ Success: https://q.10jqka.com.cn/thshy/detail/code/881272/
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  4.52it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.12it/s]100%|██████████| 3/3 [00:00<00:00,  2.94it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881121/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881121/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881121/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  3.70it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.05it/s]100%|██████████| 3/3 [00:00<00:00,  4.45it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881168/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881168/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881168/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://q.10jqka.com.cn/gn/detail/code/309130
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  6.03it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.62it/s]100%|██████████| 3/3 [00:00<00:00,  5.49it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_886078/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_886078/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_886078/01/2026.js
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  6.14it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.75it/s]100%|██████████| 3/3 [00:00<00:00,  5.56it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881279/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881279/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881279/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  4.66it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.10it/s]100%|██████████| 3/3 [00:00<00:00,  4.94it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881273/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881273/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881273/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  4.30it/s] 67%|██████▋   | 2/3 [00:00<00:00,  3.44it/s]100%|██████████| 3/3 [00:00<00:00,  4.25it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881105/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881105/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881105/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.15it/s] 67%|██████▋   | 2/3 [00:00<00:00,  3.91it/s]100%|██████████| 3/3 [00:00<00:00,  3.64it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881102/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881102/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881102/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://q.10jqka.com.cn/gn/detail/code/300816
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.64it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.72it/s]100%|██████████| 3/3 [00:00<00:00,  6.10it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_885517/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_885517/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_885517/01/2026.js
+✅ Success: https://q.10jqka.com.cn/gn/detail/code/302035
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.49it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.23it/s]100%|██████████| 3/3 [00:00<00:00,  5.79it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_885728/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_885728/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_885728/01/2026.js
+✅ Success: https://q.10jqka.com.cn/gn/detail/code/300382
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.20it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.48it/s]100%|██████████| 3/3 [00:00<00:00,  5.96it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_885343/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_885343/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_885343/01/2026.js
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  4.77it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.27it/s]100%|██████████| 3/3 [00:00<00:00,  5.71it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881153/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881153/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881153/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.20it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.32it/s]100%|██████████| 3/3 [00:00<00:00,  5.76it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881160/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881160/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881160/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://q.10jqka.com.cn/gn/detail/code/308014
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.41it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.64it/s]100%|██████████| 3/3 [00:00<00:00,  5.03it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_886015/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_886015/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_886015/01/2026.js
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399813/hisdata/klc_kl.js?d=2020_2_4
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399808/hisdata/klc_kl.js?d=2020_2_4
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399989/hisdata/klc_kl.js?d=2020_2_4
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000922/hisdata/klc_kl.js?d=2020_2_4
+🔄 触发 Plan C: 尝试使用同花顺数据源获取 [中证红利]...
+❌ Plan C 也失败: '中证红利'
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399975/hisdata/klc_kl.js?d=2020_2_4
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000932/hisdata/klc_kl.js?d=2020_2_4
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.33it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.15it/s]100%|██████████| 3/3 [00:00<00:00,  5.75it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881278/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881278/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881278/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.43it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.37it/s]100%|██████████| 3/3 [00:00<00:00,  5.78it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881126/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881126/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881126/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.86it/s] 67%|██████▋   | 2/3 [00:00<00:00,  6.04it/s]100%|██████████| 3/3 [00:00<00:00,  5.98it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881129/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881129/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881129/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.86it/s] 67%|██████▋   | 2/3 [00:00<00:00,  3.10it/s]100%|██████████| 3/3 [00:00<00:00,  4.10it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881281/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881281/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881281/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.96it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.63it/s]100%|██████████| 3/3 [00:00<00:00,  5.39it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881272/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881272/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881272/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  6.14it/s] 67%|██████▋   | 2/3 [00:00<00:00,  6.13it/s]100%|██████████| 3/3 [00:00<00:00,  6.53it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881124/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881124/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881124/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  4.12it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.01it/s]100%|██████████| 3/3 [00:00<00:00,  5.70it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881145/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881145/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881145/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.95it/s] 67%|██████▋   | 2/3 [00:00<00:00,  6.00it/s]100%|██████████| 3/3 [00:00<00:00,  6.31it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881175/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881175/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881175/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.81it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.59it/s]100%|██████████| 3/3 [00:00<00:00,  5.90it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881131/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881131/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881131/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  6.56it/s] 67%|██████▋   | 2/3 [00:00<00:00,  6.41it/s]100%|██████████| 3/3 [00:00<00:00,  6.60it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881130/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881130/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881130/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.95it/s] 67%|██████▋   | 2/3 [00:00<00:00,  3.85it/s]100%|██████████| 3/3 [00:00<00:00,  4.75it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881169/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881169/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881169/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.01it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.52it/s]100%|██████████| 3/3 [00:00<00:00,  4.98it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881280/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881280/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881280/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  4.23it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.96it/s]100%|██████████| 3/3 [00:00<00:00,  3.89it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881155/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881155/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881155/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.21it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.24it/s]100%|██████████| 3/3 [00:00<00:00,  4.69it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881144/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881144/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881144/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.53it/s] 67%|██████▋   | 2/3 [00:00<00:00,  4.21it/s]100%|██████████| 3/3 [00:00<00:00,  4.84it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881134/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881134/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881134/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  5.61it/s] 67%|██████▋   | 2/3 [00:00<00:00,  5.68it/s]100%|██████████| 3/3 [00:00<00:00,  5.97it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881156/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881156/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881156/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  6.01it/s] 67%|██████▋   | 2/3 [00:00<00:00,  6.14it/s]100%|██████████| 3/3 [00:00<00:00,  6.50it/s]                                             ✅ Success: https://d.10jqka.com.cn/v4/line/bk_881180/01/2024.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881180/01/2025.js
+✅ Success: https://d.10jqka.com.cn/v4/line/bk_881180/01/2026.js
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://17.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+🔄 Retrying 1 failed items sequentially...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000922/hisdata/klc_kl.js?d=2020_2_4
+🔄 触发 Plan C: 尝试使用同花顺数据源获取 [中证红利]...
+❌ Plan C 也失败: '中证红利'
+   Cycle 1 done. 1 still missing.
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000922/hisdata/klc_kl.js?d=2020_2_4
+🔄 触发 Plan C: 尝试使用同花顺数据源获取 [中证红利]...
+❌ Plan C 也失败: '中证红利'
+   Cycle 2 done. 1 still missing.
+Successfully fetched: 35
+
+========================================
+📊 趋势模型(题材)执行汇总
+✅ 成功: 35/36
+❌ 失败: 1/36
+⚠️ 最终失败列表: 养殖业, 旅游及酒店, 中证红利, 工业金属, 机器人概念, 煤炭开采加工, 稀土永磁
+========================================
+
+Fetching Spot Data for Patching...
+📡 Fetching THS Industry spot data...
+✅ Success: http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/1/ajax/1/
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:01<00:00,  1.53it/s]                                             ✅ Success: http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/1/ajax/1/
+✅ Success: http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/2/ajax/1/
+✅ THS Industry: 90 sectors loaded
+📡 Fetching EM Industry spot data...
+⚠️ EM Industry fetch failed: module 'akshare' has no attribute 'stock_board_industry_summary_em'
+📡 Fetching EM Concept spot data (Real-time)...
+❌ Exception (Attempt 1/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://79.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+⚠️ EM Concept fetch failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+📡 Fetching A-Share Index spot data...
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCountSimple?node=hs_s
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 11.26it/s] 50%|█████     | 4/8 [00:01<00:01,  2.60it/s] 75%|███████▌  | 6/8 [00:01<00:00,  3.89it/s] 88%|████████▊ | 7/8 [00:01<00:00,  4.41it/s]                                             /Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+/Users/NikoBelic/app/git/stock-daily-report/modules/fish_basin/fish_basin_sectors.py:691: UserWarning: no explicit representation of timezones available for np.datetime64
+  ts = (dates_arr[signal_idx] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=1&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=2&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=3&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=4&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=5&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=6&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=7&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ Success: http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple?page=8&num=80&sort=symbol&asc=1&node=hs_s&_s_r_a=page
+✅ A-Share Index Spot: 549 indices loaded
+📊 Total spot data entries: 639
+Spot Data Loaded: 639 sectors
+🔧 Patched '半导体': 2026-01-30 -> 2026-02-12 | Δ+2.37% | Source: THS_Industry
+🔧 Patched '工业金属': 2026-01-30 -> 2026-02-12 | Δ+0.17% | Source: THS_Industry
+❌ '商业航天': 历史数据截止 2026-01-30，无今日实时数据，**跳过此品种**
+🔧 Patched '光伏设备': 2026-01-30 -> 2026-02-12 | Δ+0.12% | Source: THS_Industry
+🔧 Patched '白酒': 2026-01-30 -> 2026-02-12 | Δ-1.75% | Source: THS_Industry
+🔧 Patched '煤炭开采加工': 2026-01-30 -> 2026-02-12 | Δ-0.42% | Source: THS_Industry
+🔧 Patched '养殖业': 2026-01-30 -> 2026-02-12 | Δ-1.69% | Source: THS_Industry
+❌ '机器人概念': 历史数据截止 2026-01-30，无今日实时数据，**跳过此品种**
+❌ '人工智能': 历史数据截止 2026-01-30，无今日实时数据，**跳过此品种**
+❌ '稀土永磁': 历史数据截止 2026-01-30，无今日实时数据，**跳过此品种**
+🔧 Patched '房地产': 2026-01-30 -> 2026-02-12 | Δ-0.90% | Source: THS_Industry
+🔧 Patched '旅游及酒店': 2026-01-30 -> 2026-02-12 | Δ-2.14% | Source: THS_Industry
+❌ '创新药': 历史数据截止 2026-01-30，无今日实时数据，**跳过此品种**
+❌ '细分化工': 历史数据截止 2026-02-11，无今日实时数据，**跳过此品种**
+❌ '新能源': 历史数据截止 2026-02-11，无今日实时数据，**跳过此品种**
+🔧 Patched '中证医疗': 2026-02-11 -> 2026-02-12 | Δ-0.32% | Source: Sina_Index
+🔧 Patched '证券公司': 2026-02-11 -> 2026-02-12 | Δ-0.69% | Source: Sina_Index
+🔧 Patched '中证消费': 2026-02-11 -> 2026-02-12 | Δ-1.32% | Source: Sina_Index
+🔧 Patched '电网设备': 2026-01-30 -> 2026-02-12 | Δ+2.09% | Source: THS_Industry
+🔧 Patched '汽车零部件': 2026-01-30 -> 2026-02-12 | Δ+0.41% | Source: THS_Industry
+🔧 Patched '通信设备': 2026-01-30 -> 2026-02-12 | Δ+2.00% | Source: THS_Industry
+🔧 Patched '电池': 2026-01-30 -> 2026-02-12 | Δ+0.11% | Source: THS_Industry
+🔧 Patched '软件开发': 2026-01-30 -> 2026-02-12 | Δ+0.55% | Source: THS_Industry
+🔧 Patched '消费电子': 2026-01-30 -> 2026-02-12 | Δ+1.30% | Source: THS_Industry
+🔧 Patched '电力': 2026-01-30 -> 2026-02-12 | Δ+0.69% | Source: THS_Industry
+🔧 Patched '医疗服务': 2026-01-30 -> 2026-02-12 | Δ-0.49% | Source: THS_Industry
+🔧 Patched '白色家电': 2026-01-30 -> 2026-02-12 | Δ-0.28% | Source: THS_Industry
+🔧 Patched '计算机设备': 2026-01-30 -> 2026-02-12 | Δ+0.60% | Source: THS_Industry
+🔧 Patched '贵金属': 2026-01-30 -> 2026-02-12 | Δ-1.50% | Source: THS_Industry
+🔧 Patched '风电设备': 2026-01-30 -> 2026-02-12 | Δ-0.24% | Source: THS_Industry
+🔧 Patched '银行': 2026-01-30 -> 2026-02-12 | Δ-1.51% | Source: THS_Industry
+🔧 Patched '医疗器械': 2026-01-30 -> 2026-02-12 | Δ-0.75% | Source: THS_Industry
+🔧 Patched '食品加工制造': 2026-01-30 -> 2026-02-12 | Δ-1.75% | Source: THS_Industry
+🔧 Patched '保险': 2026-01-30 -> 2026-02-12 | Δ-1.48% | Source: THS_Industry
+🔧 Patched '石油加工贸易': 2026-01-30 -> 2026-02-12 | Δ-0.96% | Source: THS_Industry
+
+=== Result Head (Sorted by Deviation) ===
+       代码      名称   状态     涨幅%     现价     黄线     白线   黄线偏离率   白线偏离率 金叉天数 死叉天数    量比    状态变量时间   区间涨幅% 排名变化
+0  881169     贵金属  YES  -1.50%   7795   5280   6207  47.61%  25.58%  252    -  0.77  25.11.25  96.28%    -
+1  881168    有色金属  YES  +0.17%   5267   4557   4977  15.57%   5.83%  180    -  0.88  25.11.25  35.87%    -
+2  881121     半导体  YES  +2.37%  14784  12978  13925  13.91%   6.17%  148    -  0.86  25.11.27  30.82%   +1
+3  881279    光伏设备  YES  +0.12%   9279   8479   9007   9.44%   3.02%  145    -  0.87  25.12.24  18.37%   +1
+4  881129    通信设备  YES  +2.00%   9033   8267   8738   9.26%   3.37%  177    -  1.02  25.11.25  25.60%   +4
+5  881180  石油加工贸易  YES  -0.96%   4005   3680   3842   8.84%   4.25%  178    -  1.00  25.12.24  15.11%   -3
+6  881278    电网设备  YES  +2.09%   7042   6587   6974   6.90%   0.99%  180    -  0.86  25.12.05  17.02%   +6
+7  881105      煤炭  YES  -0.42%   2726   2601   2622   4.77%   3.97%    5    -  1.20  26.01.28   0.98%    -
+8  881156      保险  YES  -1.48%   2564   2451   2554   4.59%   0.39%   69    -  0.84  25.12.05  12.16%   +1
+9  881280    风电设备  YES  -0.24%   5447   5241   5504   3.94%  -1.04%  182    -  0.96  25.11.28  13.77%   +2
+Saving to results/20260212/趋势模型_题材.xlsx...
+Saved: results/20260212/趋势模型_题材.xlsx
+
+Saving Merged Excel: results/20260212/趋势模型_合并.xlsx
+✅ Merged Excel Saved (Single Sheet): results/20260212/趋势模型_合并.xlsx
+
+--- Part C: Generate Combined Prompt ---
+✅ Agent Task Saved: results/20260212/temp_data/task_trend_summary.txt
+✅ Combined Prompt Saved: results/20260212/AI提示词/趋势模型_合并_Prompt.txt
+
+=== [Module 2] B1 Stock Selection & AI Analysis ===
+🔧 Applied Pandas 3.0 compatibility patch for Tushare
+⚡ 发现今日已有选股结果: results/20260212/selected_20260212_151955.json
+
+======================================================================
+  Step 2: 热门题材过滤
+======================================================================
+📊 B1技术筛选结果: 131 只股票
+📊 提取到Top5热门题材: ['贵金属', '有色金属', '半导体', '光伏设备', '通信设备']
+
+✅ 题材匹配完成:
+   - 热门题材Top5: 贵金属, 有色金属, 半导体, 光伏设备, 通信设备
+   - 匹配题材的B1股票: 10 只
+   - 信号补齐: 题材股 10 只 + 强信号补齐 10 只 = 总计 20 只候选
+
+======================================================================
+  Step 3: AI智能分析
+======================================================================
+
+[4/4] 正在调用 LLM 进行深度分析 (Top 20 只)...
+⏳ 请求已发送，请稍候...
+🤖 Calling LLM: gemini-3-pro-high...
+⚠️ Warning (Attempt 1/3): Status 404 for http://127.0.0.1:8045/v1/chat/completions
+❌ gemini-3-pro-high failed: 404 Client Error: Not Found for url: http://127.0.0.1:8045/v1/chat/completions
+🔄 Retrying with fallback model: claude-sonnet-4-5-thinking...
+🤖 Calling LLM: claude-sonnet-4-5-thinking...
+⚠️ Warning (Attempt 1/3): Status 404 for http://127.0.0.1:8045/v1/chat/completions
+❌ claude-sonnet-4-5-thinking failed: 404 Client Error: Not Found for url: http://127.0.0.1:8045/v1/chat/completions
+🔄 Retrying with fallback model: gpt...
+🤖 Calling LLM: gpt...
+⚠️ Warning (Attempt 1/3): Status 504 for http://127.0.0.1:8045/v1/chat/completions
+⚠️ Warning (Attempt 2/3): Status 504 for http://127.0.0.1:8045/v1/chat/completions
+⚠️ Warning (Attempt 3/3): Status 504 for http://127.0.0.1:8045/v1/chat/completions
+❌ gpt failed: 504 Server Error: Gateway Timeout for url: http://127.0.0.1:8045/v1/chat/completions
+❌ LLM 分析失败: 返回为空
+
+❌ LLM 分析失败，无法生成后续报告
+
+=== [Module 3] Sector Funds Flow ===
+
+=== A股板块资金流向统计 (2026-02-12) ===
+正在获取 行业资金流 数据...
+尝试数据源: 同花顺 (THS) - 行业资金流...
+✅ Success: http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/1/ajax/1/
+  0%|          | 0/2 [00:00<?, ?it/s]                                     ✅ Success: http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/1/ajax/1/
+⚠️ Warning (Attempt 1/3): Status 401 for http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/2/ajax/1/
+THS source failed: No tables found
+尝试数据源: 东方财富 (EastMoney)...
+❌ Exception (Attempt 1/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+尝试 1/2 失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+尝试 2/2 失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ 最终获取 行业资金流 失败 (THS和EM均失败)
+正在获取 概念资金流 数据...
+尝试数据源: 同花顺 (THS) - 概念资金流...
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/ajax/1/free/1/
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:00, 10.18it/s] 50%|█████     | 4/8 [00:00<00:00,  7.21it/s] 62%|██████▎   | 5/8 [00:00<00:00,  5.03it/s] 75%|███████▌  | 6/8 [00:00<00:00,  5.86it/s] 88%|████████▊ | 7/8 [00:01<00:00,  6.55it/s]100%|██████████| 8/8 [00:01<00:00,  5.26it/s]                                             ✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/1/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/2/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/3/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/4/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/5/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/6/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/7/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/gnzjl/field/tradezdf/order/desc/page/8/ajax/1/free/1/
+\n⚠️ 行业资金流获取失败
+\n🏆 概念板块 - 主力净流入 Top 10
+1. 数据中心       305.88亿
+2. 华为概念       286.27亿
+3. 芯片概念       262.17亿
+4. 新能源汽车      190.69亿
+5. 东数西算(算力)   185.64亿
+6. 专精特新       171.47亿
+7. 储能         170.10亿
+8. 5G         167.78亿
+9. DeepSeek概念 166.73亿
+10. AI智能体      159.51亿
+✅ Image Prompt saved to results/20260212/AI提示词/资金流向_Prompt.txt (Format: Midjourney/SD)
+✅ 板块资金流分析已完成 (使用概念数据生成提示词)
+
+=== [Module 4] Market Limit-up Ladder ===
+正在获取 20260212 涨停数据...
+Fetching data for 20260212...
+✅ Success: https://push2ex.eastmoney.com/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=10000&sort=fbt%3Aasc&date=20260212
+✅ Success: https://push2ex.eastmoney.com/getTopicZBPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=5000&sort=fbt%3Aasc&date=20260212
+✅ Success: https://finance.sina.com.cn/realstock/company/klc_td_sh.txt
+Fetching previous day data (20260211)...
+✅ Success: https://push2ex.eastmoney.com/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=10000&sort=fbt%3Aasc&date=20260211
+Checking for board count repairs...
+Inspecting 特发信息 (000070) for repair (Stat: 7/4, Board: 3)...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Inspecting 海量数据 (603138) for repair (Stat: 5/3, Board: 2)...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Inspecting 川润股份 (002272) for repair (Stat: 4/2, Board: 1)...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Inspecting 望变电气 (603191) for repair (Stat: 4/2, Board: 1)...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Inspecting 翔鹭钨业 (002842) for repair (Stat: 5/3, Board: 2)...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Inspecting 应流股份 (603308) for repair (Stat: 4/2, Board: 1)...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Prompt已生成: results/20260212/AI提示词/涨停天梯_Prompt.txt
+🎙️ Podcast text saved to: results/20260212/temp_data/market_ladder.txt
+
+🎨 Generating Market Ladder Cover Image...
+🎨 Generating image with prompt: Hand-drawn infographic poster, Chinese A-share sto...
+❌ Image generation failed: Error code: 404 - {'detail': 'Not Found'}
+
+=== [Module 8] Weekly Events Preview ===
+⏭️ Skipping Weekly Preview (Not weekend mode)
+
+=== [Module 9] Earnings Analysis ===
+🚀 Starting Earnings Analysis for 20260212...
+📅 Target Week: 20260209 - 20260215
+📅 Weekday: Skipping Earnings Weekly Preview (Weekly Report Only).
+
+=== [Module 10] Earnings Performance Prompt ===
+🚀 Generating Performance Prompt for 20260212...
+Fetching Stock List (Filter: >50亿, No ST)...
+Loading from persistent cache: results/stock_list_cache.csv
+✅ Loaded 2101 stocks from persistent cache (Skipping Network).
+Valid Candidates after filtering: 1829
+Fetching Earnings Forecast for 20251231 from network...
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=1&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [00:00<00:03,  4.93it/s] 12%|█▎        | 2/16 [00:00<00:02,  5.45it/s] 19%|█▉        | 3/16 [00:00<00:02,  5.23it/s] 25%|██▌       | 4/16 [00:00<00:02,  5.14it/s] 31%|███▏      | 5/16 [00:00<00:02,  5.21it/s] 38%|███▊      | 6/16 [00:01<00:01,  5.24it/s] 44%|████▍     | 7/16 [00:01<00:01,  4.99it/s] 50%|█████     | 8/16 [00:01<00:01,  5.01it/s] 56%|█████▋    | 9/16 [00:01<00:01,  5.09it/s] 62%|██████▎   | 10/16 [00:01<00:01,  5.15it/s] 69%|██████▉   | 11/16 [00:02<00:01,  3.92it/s] 75%|███████▌  | 12/16 [00:02<00:01,  3.52it/s] 81%|████████▏ | 13/16 [00:02<00:00,  4.02it/s] 88%|████████▊ | 14/16 [00:03<00:00,  4.47it/s] 94%|█████████▍| 15/16 [00:03<00:00,  4.04it/s]100%|██████████| 16/16 [00:03<00:00,  4.73it/s]                                               ✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=1&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=2&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=3&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=4&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=5&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=6&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=7&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=8&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=9&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=10&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=11&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=12&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=13&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=14&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=15&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+✅ Success: https://datacenter.eastmoney.com/securities/api/data/v1/get?sortColumns=NOTICE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1&pageSize=500&pageNumber=16&reportName=RPT_PUBLIC_OP_NEWPREDICT&columns=ALL&filter=+%28REPORT_DATE%3D%272025-12-31%27%29
+Saved forecast cache to: results/cache/earnings/forecast_20251231_20260212.csv
+Forecasts matching valid stocks: 1996
+📅 Weekday: Skipping Earnings Gold Digging (Weekly Report Only).
+🚀 Generating Merged Earnings Prompt for 2026-02-12 & 2026-02-13...
+Disclosures: Today=1
+Daily Prompt Generated: results/20260212/AI提示词/今日业绩_Prompt.txt
+
+=== [Module 11] Market Sentiment Index ===
+Running market sentiment analysis for 20260212...
+Aggregating market data...
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000016/hisdata/klc_kl.js?d=2020_2_4
+✅ 上证50: -0.28%
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000300/hisdata/klc_kl.js?d=2020_2_4
+✅ 沪深300: +0.12%
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399905/hisdata/klc_kl.js?d=2020_2_4
+✅ 中证500: +1.17%
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399303/hisdata/klc_kl.js?d=2020_2_4
+✅ 中证2000: +0.79%
+Fetching data for 20260212...
+✅ Success: https://push2ex.eastmoney.com/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=10000&sort=fbt%3Aasc&date=20260212
+✅ Success: https://push2ex.eastmoney.com/getTopicZBPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=5000&sort=fbt%3Aasc&date=20260212
+✅ Success: https://finance.sina.com.cn/realstock/company/klc_td_sh.txt
+Fetching previous day data (20260211)...
+✅ Success: https://push2ex.eastmoney.com/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=10000&sort=fbt%3Aasc&date=20260211
+✅ Success: https://push2ex.eastmoney.com/getTopicDTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=10000&sort=fund%3Aasc&date=20260212
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_1_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_2_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_3_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_4_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_5_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_6_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_7_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_8_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_9_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_10_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_11_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_12_.html
+💰 Trying Source 1: Eastmoney API for money flow...
+❌ Exception (Attempt 1/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Eastmoney API failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+💰 Trying Source 2: Tonghuashun for money flow...
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/code/order/desc/ajax/1/free/1/
+  0%|          | 0/104 [00:00<?, ?it/s]  1%|          | 1/104 [00:00<00:20,  4.96it/s]  2%|▏         | 2/104 [00:00<00:18,  5.45it/s]  3%|▎         | 3/104 [00:00<00:24,  4.13it/s]  4%|▍         | 4/104 [00:00<00:21,  4.71it/s]  5%|▍         | 5/104 [00:01<00:21,  4.54it/s]  6%|▌         | 6/104 [00:01<00:23,  4.11it/s]  7%|▋         | 7/104 [00:01<00:27,  3.57it/s]  8%|▊         | 8/104 [00:01<00:25,  3.83it/s]  9%|▊         | 9/104 [00:03<01:00,  1.57it/s] 10%|▉         | 10/104 [00:03<00:50,  1.84it/s] 11%|█         | 11/104 [00:04<00:47,  1.96it/s] 12%|█▏        | 12/104 [00:04<00:41,  2.24it/s] 12%|█▎        | 13/104 [00:04<00:34,  2.65it/s] 13%|█▎        | 14/104 [00:04<00:29,  3.10it/s] 14%|█▍        | 15/104 [00:05<00:25,  3.45it/s] 15%|█▌        | 16/104 [00:05<00:31,  2.75it/s] 16%|█▋        | 17/104 [00:05<00:28,  3.04it/s] 17%|█▋        | 18/104 [00:06<00:24,  3.50it/s] 18%|█▊        | 19/104 [00:06<00:23,  3.56it/s] 19%|█▉        | 20/104 [00:06<00:21,  3.84it/s] 20%|██        | 21/104 [00:06<00:22,  3.73it/s] 21%|██        | 22/104 [00:07<00:21,  3.83it/s] 22%|██▏       | 23/104 [00:07<00:20,  3.98it/s] 23%|██▎       | 24/104 [00:07<00:19,  4.02it/s] 24%|██▍       | 25/104 [00:07<00:19,  3.98it/s] 25%|██▌       | 26/104 [00:08<00:19,  3.94it/s] 26%|██▌       | 27/104 [00:08<00:19,  3.87it/s] 27%|██▋       | 28/104 [00:08<00:18,  4.14it/s] 28%|██▊       | 29/104 [00:08<00:18,  4.05it/s] 29%|██▉       | 30/104 [00:10<00:42,  1.76it/s] 30%|██▉       | 31/104 [00:10<00:38,  1.89it/s] 31%|███       | 32/104 [00:10<00:31,  2.29it/s] 32%|███▏      | 33/104 [00:11<00:26,  2.64it/s] 33%|███▎      | 34/104 [00:11<00:24,  2.90it/s] 34%|███▎      | 35/104 [00:11<00:21,  3.25it/s] 35%|███▍      | 36/104 [00:11<00:19,  3.51it/s] 36%|███▌      | 37/104 [00:12<00:18,  3.64it/s] 37%|███▋      | 38/104 [00:12<00:17,  3.84it/s] 38%|███▊      | 39/104 [00:12<00:16,  3.89it/s] 38%|███▊      | 40/104 [00:12<00:19,  3.32it/s] 39%|███▉      | 41/104 [00:13<00:17,  3.60it/s] 40%|████      | 42/104 [00:13<00:16,  3.73it/s] 41%|████▏     | 43/104 [00:13<00:16,  3.81it/s] 42%|████▏     | 44/104 [00:13<00:15,  3.86it/s] 43%|████▎     | 45/104 [00:14<00:15,  3.93it/s] 44%|████▍     | 46/104 [00:14<00:14,  4.01it/s] 45%|████▌     | 47/104 [00:14<00:14,  4.04it/s] 46%|████▌     | 48/104 [00:14<00:13,  4.06it/s] 47%|████▋     | 49/104 [00:15<00:13,  4.12it/s] 48%|████▊     | 50/104 [00:16<00:29,  1.80it/s] 49%|████▉     | 51/104 [00:16<00:28,  1.88it/s] 50%|█████     | 52/104 [00:17<00:24,  2.12it/s] 51%|█████     | 53/104 [00:17<00:21,  2.39it/s] 52%|█████▏    | 54/104 [00:17<00:18,  2.72it/s] 53%|█████▎    | 55/104 [00:18<00:17,  2.82it/s] 54%|█████▍    | 56/104 [00:18<00:15,  3.10it/s] 55%|█████▍    | 57/104 [00:18<00:14,  3.32it/s] 56%|█████▌    | 58/104 [00:18<00:13,  3.54it/s] 57%|█████▋    | 59/104 [00:19<00:12,  3.68it/s] 58%|█████▊    | 60/104 [00:19<00:11,  3.68it/s] 59%|█████▊    | 61/104 [00:19<00:10,  3.96it/s] 60%|█████▉    | 62/104 [00:19<00:10,  4.04it/s] 61%|██████    | 63/104 [00:19<00:10,  4.07it/s] 62%|██████▏   | 64/104 [00:20<00:09,  4.00it/s] 62%|██████▎   | 65/104 [00:20<00:10,  3.85it/s] 63%|██████▎   | 66/104 [00:20<00:09,  3.98it/s] 64%|██████▍   | 67/104 [00:21<00:10,  3.57it/s] 65%|██████▌   | 68/104 [00:21<00:10,  3.52it/s] 66%|██████▋   | 69/104 [00:21<00:09,  3.72it/s] 67%|██████▋   | 70/104 [00:21<00:08,  3.91it/s] 68%|██████▊   | 71/104 [00:23<00:20,  1.64it/s] 69%|██████▉   | 72/104 [00:23<00:16,  1.93it/s] 70%|███████   | 73/104 [00:23<00:13,  2.29it/s] 71%|███████   | 74/104 [00:24<00:11,  2.71it/s] 72%|███████▏  | 75/104 [00:24<00:08,  3.41it/s] 73%|███████▎  | 76/104 [00:24<00:06,  4.00it/s] 74%|███████▍  | 77/104 [00:24<00:06,  4.03it/s] 75%|███████▌  | 78/104 [00:24<00:06,  3.93it/s] 76%|███████▌  | 79/104 [00:25<00:06,  3.94it/s] 77%|███████▋  | 80/104 [00:25<00:06,  3.86it/s] 78%|███████▊  | 81/104 [00:25<00:06,  3.79it/s] 79%|███████▉  | 82/104 [00:25<00:05,  3.90it/s] 80%|███████▉  | 83/104 [00:26<00:05,  3.84it/s] 81%|████████  | 84/104 [00:26<00:05,  3.89it/s] 82%|████████▏ | 85/104 [00:26<00:05,  3.68it/s] 83%|████████▎ | 86/104 [00:26<00:04,  3.76it/s]✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/1/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/2/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/3/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/4/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/5/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/6/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/7/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/8/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/9/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/10/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/11/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/12/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/13/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/14/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/15/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/16/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/17/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/18/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/19/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/20/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/21/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/22/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/23/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/24/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/25/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/26/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/27/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/28/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/29/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/30/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/31/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/32/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/33/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/34/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/35/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/36/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/37/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/38/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/39/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/40/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/41/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/42/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/43/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/44/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/45/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/46/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/47/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/48/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/49/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/50/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/51/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/52/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/53/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/54/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/55/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/56/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/57/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/58/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/59/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/60/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/61/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/62/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/63/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/64/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/65/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/66/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/67/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/68/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/69/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/70/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/71/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/72/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/73/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/74/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/75/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/76/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/77/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/78/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/79/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/80/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/81/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/82/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/83/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/84/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/85/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/86/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/87/ajax/1/free/1/ 84%|████████▎ | 87/104 [00:27<00:04,  3.80it/s] 85%|████████▍ | 88/104 [00:27<00:04,  3.92it/s] 86%|████████▌ | 89/104 [00:27<00:03,  3.96it/s] 87%|████████▋ | 90/104 [00:27<00:03,  3.96it/s] 88%|████████▊ | 91/104 [00:29<00:07,  1.72it/s] 88%|████████▊ | 92/104 [00:29<00:06,  1.78it/s] 89%|████████▉ | 93/104 [00:30<00:05,  2.05it/s] 90%|█████████ | 94/104 [00:30<00:04,  2.36it/s] 91%|█████████▏| 95/104 [00:30<00:03,  2.70it/s] 92%|█████████▏| 96/104 [00:30<00:02,  2.95it/s] 93%|█████████▎| 97/104 [00:31<00:02,  3.13it/s] 94%|█████████▍| 98/104 [00:31<00:01,  3.42it/s] 95%|█████████▌| 99/104 [00:31<00:01,  3.75it/s] 96%|█████████▌| 100/104 [00:31<00:01,  3.65it/s] 97%|█████████▋| 101/104 [00:32<00:00,  3.76it/s] 98%|█████████▊| 102/104 [00:32<00:00,  2.97it/s] 99%|█████████▉| 103/104 [00:32<00:00,  3.14it/s]100%|██████████| 104/104 [00:33<00:00,  3.28it/s]                                                 
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/88/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/89/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/90/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/91/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/92/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/93/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/94/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/95/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/96/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/97/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/98/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/99/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/100/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/101/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/102/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/103/ajax/1/free/1/
+✅ Success: http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/104/ajax/1/free/1/
+❌ Tonghuashun failed: Length mismatch: Expected axis has 10 elements, new values have 7 elements
+💰 Trying Source 3: File parsing for money flow...
+✅ File parsing: Net 710亿, 3 inflows, 3 outflows
+   Inflows: ['数据中心突围', '华为', '芯片']
+   Outflows: ['谷子经济', '参股银行', '乡村振兴']
+📊 Fetching History for comparison (20260128 - 20260212)...
+❌ Exception (Attempt 1/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+⚠️ Error fetching history from AkShare: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+   AkShare history failed, trying previous prompt file...
+   ⚠️ WARNING: Both AkShare and Prompt file failed for yesterday_vol!
+📊 Fetching Real-time Volume from Sina Finance...
+✅ Success: http://hq.sinajs.cn/list=s_sh000001,s_sz399001
+✅ Sina Volume: 21417亿
+✅ Final Volume: Today=21417亿, Yesterday=0亿, Change=+0.00%
+📊 Fetching Market Valuation (PE)...
+✅ Success: http://query.sse.com.cn/commonQuery.do?sqlId=COMMON_SSE_SJ_GPSJ_GPSJZM_TJSJ_L&PRODUCT_NAME=%E8%82%A1%E7%A5%A8%2C%E4%B8%BB%E6%9D%BF%2C%E7%A7%91%E5%88%9B%E6%9D%BF&type=inParams
+✅ Success: http://www.szse.cn/api/report/ShowReport?SHOWTYPE=xlsx&CATALOGID=1803_sczm&TABKEY=tab1&txtQueryDate=2024-08-30&random=0.39339437497296137
+✅ Valuation: SH PE=13.00, SZ PE=22.00
+Market data aggregation complete.
+
+✅ Analysis complete: 72.8/100 (贪婪)
+📄 Prompt saved to: results/20260212/AI提示词/市场情绪_Prompt.txt
+
+🎨 Generating Market Sentiment Cover Image...
+🎨 Generating image with prompt: (masterpiece, best quality), (vertical:1.2), (aspe...
+❌ Image generation failed: Error code: 404 - {'detail': 'Not Found'}
+
+=== [Module 13] Close Report Prompt ===
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000001/hisdata/klc_kl.js?d=2020_2_4
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sh000300/hisdata/klc_kl.js?d=2020_2_4
+❌ Exception (Attempt 1/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://push2his.eastmoney.com/api/qt/stock/kline/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+✅ Success: https://finance.sina.com.cn/realstock/company/sz399006/hisdata/klc_kl.js?d=2020_2_4
+📊 Fetching History for comparison (20260128 - 20260212)...
+❌ Exception (Attempt 1/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 1/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 2/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+❌ Exception (Attempt 3/3): https://80.push2.eastmoney.com/api/qt/clist/get - ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+⚠️ Error fetching history from AkShare: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+   AkShare history failed, trying previous prompt file...
+   ⚠️ WARNING: Both AkShare and Prompt file failed for yesterday_vol!
+📊 Fetching Real-time Volume from Sina Finance...
+✅ Success: http://hq.sinajs.cn/list=s_sh000001,s_sz399001
+✅ Sina Volume: 21417亿
+✅ Final Volume: Today=21417亿, Yesterday=0亿, Change=+0.00%
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_1_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_2_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_3_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_4_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_5_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_6_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_7_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_8_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_9_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_10_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_11_.html
+✅ Success: https://newsapi.eastmoney.com/kuaixun/v1/getlist_102_ajaxResult_50_12_.html
+🤖 Calling LLM: gemini-3-pro-high...
+⚠️ Warning (Attempt 1/3): Status 404 for http://127.0.0.1:8045/v1/chat/completions
+❌ gemini-3-pro-high failed: 404 Client Error: Not Found for url: http://127.0.0.1:8045/v1/chat/completions
+🔄 Retrying with fallback model: claude-sonnet-4-5-thinking...
+🤖 Calling LLM: claude-sonnet-4-5-thinking...
+⚠️ Warning (Attempt 1/3): Status 404 for http://127.0.0.1:8045/v1/chat/completions
+❌ claude-sonnet-4-5-thinking failed: 404 Client Error: Not Found for url: http://127.0.0.1:8045/v1/chat/completions
+🔄 Retrying with fallback model: gpt...
+🤖 Calling LLM: gpt...
+✅ Success: http://127.0.0.1:8045/v1/chat/completions
+✅ gpt responded successfully (fallback)
+✅ 收盘速报 Prompt 已生成: results/20260212/AI提示词/收盘速报_Prompt.txt
+
+=== [Module 12] Dragon Tiger List ===
+
+=== 龙虎榜分析 (Dragon Tiger) ===
+Fetching Dragon Tiger data for 20260212...
+✅ Success: https://datacenter-web.eastmoney.com/api/data/v1/get?sortColumns=NET_BUY_AMT%2CTRADE_DATE%2CSECURITY_CODE&sortTypes=-1%2C-1%2C1&pageSize=500&pageNumber=1&reportName=RPT_ORGANIZATION_TRADE_DETAILS&columns=ALL&source=WEB&client=WEB&filter=%28TRADE_DATE%3E%3D%272026-02-12%27%29%28TRADE_DATE%3C%3D%272026-02-12%27%29
+Error fetching Dragon Tiger data: 'NoneType' object is not subscriptable
+未获取到龙虎榜数据
+
+✅ All parallel tasks completed.
+
+🧹 Cleaning up old results (Keeping last 7 days)...
+   Deleting: results/20260202

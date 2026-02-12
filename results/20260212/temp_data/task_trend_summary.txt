@@ -1,0 +1,27 @@
+Analyze the sector trend data from the 'Fish Basin' model.
+Identify 1 "Best Value" sector (Trend Up + Reasonable Deviation) and 1 "High Risk" sector (Extreme Deviation).
+Output a VERY CONCISE summary (max 50 words) in Chinese.
+
+Format:
+📊 **AI趋势精选**: [Sector] (Reason) | ⚠️ **风险**: [Sector] (Reason)
+
+Data:
+【High Deviation Sectors (Strong Trend)】
+- 贵金属: Dev 47.61%, Chg -1.50%, RankChg -
+- 有色金属: Dev 15.57%, Chg +0.17%, RankChg -
+- 半导体: Dev 13.91%, Chg +2.37%, RankChg +1
+- 光伏设备: Dev 9.44%, Chg +0.12%, RankChg +1
+- 通信设备: Dev 9.26%, Chg +2.00%, RankChg +4
+- 石油加工贸易: Dev 8.84%, Chg -0.96%, RankChg -3
+- 电网设备: Dev 6.90%, Chg +2.09%, RankChg +6
+- 煤炭: Dev 4.77%, Chg -0.42%, RankChg -
+- 保险: Dev 4.59%, Chg -1.48%, RankChg +1
+- 风电设备: Dev 3.94%, Chg -0.24%, RankChg +2
+
+【Low Deviation Sectors (Weak/Oversold)】
+- 计算机设备: Dev 0.30%, Chg +0.60%, RankChg +11
+- 旅游: Dev 0.65%, Chg -2.14%, RankChg +7
+- 房地产: Dev 1.21%, Chg -0.90%, RankChg +1
+- 白色家电: Dev 1.74%, Chg -0.28%, RankChg +6
+- 养殖: Dev 1.86%, Chg -1.69%, RankChg -1
+

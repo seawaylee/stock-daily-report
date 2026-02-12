@@ -2,7 +2,7 @@
 
 An automated AI-driven stock analysis system that generates daily market reports, stock selections, and visual prompts for content creation.
 
-## 🚀 Features (12+ Modules)
+## 🚀 Features (13+ Modules)
 
 This system consists of the following independent modules, typically executed in parallel:
 
@@ -17,7 +17,8 @@ This system consists of the following independent modules, typically executed in
 9.  **Weekly Preview (周刊前瞻)**: (Weekend Only) Strategy for the upcoming week.
 10. **Weekly Review (本周要闻)**: (Weekend Only) Summary of the past week.
 11. **Market Sentiment (市场情绪)**: Greed & Fear Index, Market Temperature analysis.
-12. **Automated Media (多媒体生成)**: Auto-generates Podcasts (Audio), Videos, and Cover Images for reports.
+12. **Close Report (收盘速报)**: Auto-generates end-of-day infographic prompt with indices, turnover, and LLM commentary.
+13. **Automated Media (多媒体生成)**: Auto-generates Podcasts (Audio), Videos, and Cover Images for reports.
 
 ## 🛠️ Usage
 
@@ -48,6 +49,9 @@ python main.py sector_flow
 
 # Market Sentiment
 python main.py sentiment
+
+# Close Report Prompt (收盘速报)
+python main.py close_report
 
 # Fish Basin Trend
 python main.py fish_basin

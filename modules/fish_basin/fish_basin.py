@@ -153,7 +153,8 @@ def fetch_data(name, code):
                                  print(f"⚠️ Sina HK spot also failed for {code}: {e_sina}")
 
                          if not spot_added:
-                             print(f"❌ Failed to get HK spot data for {name} - data may be stale!")
+                             print(f"❌ Failed to get HK spot data for {name} - stale data will be skipped.")
+                             return None
 
              except Exception as e:
                  print(f"Error fetching HK history: {e}")

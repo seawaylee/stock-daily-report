@@ -1,0 +1,99 @@
+# 市场情绪指数 - AI绘图Prompt (02月11日)
+# 数据来源: 恐贪指数模型 (5维度综合评分)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+- 配色: 贪婪=红色渐变, 恐惧=蓝色渐变
+
+## 标题
+**📊 A股恐贪指数 | Market Greed & Fear** (居中，手绘字体)
+**20260211**
+
+---
+
+## 核心指标 (大号显示)
+**恐贪指数: 52.2/100** (黄色粗体)
+**情绪等级: 中性** (橙色标签)
+**市场状态: 温和复苏，初现曙光**
+
+---
+
+## 五维度评分可视化 (雷达图/进度条)
+
+### 1. 市场宽度 (Breadth) +10.27
+- 涨停: 51 vs 跌停: 5
+- 说明: 涨停家数远超跌停
+
+### 2. 指数趋势 (Trend) -0.19
+- 上证50: +0.03% ↑
+- 沪深300: -0.22% ↓
+- 中证500: +0.23% ↑
+- 中证2000: -0.28% ↓
+- 说明: 指数整体平稳
+
+### 3. 新闻情绪 (News) +4.31
+- 利多: 89 vs 利空: 24
+- 说明: 正面新闻占优
+
+### 4. 资金流向 (Flow) -10.00 ⚠️
+- 净流出: **502.10 亿** (红色警告)
+- 流入: 小金属吸金、锂电池、金属铜
+
+### 5. 市场估值 (Valuation) -2.21
+- 上证PE: 13.00 | 深证PE: 22.00
+- 状态: 估值适中
+
+---
+
+### 6. 成交额 (Volume)
+- 今日: **19843 亿**
+- 说明: 成交额正常
+
+---
+
+## 情绪解读 (手写体文字框)
+> **当前处于"中性"区间**
+> **"温和复苏，初现曙光"**
+> 市场情绪相对平稳，，结构性机会为主。
+
+---
+
+## 投资建议
+✅ **操作**: 观望为主 | 严控仓位
+⚠️ **风险**: 资金大幅流出，小心回调
+
+---
+
+## Footer
+"每日恐贪指数 | AI量化情绪模型"
+
+---
+
+## AI绘图Prompt (Midjourney/SD)
+
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market sentiment infographic poster.
+
+**Layout Structure**:
+1. **Top Section**: A large vintage MAIN GAUGE (Speedometer style) pointing to 52.2 (中性).
+2. **Middle Section**: A PROMINENT HEXAGONAL RADAR CHART (六边形雷达图) showing 5 dimensions:
+   - Dimension 1 (Market Breadth): Score +10.3 - Strong
+   - Dimension 2 (Index Trend): Score -0.2 - Flat
+   - Dimension 3 (Money Flow): Score -10.0 - Outflow
+   - Dimension 4 (News Sentiment): Score +4.3 - Positive
+   - Dimension 5 (Valuation): Score -2.2 - Fair
+   - **Chart Style**: Hand-drawn hexagon with 5 axes radiating from center, filled area shows current scores
+   - **Color**: Use calm yellow tones, with filled area showing intensity
+3. **Background**: neutral yellow tones, balanced composition, aged paper texture, ink sketch lines.
+
+**Visual Details**:
+- Style: Da Vinci engineering sketch, complex mechanical details, infographic layout.
+- **IMPORTANT**: The hexagonal radar chart MUST be the dominant visual element in the middle section.
+- Color Palette: calm, waiting tones on parchment paper.
+- Textures: Crosshatching, ink splatters, rough paper grain.
+- No digital text, just visual representations of data.
+
+--ar 9:16 --style raw --v 6

@@ -1,0 +1,134 @@
+# 20260212 A股涨停阶梯 - AI绘图Prompt (完整数据)
+
+## 图片规格
+- 比例: 9:16 竖版
+- 风格: 手绘/手账风格，暖色纸张质感
+- 背景色: #F5E6C8 纸黄色
+
+> **⚠️ 重要：必须画出所有股票！除非单个板块超过100只才可截断。**
+
+> **⚠️ 注意：每只股票包含2个元素！**
+> 1. **股票名**（粗体黑色）- 如 锋龙股份
+> 2. **题材**（下方小字 **必须红色** Red Color）- 如 电网设备
+>
+> **特殊标记**：
+> - **[一字]** = 红色喜庆标签，表示一字涨停
+> - **[X]** = 红色叉号，表示炸板或断板
+
+## 标题
+**02月12日 A股涨停复盘** （"涨停"红色）
+
+## 热门题材 (TOP8)
+> **颜色要求**: 题材文字全部使用 **红色** (Red Ink)
+通用设备(7) | 互联网服(5) | 专用设备(5) | 电力行业(4) | 电网设备(4) | 化学制品(3) | 文化传媒(3) | 电源设备(3)
+
+---
+
+## 涨停阶梯完整数据
+格式: 股票名(上, 黑色) / 题材(下, **红色**)
+
+### 5板 (1只) - 1断板
+```
+  [X]百川股份   
+    化学制品    
+
+```
+
+### 4板 (7只) - 3断板
+```
+  [一字]大位科技    [一字]掌阅科技      雅博股份        德才股份    
+    互联网服        文化传媒        装修建材        装修装饰    
+
+  [X]欢瑞世纪     [X]龙韵股份     [X]吉华集团   
+    文化传媒        文化传媒        化学制品    
+
+```
+
+### 3板 (3只) - 2断板
+```
+    特发信息      [X]小崧股份     [X]醋化股份   
+    通信设备        家电行业        化学制品    
+
+```
+
+### 2板 (12只)
+```
+  [一字]豫能控股    [一字]美邦股份      江钨装备        金时科技    
+    电力行业        农药兽药        专用设备        电源设备    
+
+    宏和科技        山东玻纤        海量数据        中材科技    
+    玻璃玻纤        玻璃玻纤        软件开发        玻璃玻纤    
+
+    章源钨业        翔鹭钨业        东方钽业        卓郎智能    
+    小金属         小金属         小金属         专用设备    
+
+```
+
+### 首板 (43只)
+```
+  [一字]大元泵业      川润股份        金开新能        宁波精达        华东数控    
+    通用设备        工程机械        电力行业        通用设备        通用设备    
+
+    招商轮船        博杰股份        长源东谷        环旭电子        晋控电力    
+    航运港口        专用设备        汽车零部        消费电子        电力行业    
+
+    和胜股份        顺钠股份        鹏欣资源        粤桂股份        望变电气    
+    有色金属        电网设备        有色金属        综合行业        电网设备    
+
+    鑫磊股份        石英股份        常宝股份        日发精机        海联讯     
+    通用设备        非金属材        钢铁行业        通用设备        互联网服    
+
+    应流股份        中恒电气        四方股份        赛恩斯         英维克     
+    通用设备        电源设备        电网设备        环保行业        专用设备    
+
+    科士达         东阳光         京泉华        优刻得-W        渤海汽车    
+    电源设备        综合行业        消费电子        互联网服        汽车零部    
+
+    宏盛股份        伊戈尔         嘉泽新能        首都在线        双良节能    
+    通用设备        电子元件        电力行业        互联网服        光伏设备    
+
+    法狮龙         世嘉科技        长华集团        利欧股份        高新发展    
+    装修装饰        专用设备        汽车零部        互联网服        工程建设    
+
+    合肥城建        中远海能        汉缆股份    
+    房地产开        航运港口        电网设备    
+
+```
+
+---
+
+## AI绘图Prompt (English)
+
+Hand-drawn infographic poster, Chinese A-share stock market limit-up ladder chart, 02月12日.
+
+**Style**: Warm cream paper texture (#F5E6C8), vintage notebook aesthetic, handwritten Chinese fonts.
+
+**Layout (9:16 vertical)**:
+- Title: "02月12日 A股涨停复盘" (涨停 in red)
+- Hot sectors row below title
+- **Outer table structure**: horizontal lines separate different board levels (14板, 6板, etc.), left column shows board label
+- **Within each board**: stocks flow freely in rows
+
+**Stock display format (CRITICAL COLORS)**:
+```
+ [Stock Name]  (In BOLD BLACK ink)
+  [Industry]   (In SMALL **RED** ink underneath)
+```
+Example: **锋龙股份** (Black) / 电网设备 (Red)
+
+**Special markers**:
+- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)
+- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)
+
+**Key highlights**:
+- 5板: 百川股份 - highest streak
+- 通用设备 dominates with 7 stocks
+- Total 66 stocks (43 first-time + 23 连板)
+- Note: Suspension days are ignored in consecutive limit calculation (e.g. 锋龙股份)
+
+---
+
+## 底部标语
+**总结不易，每天收盘后推送，点赞关注不迷路！**
+
+（居中显示，小字，温馨提示风格）

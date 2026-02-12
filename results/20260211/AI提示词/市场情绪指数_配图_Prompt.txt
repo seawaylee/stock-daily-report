@@ -1,0 +1,48 @@
+# AI绘图提示词 - 市场贪婪恐惧指数可视化 (信息图版)
+
+**风格要求**: 复古手绘风格，竖版信息图海报
+
+---
+
+## Midjourney / Stable Diffusion Prompt
+
+(masterpiece, best quality), (vertical:1.2), (aspect ratio: 9:16), (sketch style), (hand drawn), (infographic)
+
+Create a TALL VERTICAL PORTRAIT IMAGE (Aspect Ratio 9:16) HAND-DRAWN SKETCH style stock market sentiment infographic poster.
+
+**Layout Structure**:
+1. **Top Section**: A large vintage MAIN GAUGE (Speedometer style) pointing to 57.3 (中性).
+2. **Middle Section**: A PROMINENT HEXAGONAL RADAR CHART (六边形雷达图) showing 5 dimensions:
+   - Dimension 1 (Market Breadth): Score +10.3 - Strong
+   - Dimension 2 (Index Trend): Score -0.2 - Flat
+   - Dimension 3 (Money Flow): Score -5.0 - Outflow
+   - Dimension 4 (News Sentiment): Score +4.4 - Positive
+   - Dimension 5 (Valuation): Score -2.2 - Fair
+   - **Chart Style**: Hand-drawn hexagon with 5 axes radiating from center, filled area shows current scores
+   - **Color**: Use calm, waiting tones, with filled area showing intensity
+3. **Background**: neutral yellow tones, balanced composition, aged paper texture, ink sketch lines.
+
+**Visual Details**:
+- Style: Da Vinci engineering sketch, complex mechanical details, infographic layout.
+- **IMPORTANT**: The hexagonal radar chart MUST be the dominant visual element in the middle section.
+- Color Palette: calm, waiting tones (Mainly yellow highlights) on parchment paper.
+- Textures: Crosshatching, ink splatters, rough paper grain.
+- No digital text, just visual representations of data.
+
+--ar 9:16 --style raw --v 6
+
+**画面结构**:
+1. **顶部核心**: 复古仪表盘，指针指向 57.3 (中性)
+2. **中部模块**: 5个独立的数据可视化方块 (代表宽度、趋势、资金、新闻、估值)
+3. **整体风格**: 达芬奇手稿风格，机械细节，中性色调，平衡的构图
+
+**文字信息** (建议后期PS添加):
+- 标题："A股市场情绪指数"
+- 日期：2026.02.11
+- 指数值：57.3/100
+
+---
+
+## 使用说明
+1. 复制英文Prompt到绘图工具
+2. 推荐尺寸：1024x1792 (9:16)
