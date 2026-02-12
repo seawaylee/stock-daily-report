@@ -15,13 +15,13 @@ class NumpyEncoder(json.JSONEncoder):
         return super().default(obj)
 
 def get_analysis_prompt(stocks_info):
-    """生成Top10分析的Prompt"""
+    """生成Top5分析的Prompt"""
     return f"""你是一位资深量化分析师。以下是通过"AI模型"策略选出的股票列表，该策略主要捕捉超卖反弹和回踩支撑的买入信号。
 
 选出的股票数据：
 {json.dumps(stocks_info, ensure_ascii=False, indent=2, cls=NumpyEncoder)}
 
-请从中选出Today Top20值得关注的股票，评估标准：
+请从中选出Today Top5值得关注的股票，评估标准：
 1. 信号强度（多信号叠加更佳）
 2. 技术指标位置（KDJ/RSI超卖程度）
 3. **【选股偏好】尽量不选688开头的科创板股票**，除非其他标的质量明显不足。
@@ -29,9 +29,9 @@ def get_analysis_prompt(stocks_info):
 5. **【重要】所属行业/题材**（由于数据源缺失，请你根据股票代码和名称，利用你的知识库补充其所属的行业和核心题材）
 
 请输出：
-1. Top20股票排名
+1. Top5股票排名
    - 格式：`[股票名称] ([代码]) | [行业/题材]`
-   - 推荐理由：另起一行，2-3句话，结合技术面与基本面题材。
+   - 推荐理由：另起一行，1句话，尽量控制在18字以内，突出核心逻辑。
 2. 整体市场分析（2-3句话）
 3. 风险提示
 4. **【重要】图片生成专用摘要**

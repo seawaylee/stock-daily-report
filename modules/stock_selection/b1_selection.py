@@ -1,7 +1,7 @@
 """
 全市场选股 + AI智能分析生成报告
 1. 300并发全市场选股（市值100亿+，排除ST）
-2. 接入Gemini分析Top10值博率
+2. 接入Gemini分析Top5值博率
 
 """
 import sys
@@ -402,9 +402,104 @@ def desensitize_stock_code(code):
     return code[:4] + '**'
 
 
+def normalize_stock_code(code):
+    """统一股票代码为6位数字，兼容 sz000001 / sh600000 / 600000。"""
+    import re
+
+    digits = re.sub(r"\D", "", str(code or ""))
+    return digits[-6:] if digits else ""
+
+
+def compact_reason_text(reason, max_len=18):
+    """压缩LLM理由为简洁短句，避免卡片文本过长。"""
+    import re
+
+    cleaned = re.sub(r"\s+", "", str(reason or "").strip())
+    if not cleaned:
+        return ""
+
+    parts = re.split(r"[。！？!?；;]", cleaned)
+    first = ""
+    for part in parts:
+        segment = part.strip("，,：: ")
+        if segment:
+            first = segment
+            break
+
+    if not first:
+        first = cleaned
+
+    if len(first) > max_len:
+        return first[: max_len - 1] + "…"
+    return first
+
+
+def extract_reason_map_from_analysis(analysis_text):
+    """从分析文本中提取 code->简洁理由 映射。"""
+    import re
+
+    if not analysis_text:
+        return {}
+
+    reason_map = {}
+    lines = analysis_text.splitlines()
+    current_code = None
+
+    for idx, raw_line in enumerate(lines):
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        code_match = re.search(r"\((\d{6})\)", line)
+        if code_match:
+            current_code = code_match.group(1)
+            inline_reason = re.search(r"推荐理由[:：]\s*(.+)", line)
+            if inline_reason:
+                reason_map[current_code] = compact_reason_text(inline_reason.group(1))
+                current_code = None
+            continue
+
+        if not current_code:
+            continue
+
+        reason_line = re.search(r"推荐理由[:：]?\s*(.*)", line)
+        if not reason_line:
+            continue
+
+        reason_text = reason_line.group(1).strip(" -*•")
+        if not reason_text:
+            # "推荐理由："单独占一行时，尝试读取下一条非空行作为理由。
+            for next_idx in range(idx + 1, min(idx + 4, len(lines))):
+                candidate = lines[next_idx].strip(" -*•\t")
+                if not candidate:
+                    continue
+                if re.search(r"\(\d{6}\)", candidate):
+                    break
+                reason_text = candidate
+                break
+
+        compacted = compact_reason_text(reason_text)
+        if compacted:
+            reason_map[current_code] = compacted
+        current_code = None
+
+    return reason_map
+
+
+def build_fallback_reason(stock):
+    """没有LLM理由时，使用技术指标生成简洁回退理由。"""
+    signal = ",".join(stock.get("signals", []))
+    signal = signal.replace("原始", "").replace("B1", "买点").replace("B", "买点")
+    signal = signal.split(",")[0].strip() or "形态关注"
+
+    j_val = round(stock.get("J", 0), 1)
+    rsi_val = round(stock.get("RSI", 0), 1)
+    return compact_reason_text(f"{signal}，J{j_val}/RSI{rsi_val}")
+
+
 
 def call_gemini_analysis(selected_stocks, date_dir):
-    """使用LLM直接分析Top10值博率 (全自动模式)"""
+    """使用LLM直接分析Top5值博率 (全自动模式)"""
     # 准备分析数据
     stocks_info = []
     for s in selected_stocks:
@@ -456,7 +551,7 @@ def call_gemini_analysis(selected_stocks, date_dir):
             f.write(analysis_result)
         print(f"💾 分析报告已保存: {output_file}")
 
-        # --- 提取并保存 Top 10 ---
+        # --- 提取并保存 Top 5 ---
         import re
         # 匹配 (600123) 格式
         top_codes = re.findall(r'\((\d{6})\)', analysis_result)
@@ -466,18 +561,34 @@ def call_gemini_analysis(selected_stocks, date_dir):
             if c not in seen:
                 unique_codes.append(c)
                 seen.add(c)
-        unique_codes = unique_codes[:20] # Top 20
+        unique_codes = unique_codes[:5]  # Top 5
 
-        stock_map = {s['code']: s for s in selected_stocks}
+        stock_map = {}
+        for stock in selected_stocks:
+            norm_code = normalize_stock_code(stock.get("code"))
+            if norm_code and norm_code not in stock_map:
+                stock_map[norm_code] = stock
         top_stocks = []
         for c in unique_codes:
             if c in stock_map:
                 top_stocks.append(stock_map[c])
 
-        top10_file = os.path.join(temp_dir, "selected_top10.json") # Save to temp
-        with open(top10_file, 'w', encoding='utf-8') as f:
+        reason_map = extract_reason_map_from_analysis(analysis_result)
+        for stock in top_stocks:
+            norm_code = normalize_stock_code(stock.get("code"))
+            reason = reason_map.get(norm_code)
+            if reason:
+                stock["reason"] = reason
+
+        top5_file = os.path.join(temp_dir, "selected_top5.json")
+        with open(top5_file, 'w', encoding='utf-8') as f:
             json.dump(top_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
-        print(f"📁 已提取 Top 股票池: {top10_file} ({len(top_stocks)}只)")
+
+        # 兼容旧流程：保留 selected_top10.json（内容同Top5）
+        legacy_top10_file = os.path.join(temp_dir, "selected_top10.json")
+        with open(legacy_top10_file, 'w', encoding='utf-8') as f:
+            json.dump(top_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
+        print(f"📁 已提取 Top5 股票池: {top5_file} ({len(top_stocks)}只)")
 
         return analysis_result, prompt
 
@@ -495,9 +606,9 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
     from common.data_masking import mask_stock_info
 
     # 准备股票数据摘要(包含技术指标 + 脱敏信息)
-    if len(selected_stocks) > 10:
-        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 10。")
-        selected_stocks = selected_stocks[:10]
+    if len(selected_stocks) > 5:
+        print(f"⚠️ 警告: 传入图片生成的股票数量为 {len(selected_stocks)}，截取Top 5。")
+        selected_stocks = selected_stocks[:5]
 
     # 从分析结果提取 "整体市场复盘" 和 "次日交易策略"
     import re
@@ -568,6 +679,7 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
 """
 
     # --- Generate Card Text with Trading Strategy (Python Logic) ---
+    reason_map = extract_reason_map_from_analysis(gemini_analysis)
     cards_text = ""
     for idx, s in enumerate(selected_stocks, 1):
         # 应用数据脱敏：代码后2位替换为**，名称后2字替换为拼音缩写
@@ -577,53 +689,21 @@ def generate_image_prompt(gemini_analysis, selected_stocks, date_dir):
         if not industry or industry == '未知' or str(industry).lower() == 'nan':
             industry = guess_sector_by_name(s['name'])
 
-        signals = ','.join(s.get('signals', [])).replace('B1','标准买点').replace('B','标准买点').replace('原始买点','标准买点')
-        signals = signals.split(',')[0] # First signal
-        signals = signals.replace('标准买点', 'Buy').replace('回踩', 'Retrace')
+        signals = ','.join(s.get('signals', [])).replace('B1', '买点').replace('B', '买点').replace('原始买点', '买点')
+        signals = signals.split(',')[0]  # First signal
 
         J_val = round(s.get('J', 0), 2)
         RSI_val = round(s.get('RSI', 0), 2)
-
-        # 获取价格：优先从price字段，否则从raw_data_mock中获取
-        price = s.get('price', 0)
-        if price == 0 and 'raw_data_mock' in s:
-            price = s['raw_data_mock'].get('close', 0)
-
-        # 计算操作策略
-        # 买入时机：根据J值和RSI值判断
-        if J_val < 20 and RSI_val < 40:
-            buy_timing = "超卖区，可分批建仓"
-            entry_zone = f"{price * 0.98:.2f}-{price * 1.02:.2f}"
-        elif J_val < 50:
-            buy_timing = "回调企稳后买入"
-            entry_zone = f"{price * 0.97:.2f}-{price:.2f}"
-        else:
-            buy_timing = "突破确认后追涨"
-            entry_zone = f"{price:.2f}-{price * 1.03:.2f}"
-
-        # 止损位：通常设置在5-8%
-        stop_loss = f"{price * 0.92:.2f}"
-        stop_loss_pct = "8%"
-
-        # 风险评估：根据RSI和振幅判断
-        near_amp = s.get('near_amplitude', 0)
-        if RSI_val < 30 or near_amp > 15:
-            risk_level = "⚠️ 高风险"
-            risk_note = "波动较大，建议轻仓"
-        elif RSI_val < 50:
-            risk_level = "⚡ 中等风险"
-            risk_note = "适度参与"
-        else:
-            risk_level = "📊 相对稳健"
-            risk_note = "可适当增仓"
+        norm_code = normalize_stock_code(s.get("code"))
+        llm_reason = s.get("reason") or reason_map.get(norm_code) or build_fallback_reason(s)
+        llm_reason = compact_reason_text(llm_reason)
 
         # 使用脱敏后的代码和名称
         line1 = f"#{idx} {masked_name} | {masked_code} | 🏭 {industry}"
-        line2 = f"🚀 **{signals}** (Red Ink) | **J={J_val}** (Blue) **RSI={RSI_val}** (Purple)"
-        line3 = f"💰 **买入区间**: {entry_zone}元 | **止损**: {stop_loss}元(-{stop_loss_pct})"
-        line4 = f"📍 **操作**: {buy_timing} | **风险**: {risk_level} ({risk_note})"
+        line2 = f"📌 选股理由: {llm_reason}"
+        line3 = f"📊 信号: {signals} | J={J_val} RSI={RSI_val}"
 
-        cards_text += f"{line1}\n{line2}\n{line3}\n{line4}\n\n"
+        cards_text += f"{line1}\n{line2}\n{line3}\n\n"
 
     # --- Final Prompt Construction ---
     final_prompt = f"""(masterpiece, best quality), (vertical:1.2), (aspect ratio: 10:16), (sketch style), (hand drawn), (infographic)
@@ -765,11 +845,16 @@ def enrich_stocks_from_analysis(selected_stocks, date_dir):
 
             print(f"✅ 成功从分析报告回填 {count} 条行业数据")
 
-            # 保存回填后的结果到 selected_top10.json
-            top10_file = os.path.join(temp_dir, "selected_top10.json")
-            with open(top10_file, 'w', encoding='utf-8') as f:
+            # 保存回填后的结果到 selected_top5.json
+            top5_file = os.path.join(temp_dir, "selected_top5.json")
+            with open(top5_file, 'w', encoding='utf-8') as f:
                 json.dump(selected_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
-            print(f"💾 已更新 selected_top10.json")
+
+            # 兼容旧流程
+            legacy_top10_file = os.path.join(temp_dir, "selected_top10.json")
+            with open(legacy_top10_file, 'w', encoding='utf-8') as f:
+                json.dump(selected_stocks, f, cls=NumpyEncoder, ensure_ascii=False, indent=2)
+            print(f"💾 已更新 selected_top5.json")
 
             return True
         else:
@@ -850,7 +935,7 @@ def run(date_dir=None, force=False):
         print(f"   - 热门题材Top5: {', '.join(hot_sectors)}")
         print(f"   - 匹配题材的B1股票: {len(hot_stocks)} 只")
 
-        # 补齐逻辑：确保至少有 15-20 只候选股供 AI 筛选 Top 10
+        # 补齐逻辑：确保至少有 15-20 只候选股供 AI 筛选 Top 5
         target_pool_size = 20
         if len(hot_stocks) < target_pool_size:
             # 排除已选中的题材股
@@ -887,17 +972,22 @@ def run(date_dir=None, force=False):
 
         print("\n✅ AI 智能分析流程结束")
 
-        # 加载 Top 10 中间文件 (call_gemini_analysis 已经生成)
+        # 加载 Top 5 中间文件 (call_gemini_analysis 已经生成)
         temp_dir = os.path.join(date_dir, "temp_data")
-        top10_file = os.path.join(temp_dir, "selected_top10.json")
+        top5_file = os.path.join(temp_dir, "selected_top5.json")
+        legacy_top10_file = os.path.join(temp_dir, "selected_top10.json")
         top_stocks_list = all_stocks # 默认
         
-        if os.path.exists(top10_file):
-             with open(top10_file, 'r', encoding='utf-8') as f:
+        if os.path.exists(top5_file):
+             with open(top5_file, 'r', encoding='utf-8') as f:
                 top_stocks_list = json.load(f)
-             print(f"⚡ 加载 Top股票池: {len(top_stocks_list)} 只")
+             print(f"⚡ 加载 Top5股票池: {len(top_stocks_list)} 只")
+        elif os.path.exists(legacy_top10_file):
+             with open(legacy_top10_file, 'r', encoding='utf-8') as f:
+                top_stocks_list = json.load(f)
+             print(f"⚡ 加载兼容股票池: {len(top_stocks_list)} 只")
         else:
-             print("⚠️ 未找到 selected_top10.json，将使用全部过滤后的股票")
+             print("⚠️ 未找到 selected_top5.json，将使用全部过滤后的股票")
 
         # --- 新增步骤：从 AI分析报告 (result_analysis.txt) 回填 行业/题材 ---
         # 目的：直接从分析结果回填信息
