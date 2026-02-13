@@ -2,38 +2,64 @@
 import akshare as ak
 import pandas as pd
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 
-def get_dragon_tiger_data(date_str=None):
+
+def _has_rows(df):
+    return df is not None and isinstance(df, pd.DataFrame) and not df.empty
+
+
+def get_dragon_tiger_data(date_str=None, max_fallback_days=5, return_used_date=False):
     """
     Fetch Dragon Tiger List data:
     1. Institutional Seat Tracking (机构席位追踪)
     2. Active Business Departments (活跃营业部)
+    当目标日期无数据时，自动回退最近交易日。
     """
     if not date_str:
         date_str = datetime.now().strftime('%Y%m%d')
 
-    # Format date for akshare if needed, or just rely on current day defaults if API supports it.
-    # ak.stock_lhb_jgmmtj_em and ak.stock_lhb_hyyyb_em usually take start/end dates.
-    # Format: "20240101" -> "20240101"
-
-    print(f"Fetching Dragon Tiger data for {date_str}...")
-
     try:
-        # 1. Institutional Buying (Net Buy)
-        # ak.stock_lhb_jgmmtj_em(start_date="20240101", end_date="20240101")
-        df_inst = ak.stock_lhb_jgmmtj_em(start_date=date_str, end_date=date_str)
+        base_date = datetime.strptime(date_str, "%Y%m%d")
+    except ValueError:
+        base_date = datetime.now()
+        date_str = base_date.strftime('%Y%m%d')
 
-        # 2. Active Departments
-        # ak.stock_lhb_hyyyb_em(start_date="20240101", end_date="20240101")
-        df_active = ak.stock_lhb_hyyyb_em(start_date=date_str, end_date=date_str)
+    last_error = None
+    for offset in range(max_fallback_days + 1):
+        candidate_date = (base_date - timedelta(days=offset)).strftime('%Y%m%d')
+        print(f"Fetching Dragon Tiger data for {candidate_date}...")
 
-        return df_inst, df_active
+        df_inst = None
+        df_active = None
+        inst_error = None
+        active_error = None
 
-    except Exception as e:
-        print(f"Error fetching Dragon Tiger data: {e}")
-        return None, None
+        try:
+            df_inst = ak.stock_lhb_jgmmtj_em(start_date=candidate_date, end_date=candidate_date)
+        except Exception as e:
+            inst_error = e
+
+        try:
+            df_active = ak.stock_lhb_hyyyb_em(start_date=candidate_date, end_date=candidate_date)
+        except Exception as e:
+            active_error = e
+
+        if _has_rows(df_inst) or _has_rows(df_active):
+            if offset > 0:
+                print(f"ℹ️ 当日无可用龙虎榜数据，回退至 {candidate_date}")
+            if return_used_date:
+                return df_inst, df_active, candidate_date
+            return df_inst, df_active
+
+        last_error = inst_error or active_error
+
+    if last_error is not None:
+        print(f"Error fetching Dragon Tiger data: {last_error}")
+    if return_used_date:
+        return None, None, date_str
+    return None, None
 
 def generate_prompt(inst_df, active_df, date_str, output_path):
     """
@@ -150,7 +176,7 @@ def run(date_dir=None):
     except:
         date_str = datetime.now().strftime('%Y%m%d')
 
-    inst_df, active_df = get_dragon_tiger_data(date_str)
+    inst_df, active_df, used_date = get_dragon_tiger_data(date_str, return_used_date=True)
 
     if inst_df is not None or active_df is not None:
         # Generate AI Prompt
@@ -177,7 +203,7 @@ def run(date_dir=None):
         if active_df is not None and 'buy_total' in active_df.columns:
              active_df['buy_total'] = pd.to_numeric(active_df['buy_total'], errors='coerce')
 
-        generate_prompt(inst_df, active_df, date_str, prompt_path)
+        generate_prompt(inst_df, active_df, used_date, prompt_path)
 
         return True
     else:

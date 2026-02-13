@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import os
 import platform
+import requests
 from datetime import datetime
 
 # Configure Chinese Font
@@ -20,6 +21,52 @@ def get_chinese_font():
 
 plt.rcParams['font.sans-serif'] = [get_chinese_font()]
 plt.rcParams['axes.unicode_minus'] = False
+
+
+def _fetch_sector_flow_dataapi(sector_type):
+    """通过 data.eastmoney.com 的中转接口获取板块资金流，规避 push2 连接问题。"""
+    sector_code_map = {
+        '行业资金流': 'm:90+t:2',
+        '概念资金流': 'm:90+t:3',
+        '地域资金流': 'm:90+t:1',
+    }
+    flow_key_map = {'今日': 'f62', '5日': 'f164', '10日': 'f174'}
+
+    code = sector_code_map.get(sector_type)
+    if not code:
+        return None
+
+    url = "https://data.eastmoney.com/dataapi/bkzj/getbkzj"
+    params = {"key": flow_key_map['今日'], "code": code}
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+        )
+    }
+    resp = requests.get(url, params=params, headers=headers, timeout=15)
+    resp.raise_for_status()
+    payload = resp.json()
+
+    if payload.get("rc") != 0:
+        raise RuntimeError(f"DataAPI rc={payload.get('rc')}")
+
+    diff = ((payload.get("data") or {}).get("diff") or [])
+    if not diff:
+        return None
+
+    df = pd.DataFrame(diff)
+    if "f14" not in df.columns or "f62" not in df.columns:
+        return None
+
+    df = df.rename(columns={"f14": "名称", "f62": "net_flow"})
+    df["net_flow_billion"] = pd.to_numeric(df["net_flow"], errors="coerce") / 100000000
+    df = df.dropna(subset=["net_flow_billion"])
+    if df.empty:
+        return None
+
+    return df
+
 
 def draw_sector_chart(inflow_df, outflow_df, name_col, flow_col, output_dir):
     """
@@ -189,8 +236,29 @@ def get_sector_flow(sector_type='行业资金流'):
                 time.sleep(1)
 
         if df_em is None or df_em.empty:
-            print(f"❌ 最终获取 {sector_type} 失败 (THS和EM均失败)")
-            return None
+            print("尝试数据源: 东方财富 (DataAPI)...")
+            try:
+                df_dataapi = _fetch_sector_flow_dataapi(sector_type)
+            except Exception as e:
+                print(f"DataAPI source failed: {e}")
+                df_dataapi = None
+
+            if df_dataapi is None or df_dataapi.empty:
+                print(f"❌ 最终获取 {sector_type} 失败 (THS/EM/DataAPI均失败)")
+                return None
+
+            # --- Filtering Noise / Garbage Names ---
+            exclude_keywords = [
+                "同花顺", "板块", "概念", "成分", "持股", "股通", "基金", "昨日", "人民币",
+                "融资", "融券", "B股", "ST", "转债", "高股息", "破净", "百元", "核心",
+                "龙头", "茅", "大盘", "中字头", "AH", "REITs", "ETF", "标准", "普尔", "MSCI"
+            ]
+            df_dataapi = df_dataapi[
+                ~df_dataapi["名称"].apply(lambda x: any(k in str(x) for k in exclude_keywords))
+            ]
+            top_inflow = df_dataapi.sort_values(by='net_flow_billion', ascending=False).head(10)
+            top_outflow = df_dataapi.sort_values(by='net_flow_billion', ascending=True).head(10)
+            return top_inflow, top_outflow, '名称', 'net_flow_billion'
 
         # Process EastMoney data if it was successfully retrieved
         target_col = None
