@@ -116,7 +116,8 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append(">")
     prompt_lines.append("> **特殊标记**：")
     prompt_lines.append("> - **[一字]** = 红色喜庆标签，表示一字涨停")
-    prompt_lines.append("> - **[X]** = 红色叉号，表示炸板或断板")
+    prompt_lines.append("> - **[X]** = 红色毛笔叉，直接覆盖该股票“股票名+题材”两行区域，表示炸板或断板")
+    prompt_lines.append(">   （不要画在旁边，不要额外占空间；`[X]` 只是状态标记，不是要额外写出来的文字）")
     prompt_lines.append("")
     prompt_lines.append("## 标题")
     prompt_lines.append(f'**{display_date} A股涨停复盘** （"涨停"红色）')
@@ -224,10 +225,11 @@ def generate_ladder_prompt(date_str=None, output_dir=None):
     prompt_lines.append("  [Industry]   (In SMALL **RED** ink underneath)")
     prompt_lines.append("```")
     prompt_lines.append("Example: **锋龙股份** (Black) / 电网设备 (Red)")
+    prompt_lines.append("For failed stocks marked with [X], draw one red brush-stroke X across both lines (name + industry), not beside the text.")
     prompt_lines.append("")
     prompt_lines.append("**Special markers**:")
     prompt_lines.append("- **[一字]** = Festive RED badge, means sealed at open and never opened (best performers)")
-    prompt_lines.append("- **[X]** = RED cross/X mark over stock name, means failed (炸板/断板)")
+    prompt_lines.append("- **[X]** = RED brush-style X overlay over the whole stock block (name + industry), not beside it; means failed (炸板/断板)")
     prompt_lines.append("")
     
     # 统计
