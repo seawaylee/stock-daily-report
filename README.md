@@ -37,12 +37,12 @@ python main.py b1
 # Market Ladder
 python main.py ladder
 
-# Market Calendar (Tomorrow)
-python main.py calendar
-
 # Earnings Analysis & Prompt
 python main.py earnings
 python main.py earnings_prompt
+
+# Weekly Preview
+python main.py weekly_preview
 
 # Sector Capital Flow
 python main.py sector_flow
@@ -56,6 +56,34 @@ python main.py close_report
 # Fish Basin Trend
 python main.py fish_basin
 ```
+
+### 3. After-Close Auto Email (Trade Days)
+Run selected close-time modules and send attachments by email:
+```bash
+# Manual run (today)
+bash scripts/run_after_close.sh
+
+# Manual run (specific date)
+bash scripts/run_after_close.sh --date 20260213
+
+# Dry run (no email send)
+python scripts/after_close_workflow.py --date 20260213 --dry-run
+```
+
+Install local `launchd` scheduler (Mon-Fri 15:10):
+```bash
+bash scripts/install_close_launchd.sh
+launchctl list | grep com.stock_daily_report.after_close
+```
+
+Scheduler logs:
+- `logs/after_close_scheduler.out.log`
+- `logs/after_close_scheduler.err.log`
+
+Notes:
+- Workflow checks A-share trade calendar and skips non-trade days automatically.
+- Default recipient is `13522781970@163.com` (override with `--recipient`).
+- Attachments are collected from `results/YYYYMMDD/` and `results/YYYYMMDD/AI提示词/`.
 
 ## 📂 Output Structure
 All results are saved in `results/YYYYMMDD/`:
@@ -71,6 +99,21 @@ All results are saved in `results/YYYYMMDD/`:
 - **Environment**: Python 3.11 (Managed via Conda `stock311`)
 - **Dependencies**: `akshare`, `pandas`, `requests`, `numpy`, etc.
 - **Settings**: `common/config.py` (Concurrency, Market Cap filters).
+
+### Mail Environment Variables (`.env`)
+- `MAIL_SMTP_HOST` (default: `smtp.163.com`)
+- `MAIL_SMTP_PORT` (default: `465`)
+- `MAIL_USE_SSL` (`1/0`, default: `1`)
+- `MAIL_SMTP_USER` (required)
+- `MAIL_SMTP_PASS` (required, SMTP authorization code)
+- `MAIL_FROM` (optional, default: `MAIL_SMTP_USER`)
+- `MAIL_ATTACHMENT_PREFIX_DATE` (`true/false`, default: `false`)
+- `MAIL_ATTACHMENT_USE_CHINESE` (`true/false`, default: `false`)
+
+Attachment naming behavior:
+- Default (`MAIL_ATTACHMENT_USE_CHINESE=false`): ASCII-safe names for better mail client compatibility.
+- If `MAIL_ATTACHMENT_USE_CHINESE=true`: use original Chinese filenames.
+- If `MAIL_ATTACHMENT_PREFIX_DATE=true`: prepend `YYYYMMDD_` to attachment names.
 
 ## 📝 Developer Notes
 - **Prompt Generation**: Most modules now self-contain their prompt generation logic or use helpers in `modules/`.
